@@ -1,0 +1,1289 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#2D2926">
+<meta name="description" content="SCIP v4 preview — Supply Chain Intelligence Platform for Church's Texas Chicken (mock data)">
+<title>SCIP v4 Preview</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Barlow+Semi+Condensed:wght@400;500;600&family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<style>
+:root{
+  --bg0:#141210;--bg1:#1C1916;--panel:#24201C;--panel2:#2B2621;--panel3:#332D27;
+  --line:rgba(255,236,214,.08);--line2:rgba(255,236,214,.15);
+  --tx:#F3EBE1;--tx2:#BDB1A4;--tx3:#877C71;
+  --brand-red:#9B3324;--red:#F76B52;--red-bg:rgba(247,107,82,.13);
+  --gold:#E1A626;--gold-bg:rgba(225,166,38,.13);
+  --amber:#E07A3F;--amber-bg:rgba(224,122,63,.14);
+  --green:#6E8B2E;--green-t:#9DBE4F;--green-bg:rgba(110,139,46,.18);
+  --blue:#7FA7C9;--black:#2D2926;
+  --f-disp:'Barlow Condensed',system-ui,sans-serif;
+  --f-ui:'Barlow Semi Condensed',system-ui,sans-serif;
+  --f-body:'DM Sans',system-ui,sans-serif;
+  --f-mono:'JetBrains Mono',ui-monospace,monospace;
+  --r:10px;--rail:92px;--top:64px;
+  --safe-b:env(safe-area-inset-bottom,0px);
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:var(--bg0);color:var(--tx);overflow-x:hidden}
+body{font-family:var(--f-ui);font-size:15px;line-height:1.35;-webkit-font-smoothing:antialiased;-webkit-tap-highlight-color:transparent}
+button,input,select{font:inherit;color:inherit}
+button{cursor:pointer}
+a{color:var(--gold)}
+.num,.mono{font-family:var(--f-mono);font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+.tn{font-variant-numeric:tabular-nums}
+h1,h2,h3,.disp{font-family:var(--f-disp);text-transform:uppercase;letter-spacing:.03em;margin:0;font-weight:700}
+h1{font-size:28px}h2{font-size:19px;font-weight:600;letter-spacing:.06em}h3{font-size:15px;font-weight:600;letter-spacing:.08em;color:var(--tx2)}
+.muted{color:var(--tx2)}.quiet{color:var(--tx3)}.small{font-size:13px}.xs{font-size:12px}
+.red{color:var(--red)}.goldt{color:var(--gold)}.greent{color:var(--green-t)}.ambert{color:var(--amber)}
+
+/* ---------- shell ---------- */
+.app{display:grid;grid-template-columns:var(--rail) 1fr;grid-template-rows:var(--top) 1fr;height:100vh;height:100dvh}
+.rail{grid-row:1/3;background:linear-gradient(180deg,#1E1A17,#171411);border-right:1px solid var(--line);display:flex;flex-direction:column;align-items:stretch;padding:10px 8px;gap:4px;z-index:20}
+.brand{display:flex;flex-direction:column;align-items:center;padding:6px 0 12px;border-bottom:1px solid var(--line);margin-bottom:6px}
+.brand .wm{font-family:var(--f-disp);font-weight:700;font-size:26px;letter-spacing:.06em;line-height:1}
+.brand .wm b{color:var(--gold);font-weight:700}
+.brand .v{font-family:var(--f-disp);font-size:13px;color:var(--tx2);letter-spacing:.12em}
+.pill{display:inline-flex;align-items:center;gap:5px;border:1px solid var(--line2);border-radius:999px;padding:2px 8px;font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--tx2);white-space:nowrap}
+.brand .pill{margin-top:7px;font-size:9px;padding:3px 6px;border-color:rgba(225,166,38,.4);color:var(--gold);white-space:normal;text-align:center;line-height:1.2;max-width:76px;justify-content:center;border-radius:8px}
+.nav{display:flex;flex-direction:column;gap:2px;flex:1}
+.nav a{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;min-height:60px;border-radius:10px;color:var(--tx3);text-decoration:none;font-family:var(--f-disp);font-weight:600;font-size:12px;letter-spacing:.08em;text-transform:uppercase;position:relative;transition:background .15s,color .15s}
+.nav a svg{width:22px;height:22px}
+.nav a:hover{color:var(--tx);background:rgba(255,255,255,.03)}
+.nav a.on{color:var(--tx);background:var(--panel)}
+.nav a.on::before{content:"";position:absolute;left:-8px;top:14px;bottom:14px;width:3px;border-radius:0 3px 3px 0;background:var(--gold)}
+.nav a .bdg{position:absolute;top:6px;right:12px;min-width:18px;height:18px;border-radius:9px;background:var(--brand-red);color:#fff;font-family:var(--f-mono);font-size:10.5px;display:grid;place-items:center;padding:0 4px}
+.rail-foot{font-size:10px;color:var(--tx3);text-align:center;line-height:1.3;padding:6px 2px}
+.top{display:flex;align-items:center;gap:14px;padding:0 18px;border-bottom:1px solid var(--line);background:rgba(20,18,16,.92);backdrop-filter:blur(8px);z-index:15;min-width:0}
+.search{position:relative;flex:1;max-width:620px;min-width:0}
+.search input{width:100%;height:44px;border-radius:10px;border:1px solid var(--line2);background:var(--bg1);padding:0 14px 0 42px;font-size:15px;outline:none;transition:border-color .15s,box-shadow .15s}
+.search input::placeholder{color:var(--tx3)}
+.search input:focus{border-color:rgba(225,166,38,.6);box-shadow:0 0 0 3px rgba(225,166,38,.12)}
+.search>svg{position:absolute;left:13px;top:12px;width:20px;height:20px;color:var(--tx3)}
+.sdrop{position:absolute;left:0;right:0;top:50px;background:var(--panel);border:1px solid var(--line2);border-radius:12px;box-shadow:0 18px 50px rgba(0,0,0,.55);padding:10px;display:none;z-index:50;max-height:70vh;overflow:auto}
+.sdrop.open{display:block}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{border:1px solid var(--line2);background:var(--bg1);border-radius:999px;padding:0 12px;min-height:34px;display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--tx2)}
+.chip:hover{border-color:var(--gold);color:var(--tx)}
+.asof{display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--tx2);white-space:nowrap;margin-left:auto}
+.dot{width:9px;height:9px;border-radius:50%;display:inline-block;flex:none}
+.dot.g{background:var(--green-t);box-shadow:0 0 0 3px rgba(157,190,79,.18)}
+.dot.a{background:var(--amber);box-shadow:0 0 0 3px rgba(224,122,63,.2)}
+.dot.r{background:var(--red);box-shadow:0 0 0 3px rgba(247,107,82,.2)}
+.iconbtn{height:44px;min-width:44px;border-radius:10px;border:1px solid var(--line2);background:var(--bg1);display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:0 12px;font-size:13px;color:var(--tx2)}
+.iconbtn:hover,.iconbtn.on{color:var(--tx);border-color:var(--gold)}
+.iconbtn svg{width:18px;height:18px}
+main{overflow-y:auto;overflow-x:hidden;min-width:0;position:relative;-webkit-overflow-scrolling:touch}
+.view{display:none;padding:18px 20px 40px;max-width:1500px;margin:0 auto}
+.view.on{display:block;animation:fade .25s ease}
+@keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+.vhead{display:flex;align-items:flex-end;gap:14px;flex-wrap:wrap;margin-bottom:14px}
+.vhead .sub{color:var(--tx2);font-size:14px;margin-top:2px}
+.vhead .right{margin-left:auto;display:flex;gap:8px;flex-wrap:wrap}
+.foot{margin-top:28px;padding-top:12px;border-top:1px solid var(--line);font-size:11.5px;color:var(--tx3);display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
+
+/* ---------- primitives ---------- */
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:14px 16px;min-width:0}
+.panel>.ph{display:flex;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap}
+.panel>.ph .r{margin-left:auto}
+.grid{display:grid;gap:12px}
+.g2{grid-template-columns:repeat(2,minmax(0,1fr))}.g3{grid-template-columns:repeat(3,minmax(0,1fr))}.g4{grid-template-columns:repeat(4,minmax(0,1fr))}
+.btn{min-height:44px;padding:0 16px;border-radius:9px;border:1px solid var(--line2);background:var(--panel2);font-family:var(--f-disp);font-weight:600;font-size:15px;letter-spacing:.07em;text-transform:uppercase;display:inline-flex;align-items:center;justify-content:center;gap:8px;color:var(--tx);transition:background .15s,border-color .15s,transform .05s}
+.btn:hover{border-color:var(--tx3)}.btn:active{transform:translateY(1px)}
+.btn.pri{background:var(--gold);border-color:var(--gold);color:#1A1612}
+.btn.pri:hover{background:#EDB43A}
+.btn.danger{background:var(--brand-red);border-color:var(--brand-red);color:#fff}
+.btn.ghost{background:transparent}
+.btn.sm{min-height:36px;font-size:13px;padding:0 12px}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.btn svg{width:16px;height:16px}
+.tier{display:inline-flex;align-items:center;gap:6px;font-family:var(--f-disp);font-weight:700;font-size:12.5px;letter-spacing:.12em;text-transform:uppercase;padding:3px 9px;border-radius:5px}
+.tier.Severe{background:var(--red-bg);color:var(--red)}
+.tier.High{background:var(--gold-bg);color:var(--gold)}
+.tier.Watch{background:var(--amber-bg);color:var(--amber)}
+.tier.OK{background:var(--green-bg);color:var(--green-t)}
+.tag{display:inline-flex;align-items:center;gap:4px;font-size:11.5px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;padding:2px 7px;border-radius:4px;border:1px solid var(--line2);color:var(--tx2);white-space:nowrap}
+.tag.basket{border-color:rgba(225,166,38,.45);color:var(--gold)}
+.tag.lto{border-color:rgba(127,167,201,.5);color:var(--blue)}
+.tag.nosub{border-color:rgba(247,107,82,.5);color:var(--red)}
+.tag.trig{background:var(--panel3);border-color:transparent;color:var(--tx)}
+.tag.wx{background:rgba(127,167,201,.16);color:#A9CBE6;border-color:transparent}
+.tag.ok{border-color:rgba(157,190,79,.5);color:var(--green-t)}
+.tag.warn{border-color:rgba(224,122,63,.55);color:var(--amber)}
+.tag.bad{border-color:rgba(247,107,82,.55);color:var(--red);background:var(--red-bg)}
+table{border-collapse:collapse;width:100%}
+.tbl th{font-family:var(--f-disp);font-weight:600;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--tx3);text-align:left;padding:8px 10px;border-bottom:1px solid var(--line2);white-space:nowrap}
+.tbl td{padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:middle;font-size:14px}
+.tbl tr:last-child td{border-bottom:0}
+.tbl td.n,.tbl th.n{text-align:right;font-family:var(--f-mono);font-variant-numeric:tabular-nums;font-size:13px}
+.tbl tbody tr:hover td{background:rgba(255,255,255,.015)}
+.tscroll{overflow-x:auto;-webkit-overflow-scrolling:touch;max-width:100%}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:4px 14px;font-size:14px}
+.kv dt{color:var(--tx3);font-size:12px;text-transform:uppercase;letter-spacing:.08em;padding-top:2px}
+.kv dd{margin:0}
+.note{font-size:12.5px;color:var(--tx2);border-left:2px solid var(--gold);padding:6px 10px;background:rgba(225,166,38,.05);border-radius:0 6px 6px 0}
+.note.red{border-left-color:var(--red);background:var(--red-bg)}
+.seg{display:inline-flex;background:var(--bg1);border:1px solid var(--line2);border-radius:10px;padding:3px;gap:2px;flex-wrap:wrap}
+.seg button{min-height:38px;padding:0 12px;border:0;border-radius:7px;background:transparent;color:var(--tx2);font-size:13.5px;font-weight:500;white-space:nowrap}
+.seg button.on{background:var(--panel3);color:var(--tx);box-shadow:inset 0 0 0 1px var(--line2)}
+.switch{display:inline-flex;align-items:center;gap:10px;min-height:44px;cursor:pointer;user-select:none}
+.switch input{appearance:none;width:40px;height:22px;border-radius:11px;background:var(--panel3);border:1px solid var(--line2);position:relative;transition:background .15s;margin:0;flex:none}
+.switch input::after{content:"";position:absolute;width:16px;height:16px;border-radius:50%;background:var(--tx2);top:2px;left:2px;transition:transform .15s,background .15s}
+.switch input:checked{background:rgba(225,166,38,.35)}
+.switch input:checked::after{transform:translateX(18px);background:var(--gold)}
+input.f,select.f{height:44px;border-radius:8px;border:1px solid var(--line2);background:var(--bg1);padding:0 10px;outline:none;width:100%}
+input.f:focus,select.f:focus{border-color:var(--gold)}
+label.fl{display:block;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--tx3);margin:10px 0 5px}
+</style>
+<style>
+/* ---------- today ---------- */
+.kpis{display:grid;grid-template-columns:1.5fr 1fr 1.25fr 1fr 1fr;gap:10px;margin-bottom:16px}
+.kpi{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:12px 14px;position:relative;overflow:hidden;min-width:0;text-decoration:none;color:inherit;display:block}
+a.kpi:hover{border-color:var(--line2)}
+.kpi .lb{font-family:var(--f-disp);font-weight:600;font-size:12.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--tx3)}
+.kpi .vl{font-family:var(--f-disp);font-weight:700;font-size:34px;line-height:1.05;margin-top:4px;font-variant-numeric:tabular-nums}
+.kpi .vl small{font-size:15px;color:var(--tx2);font-weight:500;letter-spacing:.03em}
+.kpi .ft{font-size:12px;color:var(--tx2);margin-top:2px}
+.kpi.alarm{border-color:rgba(247,107,82,.35);background:linear-gradient(135deg,rgba(155,51,36,.22),var(--panel) 60%)}
+.tiers{display:flex;gap:14px;margin-top:6px}
+.tiers div{display:flex;flex-direction:column}
+.tiers b{font-family:var(--f-disp);font-size:32px;line-height:1}
+.tiers span{font-size:11px;letter-spacing:.1em;text-transform:uppercase;font-weight:600}
+.redlight{position:absolute;right:12px;top:12px;width:14px;height:14px;border-radius:50%;background:var(--red);box-shadow:0 0 12px var(--red)}
+.fdlist{display:flex;flex-direction:column;gap:8px}
+.fd{display:grid;grid-template-columns:6px 1fr auto;background:var(--panel);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;cursor:pointer;transition:border-color .15s,transform .1s;text-align:left;padding:0;width:100%}
+.fd:hover{border-color:var(--line2)}
+.fd:active{transform:scale(.997)}
+.fd .bar{background:var(--tx3)}
+.fd.Severe .bar{background:var(--red)}.fd.High .bar{background:var(--gold)}.fd.Watch .bar{background:var(--amber)}
+.fd .body{padding:12px 14px;min-width:0}
+.fd .l1{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.fd .nm{font-family:var(--f-disp);font-weight:700;font-size:21px;letter-spacing:.02em;text-transform:uppercase}
+.fd .cin{font-family:var(--f-mono);font-size:12px;color:var(--tx3)}
+.fd .l2{display:flex;gap:6px 18px;flex-wrap:wrap;margin-top:6px;font-size:13.5px;color:var(--tx2)}
+.fd .l2 b{color:var(--tx);font-weight:600}
+.fd .runout{padding:12px 16px;display:flex;flex-direction:column;align-items:flex-end;justify-content:center;border-left:1px solid var(--line);min-width:128px}
+.fd .runout .d{font-family:var(--f-disp);font-weight:700;font-size:30px;line-height:1}
+.fd .runout .lbl{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--tx3)}
+.fd .runout .rc{font-size:12px;color:var(--tx2);margin-top:4px;white-space:nowrap}
+.grp{background:var(--panel);border:1px solid rgba(247,107,82,.3);border-radius:var(--r);overflow:hidden}
+.grp>.fd{border:0;border-radius:0}
+.grp .kids{border-top:1px dashed var(--line2);background:var(--bg1);display:none}
+.grp.open .kids{display:block}
+.grp .kid{display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr auto;gap:10px;align-items:center;padding:8px 16px 8px 22px;border-bottom:1px solid var(--line);font-size:13.5px;cursor:pointer;min-height:48px}
+.grp .kid:hover{background:rgba(255,255,255,.02)}
+.expand{display:inline-flex;align-items:center;gap:4px;font-size:12px;color:var(--tx2);border:1px solid var(--line2);border-radius:6px;padding:3px 8px;background:transparent;min-height:30px}
+.secthead{display:flex;align-items:center;gap:10px;margin:18px 0 8px}
+.secthead .ln{flex:1;height:1px;background:var(--line)}
+
+/* ---------- gap ---------- */
+.gaphead{display:flex;gap:16px;align-items:flex-start;flex-wrap:wrap;margin-bottom:14px}
+.gaphead .ids{display:flex;gap:6px 16px;flex-wrap:wrap;font-size:13px;color:var(--tx2);margin-top:6px}
+.gaphead .ids b{font-family:var(--f-mono);color:var(--tx);font-weight:500}
+.stat .lb{font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--tx3);font-weight:600}
+.stat .vl{font-family:var(--f-disp);font-weight:700;font-size:30px;line-height:1.1;font-variant-numeric:tabular-nums}
+.stat .ft{font-size:12px;color:var(--tx2)}
+.chart svg{width:100%;height:auto;display:block}
+.donor{display:grid;grid-template-columns:minmax(0,1.3fr) 70px 90px minmax(0,1.6fr) 60px;gap:10px;align-items:center;padding:9px 0;border-bottom:1px solid var(--line);font-size:13.5px}
+.donor:last-child{border-bottom:0}
+.donor.hd{font-family:var(--f-disp);font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--tx3);font-weight:600;padding-top:0}
+.steps{display:flex;gap:4px;flex-wrap:wrap}
+.step{font-family:var(--f-mono);font-size:11.5px;padding:2px 6px;border-radius:4px;background:var(--panel3);color:var(--tx)}
+.step.half{background:transparent;border:1px dashed var(--line2);color:var(--tx2)}
+.hist li{padding:8px 0;border-bottom:1px solid var(--line);font-size:13.5px;list-style:none}
+.hist{padding:0;margin:0}
+
+/* ---------- sheet / modal / toast ---------- */
+.scrim{position:fixed;inset:0;background:rgba(8,6,5,.6);backdrop-filter:blur(2px);z-index:80;display:none}
+.scrim.on{display:block}
+.sheet{position:fixed;right:0;top:0;bottom:0;width:min(440px,100vw);background:var(--panel);border-left:1px solid var(--line2);z-index:90;transform:translateX(105%);transition:transform .25s ease;display:flex;flex-direction:column;box-shadow:-20px 0 60px rgba(0,0,0,.5)}
+.sheet.on{transform:none}
+.sheet .sh{padding:18px 20px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:10px}
+.sheet .sb{padding:6px 20px 20px;overflow:auto;flex:1}
+.sheet .sf{padding:14px 20px calc(14px + var(--safe-b));border-top:1px solid var(--line);display:flex;gap:10px}
+.modal{position:fixed;left:50%;top:50%;transform:translate(-50%,-48%) scale(.98);opacity:0;pointer-events:none;width:min(980px,94vw);max-height:90vh;background:var(--panel);border:1px solid var(--line2);border-radius:14px;z-index:90;display:flex;flex-direction:column;transition:opacity .2s,transform .2s;box-shadow:0 30px 80px rgba(0,0,0,.6)}
+.modal.on{opacity:1;pointer-events:auto;transform:translate(-50%,-50%)}
+.modal .mh{padding:14px 18px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:10px}
+.modal .mb{padding:16px 18px;overflow:auto}
+.x{margin-left:auto;width:44px;height:44px;border-radius:9px;border:1px solid var(--line2);background:transparent;font-size:20px;color:var(--tx2)}
+.toast{position:fixed;left:50%;bottom:calc(24px + var(--safe-b));transform:translate(-50%,20px);opacity:0;background:#F3EBE1;color:#1A1612;border-radius:12px;padding:12px 16px;z-index:120;box-shadow:0 14px 40px rgba(0,0,0,.5);transition:opacity .2s,transform .2s;display:flex;gap:14px;align-items:center;max-width:92vw;font-size:14px;pointer-events:none}
+.toast.on{opacity:1;transform:translate(-50%,0);pointer-events:auto}
+.toast b{font-weight:700}
+.toast .sig{font-size:12px;color:#5d534a;margin-top:2px}
+.toast button{background:transparent;border:1px solid #1A1612;border-radius:7px;min-height:36px;padding:0 10px;font-weight:600;color:#1A1612}
+.pop{position:fixed;z-index:70;background:var(--panel2);border:1px solid var(--line2);border-radius:10px;padding:12px 14px;width:260px;box-shadow:0 18px 44px rgba(0,0,0,.55);display:none;font-size:13.5px}
+.pop.on{display:block}
+
+/* ---------- map ---------- */
+.mapwrap{position:relative;display:grid;grid-template-columns:1fr 290px;gap:12px;height:calc(100dvh - var(--top) - 150px);min-height:460px}
+#map{border-radius:var(--r);border:1px solid var(--line2);background:#0f0e0d;height:100%;min-height:420px;z-index:1}
+.mapside{display:flex;flex-direction:column;gap:10px;overflow:auto;min-height:0}
+.layer{display:flex;align-items:center;gap:10px;min-height:44px;border-bottom:1px solid var(--line);font-size:14px;cursor:pointer}
+.layer:last-child{border-bottom:0}
+.layer .sw{width:14px;height:14px;flex:none}
+.layer input{margin-left:auto}
+.leg{display:grid;grid-template-columns:18px 1fr;gap:6px 8px;align-items:center;font-size:12.5px;color:var(--tx2)}
+.inview{display:grid;grid-template-columns:1fr auto;gap:4px 10px;font-size:13.5px}
+.inview b{font-family:var(--f-mono);font-weight:500;text-align:right}
+.mapoff{position:absolute;inset:0;display:none;align-items:center;justify-content:center;flex-direction:column;gap:8px;text-align:center;color:var(--tx2);padding:20px;background:repeating-linear-gradient(45deg,#181513,#181513 12px,#1b1815 12px,#1b1815 24px);border-radius:var(--r);z-index:5}
+.leaflet-container{font-family:var(--f-ui);background:#0f0e0d}
+.leaflet-popup-content-wrapper,.leaflet-popup-tip{background:var(--panel2);color:var(--tx);border:1px solid var(--line2);box-shadow:0 14px 40px rgba(0,0,0,.6)}
+.leaflet-popup-content{margin:12px 14px;font-size:13px;line-height:1.4}
+.leaflet-container a.leaflet-popup-close-button{color:var(--tx2);width:30px;height:30px;font-size:22px}
+.leaflet-control-zoom a{background:var(--panel2)!important;color:var(--tx)!important;border-color:var(--line2)!important;width:40px!important;height:40px!important;line-height:40px!important}
+.leaflet-control-attribution{background:rgba(20,18,16,.75)!important;color:var(--tx3)!important;font-size:10px}
+.leaflet-control-attribution a{color:var(--tx2)!important}
+.dcm{display:flex;align-items:center;gap:6px;white-space:nowrap;transform:translate(-9px,-9px)}
+.dcm i{width:18px;height:18px;border:2px solid #141210;box-shadow:0 0 0 1px rgba(255,255,255,.5),0 2px 8px rgba(0,0,0,.6);display:block;flex:none}
+.dcm span{font-family:var(--f-disp);font-weight:600;font-size:12.5px;letter-spacing:.04em;color:#fff;text-shadow:0 1px 3px #000,0 0 6px #000}
+.supm i{width:13px;height:13px;transform:rotate(45deg);background:#A9CBE6;border:2px solid #141210;display:block;box-shadow:0 0 0 1px rgba(255,255,255,.4)}
+.trk{width:26px;height:26px;border-radius:50%;background:#F3EBE1;color:#141210;display:grid;place-items:center;box-shadow:0 2px 8px rgba(0,0,0,.6);border:2px solid #141210}
+.trk svg{width:15px;height:15px}
+.trk.stale{background:#6b625a;color:#2a2622}
+.trk.hot{background:var(--red);color:#fff}
+.pt{font-family:var(--f-disp);font-weight:700;font-size:16px;text-transform:uppercase;letter-spacing:.03em;margin-bottom:4px}
+.prow{display:flex;justify-content:space-between;gap:12px;border-top:1px solid var(--line);padding:3px 0}
+.prow span:first-child{color:var(--tx3)}
+.honest{font-size:12px;color:var(--tx3);margin-top:10px;display:flex;gap:8px;align-items:center}
+
+/* ---------- basket ---------- */
+.bgrid{display:grid;gap:0;align-items:center;min-width:760px}
+.bgrid .rh{font-size:13px;padding:0 10px 0 0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;height:30px;line-height:30px;border-bottom:1px solid var(--line)}
+.bgrid .ch{height:84px;position:relative;cursor:pointer}
+.bgrid .ch span{position:absolute;left:50%;bottom:6px;transform-origin:left bottom;transform:rotate(-55deg);font-family:var(--f-disp);font-weight:600;font-size:12.5px;letter-spacing:.06em;white-space:nowrap;color:var(--tx2)}
+.bgrid .cell{height:30px;display:grid;place-items:center;border-bottom:1px solid var(--line)}
+.lt{width:20px;height:20px;border-radius:50%;border:0;padding:0;position:relative}
+.lt::after{content:"";position:absolute;inset:-12px}
+.lt.nd{background:transparent!important;border:1.5px solid var(--tx3);opacity:.55}
+.lt.c-r{background:var(--red);box-shadow:0 0 8px rgba(247,107,82,.55)}
+.lt.c-g{background:var(--gold)}
+.lt.c-a{background:var(--amber)}
+.lt.c-k{background:var(--green)}
+.lt.pulse{animation:pulse 1.6s ease-in-out infinite}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(247,107,82,.7)}50%{box-shadow:0 0 0 7px rgba(247,107,82,0)}}
+.paused .lt.pulse{animation:none}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12.5px;color:var(--tx2);align-items:center}
+.legend i{width:12px;height:12px;border-radius:50%;display:inline-block;margin-right:5px;vertical-align:-1px}
+.cidx .big{font-family:var(--f-disp);font-weight:700;font-size:56px;line-height:1}
+.basketlay{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:12px;align-items:start}
+
+/* ---------- pricing ---------- */
+.pgrid input.cellin{width:86px;height:36px;background:var(--bg1);border:1px solid var(--line2);border-radius:6px;text-align:right;padding:0 8px;font-family:var(--f-mono);font-size:13px;outline:none}
+.pgrid input.cellin:focus{border-color:var(--gold)}
+.pgrid tr.dirty td{background:rgba(225,166,38,.05)}
+.pgrid tr.err td{background:rgba(247,107,82,.07)}
+.pgrid tr.newrow td{background:rgba(127,167,201,.06)}
+.status-pill{font-family:var(--f-disp);font-weight:700;letter-spacing:.12em;font-size:13px;padding:4px 10px;border-radius:6px;background:var(--gold-bg);color:var(--gold);border:1px solid rgba(225,166,38,.35)}
+.status-pill.saved{background:var(--green-bg);color:var(--green-t);border-color:rgba(157,190,79,.4)}
+.pf li{list-style:none;padding:9px 0;border-bottom:1px solid var(--line);display:flex;gap:10px;align-items:flex-start;font-size:13.5px}
+.pf{margin:0;padding:0}
+.cal{position:relative;height:88px;border-radius:8px;background:var(--bg1);border:1px solid var(--line);overflow:hidden}
+.cal .mo{position:absolute;top:0;bottom:0;border-left:1px solid var(--line2);font-size:11px;color:var(--tx3);padding:4px 6px;font-family:var(--f-disp);letter-spacing:.1em;text-transform:uppercase}
+.cal .ev{position:absolute;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:2px;font-size:10.5px;white-space:nowrap}
+.cal .ev i{width:10px;height:10px;border-radius:2px;transform:rotate(45deg)}
+.cal .today{position:absolute;top:0;bottom:0;width:2px;background:var(--gold)}
+.multi{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px}
+.multi label{display:flex;align-items:center;gap:8px;min-height:44px;padding:0 8px;border-radius:8px;border:1px solid var(--line);font-size:14px}
+.multi input{width:18px;height:18px;accent-color:#E1A626}
+.exA{background:#FBF7F0;color:#1d1915;border-radius:6px;padding:28px 32px;font-family:var(--f-body);font-size:12.5px}
+.exA h4{font-family:var(--f-disp);font-size:22px;text-transform:uppercase;margin:0 0 2px;letter-spacing:.04em}
+.exA table th{background:#2D2926;color:#fff;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;padding:6px;text-align:left}
+.exA table td{border-bottom:1px solid #e4dccf;padding:5px 6px}
+.exA td.n{text-align:right;font-family:var(--f-mono);font-size:11.5px}
+
+/* ---------- invoices ---------- */
+.invlay{display:grid;grid-template-columns:280px minmax(0,1fr);gap:12px;align-items:start}
+.invli{display:block;width:100%;text-align:left;background:transparent;border:0;border-bottom:1px solid var(--line);padding:10px 8px;min-height:56px;border-radius:6px}
+.invli.on{background:var(--panel3)}
+.paper{background:#FBF7F0;color:#1d1915;border-radius:6px;padding:22px 24px;font-family:var(--f-body);font-size:12.5px;overflow-x:auto;box-shadow:0 10px 30px rgba(0,0,0,.4)}
+.paper .row{display:flex;gap:14px;flex-wrap:wrap}
+.paper .box{border:1.5px solid #2D2926;padding:8px 10px;flex:1;min-width:180px}
+.paper .box h5{margin:0 0 4px;font-family:var(--f-disp);font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:#6d6156}
+.paper table{min-width:760px;margin-top:12px}
+.paper th{background:#2D2926;color:#fff;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;padding:6px;text-align:left}
+.paper td{border-bottom:1px solid #e1d8ca;padding:6px;vertical-align:top}
+.paper td.n{text-align:right;font-family:var(--f-mono);font-size:12px}
+.paper .derived{border-bottom:1.5px dotted #9B3324;}
+.paper .nif{color:#a79a8c;font-style:italic}
+.paper .mark{font-size:9px;font-weight:700;letter-spacing:.1em;color:#9B3324;margin-left:4px}
+.paper tr.mismatch td{background:#FCE9E3}
+.paper .cl{font-size:11px;color:#6d6156}
+.paper a{color:#9B3324}
+
+/* ---------- onboarding / feeds ---------- */
+.ob{min-width:900px}
+.ob td.stp{text-align:center}
+.sc{display:inline-flex;flex-direction:column;align-items:center;gap:2px;min-width:72px;padding:6px 4px;border-radius:7px;font-size:11px;line-height:1.15}
+.sc b{font-family:var(--f-mono);font-weight:500;font-size:11.5px}
+.sc.done{background:var(--green-bg);color:var(--green-t)}
+.sc.prog{background:var(--gold-bg);color:var(--gold)}
+.sc.over{background:var(--red-bg);color:var(--red);box-shadow:inset 0 0 0 1px rgba(247,107,82,.5)}
+.sc.ns{background:var(--bg1);color:var(--tx3)}
+.prop{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;padding:12px 0;border-bottom:1px solid var(--line);align-items:center}
+.prop:last-child{border-bottom:0}
+
+/* ---------- responsive ---------- */
+@media (max-width:1180px){
+  .kpis{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .mapwrap{grid-template-columns:1fr 250px}
+  .basketlay{grid-template-columns:1fr}
+}
+@media (max-width:900px), (orientation:portrait) and (max-width:1000px){
+  :root{--top:60px}
+  .app{grid-template-columns:minmax(0,1fr);grid-template-rows:var(--top) minmax(0,1fr) calc(64px + var(--safe-b))}
+  .rail{grid-row:3;grid-column:1;min-width:0;flex-direction:row;padding:4px 4px calc(4px + var(--safe-b));border-right:0;border-top:1px solid var(--line);overflow-x:auto}
+  .brand,.rail-foot{display:none}
+  .nav{flex-direction:row;gap:2px}
+  .nav a{flex:1;min-width:56px;min-height:54px;font-size:10.5px;letter-spacing:.04em}
+  .nav a.on::before{left:14px;right:14px;top:-4px;bottom:auto;width:auto;height:3px;border-radius:0 0 3px 3px}
+  .nav a .bdg{right:6px;top:2px}
+  .top{grid-row:1}
+  main{grid-row:2}
+  .mapwrap{grid-template-columns:1fr;height:auto}
+  #map{height:58vh}
+  .invlay{grid-template-columns:1fr}
+  .g4{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .g3{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media (max-width:640px){
+  .view{padding:12px 12px 32px}
+  .top{padding:0 10px;gap:8px}
+  .asof .txt,.top .hidem{display:none}
+  .kpis{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .kpis .kpi:first-child{grid-column:1/3}
+  .g2,.g3{grid-template-columns:1fr}
+  .fd{grid-template-columns:5px 1fr}
+  .fd .runout{grid-column:2;border-left:0;border-top:1px solid var(--line);flex-direction:row;align-items:center;justify-content:space-between;gap:8px;min-width:0}
+  .grp .kid{grid-template-columns:1fr 1fr;font-size:12.5px}
+  .donor{grid-template-columns:minmax(0,1fr) 60px 70px;}
+  .donor .dsteps,.donor .dtr{grid-column:1/-1}
+  .nav a span.l{display:none}
+  .nav a{min-width:44px}
+  .gaphead select.f{min-width:0!important;flex:1}
+  .gaphead>div:last-child{width:100%}
+  h1{font-size:23px}
+  .fd .nm{font-size:18px}
+}
+/* present mode */
+body.present{font-size:16.5px}
+body.present .nav a span.l,body.present .foot,body.present .rail-foot{display:none}
+body.present .nav a{min-height:56px}
+body.present .fd .nm{font-size:23px}
+body.present .kpi .vl{font-size:38px}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important}
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="rail">
+    <div class="brand">
+      <div class="wm">SC<b>I</b>P</div>
+      <div class="v">v4</div>
+      <span class="pill">Preview · mock data</span>
+    </div>
+    <nav class="nav" id="nav">
+      <a href="#today" data-v="today"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3c2 3 5 5 5 9a5 5 0 0 1-10 0c0-2 1-3 2-4 0 2 1 3 2 3 0-3-1-5 1-8z"/></svg><span class="l">Today</span><i class="bdg" id="navbdg">2</i></a>
+      <a href="#gap" data-v="gap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 17l5-5 4 3 8-8"/><path d="M14 7h6v6"/><path d="M3 21h18"/></svg><span class="l">Supply gap</span></a>
+      <a href="#map" data-v="map"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 4L3 6v14l6-2 6 2 6-2V4l-6 2-6-2z"/><path d="M9 4v14M15 6v14"/></svg><span class="l">Map</span></a>
+      <a href="#basket" data-v="basket"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="6" cy="6" r="2"/><circle cx="12" cy="6" r="2"/><circle cx="18" cy="6" r="2"/><circle cx="6" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="18" cy="12" r="2"/><circle cx="6" cy="18" r="2"/><circle cx="12" cy="18" r="2"/><circle cx="18" cy="18" r="2"/></svg><span class="l">Basket</span></a>
+      <a href="#pricing" data-v="pricing"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 12l9-9h8v8l-9 9z"/><circle cx="16" cy="8" r="1.5"/></svg><span class="l">Pricing</span></a>
+      <a href="#invoices" data-v="invoices"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2z"/><path d="M9 8h6M9 12h6M9 16h3"/></svg><span class="l">Invoices</span></a>
+      <a href="#onboarding" data-v="onboarding"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M8 12l3 3 5-6"/></svg><span class="l">Onboard</span><i class="bdg">3</i></a>
+      <a href="#feeds" data-v="feeds"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 11a9 9 0 0 1 9 9"/><path d="M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1.5"/></svg><span class="l">Feeds</span></a>
+    </nav>
+    <div class="rail-foot">Church's Texas Chicken<br>Supply Chain</div>
+  </aside>
+
+  <header class="top">
+    <div class="search" id="searchbox">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+      <input id="q" type="search" autocomplete="off" spellcheck="false" placeholder="Type any item # — PFG, DC item, CIN, Mfr #, AS #" aria-label="Universal item search">
+      <div class="sdrop" id="sdrop"></div>
+    </div>
+    <div class="asof"><span class="dot a" id="feeddot"></span><span class="txt">Run <span class="mono">2026-10-19 06:10 ET</span> · 14/15 feeds current</span></div>
+    <button class="iconbtn hidem" id="presentBtn" title="Present mode"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="12" rx="1.5"/><path d="M12 16v4M8 20h8"/></svg><span>Present</span></button>
+  </header>
+
+  <main id="main">
+    <section class="view" id="v-today"></section>
+    <section class="view" id="v-gap"></section>
+    <section class="view" id="v-map">
+      <div class="vhead">
+        <div><h1>Network map</h1><div class="sub">Restaurants, DCs, supplier ship-froms, inbound trucks and weather — one picture.</div></div>
+        <div class="right"><button class="btn sm" id="fitBtn">Fit network</button><button class="btn sm" id="stormBtn">Zoom to Nadine</button></div>
+      </div>
+      <div class="mapwrap">
+        <div style="position:relative;min-height:0">
+          <div id="map"></div>
+          <div class="mapoff" id="mapoff"><h2>Map tiles unavailable</h2><div>You appear to be offline. Layers, counts and firedrills still work — the basemap returns when the connection does.</div></div>
+        </div>
+        <div class="mapside">
+          <div class="panel"><div class="ph"><h3>Layers</h3></div><div id="layers"></div></div>
+          <div class="panel"><div class="ph"><h3>In view</h3></div><div class="inview" id="inview"></div></div>
+          <div class="panel"><div class="ph"><h3>Legend</h3></div>
+            <div class="leg">
+              <span class="dot" style="background:var(--green-t)"></span><span>Restaurant open</span>
+              <span class="dot" style="background:var(--red)"></span><span>Restaurant closed</span>
+              <span class="dot" style="background:var(--amber)"></span><span>Unconfirmed &gt; 48 h</span>
+              <i style="width:13px;height:13px;background:var(--red);display:block"></i><span>DC · worst firedrill Severe</span>
+              <i style="width:13px;height:13px;background:var(--gold);display:block"></i><span>DC · High</span>
+              <i style="width:13px;height:13px;background:var(--amber);display:block"></i><span>DC · Watch</span>
+              <i style="width:13px;height:13px;background:var(--green);display:block"></i><span>DC · no firedrill</span>
+              <i style="width:10px;height:10px;background:#A9CBE6;transform:rotate(45deg);display:block;margin-left:2px"></i><span>Supplier ship-from</span>
+              <span class="dot" style="background:#F3EBE1"></span><span>Truck (grey = fix &gt; 2 h)</span>
+              <i style="width:14px;height:10px;background:rgba(247,107,82,.3);border:1px solid var(--red);display:block"></i><span>Forecast cone / NWS alert</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="honest"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16v.5"/></svg>Map never claims every load is tracked, an ETA, or item-level temperature.</div>
+    </section>
+    <section class="view" id="v-basket"></section>
+    <section class="view" id="v-pricing"></section>
+    <section class="view" id="v-invoices"></section>
+    <section class="view" id="v-onboarding"></section>
+    <section class="view" id="v-feeds"></section>
+  </main>
+</div>
+
+<div class="scrim" id="scrim"></div>
+<div class="sheet" id="sheet"><div class="sh"><h2 id="sheetT"></h2><button class="x" data-close>×</button></div><div class="sb" id="sheetB"></div><div class="sf" id="sheetF"></div></div>
+<div class="modal" id="modal"><div class="mh"><h2 id="modalT"></h2><button class="x" data-close>×</button></div><div class="mb" id="modalB"></div></div>
+<div class="toast" id="toast"></div>
+<div class="pop" id="pop"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script>
+'use strict';
+/* =====================================================================
+   SCIP v4 — preview build. Everything below is mock data.
+   ===================================================================== */
+const RUN = new Date(2026,9,19,6,10);
+const DOW = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+function dayDate(off){const d=new Date(RUN);d.setDate(d.getDate()+off);return d}
+function fD(off){const d=dayDate(off);return DOW[d.getDay()]+' '+(d.getMonth()+1)+'/'+d.getDate()}
+function fISO(off){const d=dayDate(off);return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
+function relD(off){return off<=0?'today':off===1?'tomorrow':'in '+off+' d'}
+const $=(s,r=document)=>r.querySelector(s);
+const $$=(s,r=document)=>Array.from(r.querySelectorAll(s));
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const money=(n,d=2)=>'$'+Number(n).toLocaleString('en-US',{minimumFractionDigits:d,maximumFractionDigits:d});
+const int=n=>Math.round(n).toLocaleString('en-US');
+function hash(s){let h=2166136261;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619)}return (h>>>0)/4294967295}
+function prng(seed){let a=seed>>>0;return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+const store={get(k,d){try{const v=localStorage.getItem('scip4.'+k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem('scip4.'+k,JSON.stringify(v))}catch(e){}}};
+
+/* ---------- distribution centres (names, never codes, in the UI) ---------- */
+const DCS=[
+ {id:'HOU',name:'PFG Houston',city:'Houston, TX',lat:29.80,lng:-95.42,ab:'HOU'},
+ {id:'TMP',name:'PFG Temple',city:'Temple, TX',lat:31.10,lng:-97.34,ab:'TMP'},
+ {id:'VIC',name:'PFG Victoria',city:'Victoria, TX',lat:28.81,lng:-97.00,ab:'VIC'},
+ {id:'DAL',name:'PFG Dallas',city:'Dallas, TX',lat:32.86,lng:-96.92,ab:'DAL'},
+ {id:'LBK',name:'PFG Lubbock',city:'Lubbock, TX',lat:33.58,lng:-101.86,ab:'LBK'},
+ {id:'RGV',name:'PFG Edinburg',city:'Edinburg, TX',lat:26.30,lng:-98.16,ab:'EDN'},
+ {id:'ELP',name:'PFG El Paso',city:'El Paso, TX',lat:31.80,lng:-106.40,ab:'ELP'},
+ {id:'OKC',name:'PFG Oklahoma City',city:'Oklahoma City, OK',lat:35.42,lng:-97.60,ab:'OKC'},
+ {id:'AZ',name:'PFG RFS Arizona',city:'Tolleson, AZ',lat:33.45,lng:-112.26,ab:'ARZ'},
+ {id:'BAK',name:'PFG Bakersfield',city:'Bakersfield, CA',lat:35.37,lng:-119.02,ab:'BAK'},
+ {id:'LAF',name:'PFG Lafayette',city:'Lafayette, LA',lat:30.22,lng:-92.02,ab:'LAF'},
+ {id:'BTV',name:'PFG Batesville',city:'Batesville, MS',lat:34.31,lng:-89.94,ab:'BTV'},
+ {id:'LR',name:'PFG Little Rock',city:'Little Rock, AR',lat:34.75,lng:-92.29,ab:'LRK'},
+ {id:'MGM',name:'PFG Montgomery',city:'Montgomery, AL',lat:32.37,lng:-86.30,ab:'MGM'},
+ {id:'ATL',name:'PFG Atlanta',city:'Gainesville, GA',lat:34.30,lng:-83.82,ab:'ATL'},
+ {id:'FLA',name:'PFG Florida',city:'Lakeland, FL',lat:28.04,lng:-81.95,ab:'FLA'}
+];
+const DC=Object.fromEntries(DCS.map(d=>[d.id,d]));
+
+/* ---------- item master (CIN is Church's item number) ---------- */
+const ITEMS=[
+ {cin:'1001',name:'Fresh Chicken 8-pc Cut',pack:'4 × 8-pc bags · 32 hd',mfr:'KF-08PC-32',pfg:'1051120',as:'AS-50110',tihi:[8,7],sup:'Koch Foods',buyer:'Maria G.',gw:34,base:58.90,cat:'Poultry',basket:1,sub:[]},
+ {cin:'1010',name:'Chicken Tenders, Marinated',pack:'4 × 5 lb',mfr:'CF-TND-20',pfg:'1051244',as:'AS-50118',tihi:[10,7],sup:'Case Farms',buyer:'Maria G.',gw:21.5,base:62.40,cat:'Poultry',basket:1,sub:[]},
+ {cin:'1030',name:'Bone-in Wings, Jumbo',pack:'4 × 10 lb',mfr:'KF-WNG-40',pfg:'1051390',as:'AS-50124',tihi:[8,6],sup:'Koch Foods',buyer:'Maria G.',gw:41.5,base:96.20,cat:'Poultry',basket:1,sub:[]},
+ {cin:'2101',name:'Honey-Butter Biscuit Mix',pack:'50 lb bag',mfr:'AM-BX5021',pfg:'1039915',as:'AS-50401',tihi:[5,8],sup:'Ardent Mills',buyer:'Sean L.',gw:50.6,base:31.75,cat:'Biscuit',basket:1,sub:['2102']},
+ {cin:'2140',name:'Honey-Butter Biscuit Glaze',pack:'4 × 1 gal',mfr:'SB-HBG-4',pfg:'1040277',as:'AS-50422',tihi:[12,5],sup:'Sauer Brands',buyer:'Sean L.',gw:38.2,base:44.60,cat:'Biscuit',basket:1,sub:[]},
+ {cin:'2201',name:'Seasoned Breading Flour',pack:'50 lb bag',mfr:'AM-BRD7740',pfg:'1039982',as:'AS-50455',tihi:[5,8],sup:'Ardent Mills',buyer:'Sean L.',gw:50.6,base:27.90,cat:'Breading',basket:1,sub:['2205']},
+ {cin:'2210',name:'Wet Batter Mix',pack:'25 lb bag',mfr:'AM-BTR2210',pfg:'1039990',as:'AS-50461',tihi:[10,8],sup:'Ardent Mills',buyer:'Sean L.',gw:25.4,base:19.10,cat:'Breading',basket:1,sub:[]},
+ {cin:'3310',name:'Crinkle-Cut Fries 3/8"',pack:'6 × 5 lb',mfr:'MC6833',pfg:'1047382',as:'AS-50331',tihi:[10,6],sup:'McCain',buyer:'Sean L.',gw:31.8,base:36.85,cat:'Fries',basket:1,sub:['3311']},
+ {cin:'3311',name:'Crinkle-Cut Fries 3/8" (alt)',pack:'6 × 5 lb',mfr:'L0612',pfg:'1047415',as:'AS-50338',tihi:[10,6],sup:'Lamb Weston',buyer:'Sean L.',gw:31.6,base:37.40,cat:'Fries',basket:0,sub:['3310']},
+ {cin:'4410',name:'Sliced Jalapeños',pack:'4 × 1 gal',mfr:'DV-JAL-4G',pfg:'1044018',as:'AS-50512',tihi:[12,5],sup:'Del Valle Foods',buyer:'Sean L.',gw:36.4,base:29.30,cat:'Jalapeño',basket:1,sub:['4411']},
+ {cin:'4420',name:'Jalapeño Bombers',pack:'6 × 2 lb',mfr:'RP-JB-0612',pfg:'1044107',as:'AS-50518',tihi:[12,6],sup:'Rich Products',buyer:'Sean L.',gw:13.8,base:48.75,cat:'Jalapeño',basket:1,sub:[]},
+ {cin:'5001',name:'Fryer Shortening, Clear',pack:'35 lb cube',mfr:'BG-FS35C',pfg:'1036650',as:'AS-55120',tihi:[8,6],sup:'Bunge',buyer:'Sean L.',gw:36.1,base:41.18,cat:'Shortening',basket:1,sub:['5002']},
+ {cin:'6110',name:'Signature Seasoning',pack:'25 lb box',mfr:'NW-SIG-25',pfg:'1042210',as:'AS-50601',tihi:[10,7],sup:'Newly Weds Foods',buyer:'Sean L.',gw:26.0,base:52.30,cat:'Seasoning',basket:1,sub:[]},
+ {cin:'6120',name:'Spicy Seasoning',pack:'25 lb box',mfr:'NW-SPC-25',pfg:'1042236',as:'AS-50606',tihi:[10,7],sup:'Newly Weds Foods',buyer:'Sean L.',gw:26.0,base:54.10,cat:'Seasoning',basket:1,sub:[]},
+ {cin:'8110',name:'Coleslaw Mix, Fresh-Cut',pack:'4 × 5 lb',mfr:'GG-SLAW-20',pfg:'1048801',as:'AS-50702',tihi:[10,6],sup:'GreenGate Fresh',buyer:'Sean L.',gw:21.2,base:22.80,cat:'Sides',basket:1,sub:[]},
+ {cin:'8120',name:'Mashed Potato Mix',pack:'12 × 26 oz',mfr:'BA-MP1226',pfg:'1043355',as:'AS-50710',tihi:[12,7],sup:'Basic American Foods',buyer:'Sean L.',gw:20.7,base:34.15,cat:'Sides',basket:1,sub:[]},
+ {cin:'8130',name:'Country Gravy Mix',pack:'12 × 24 oz',mfr:'BA-GR1224',pfg:'1043361',as:'AS-50714',tihi:[12,7],sup:'Basic American Foods',buyer:'Sean L.',gw:19.4,base:39.60,cat:'Sides',basket:1,sub:[]},
+ {cin:'8140',name:'Mac & Cheese',pack:'4 × 5 lb',mfr:'SF-MAC-20',pfg:'1048830',as:'AS-50720',tihi:[10,6],sup:"Schwan's Food Service",buyer:'Sean L.',gw:21.6,base:46.90,cat:'Sides',basket:1,sub:[]},
+ {cin:'8150',name:'Breaded Okra',pack:'6 × 4 lb',mfr:'MC-OKR-24',pfg:'1047460',as:'AS-50726',tihi:[10,6],sup:'McCain',buyer:'Sean L.',gw:25.5,base:41.25,cat:'Sides',basket:1,sub:[]},
+ {cin:'8160',name:'Corn on the Cob',pack:'96 ct',mfr:'TG-COB-96',pfg:'1048877',as:'AS-50731',tihi:[9,6],sup:'Twin Garden Farms',buyer:'Sean L.',gw:30.0,base:33.40,cat:'Sides',basket:1,sub:[]},
+ {cin:'7710',name:'Honey Packets 9 g',pack:'1,000 ct',mfr:'GH-HNY-1000',pfg:'1045501',as:'AS-50803',tihi:[12,8],sup:'Golden Heritage',buyer:'Sean L.',gw:22.9,base:38.70,cat:'Sauces',basket:1,sub:[]},
+ {cin:'7720',name:'Hot Sauce Packets 7 g',pack:'500 ct',mfr:'SB-HS-500',pfg:'1045518',as:'AS-50806',tihi:[14,8],sup:'Sauer Brands',buyer:'Sean L.',gw:9.1,base:17.25,cat:'Sauces',basket:1,sub:[]},
+ {cin:'7730',name:'Ranch Dip Cups 2 oz',pack:'4 × 25 ct',mfr:'SB-RAN-100',pfg:'1045522',as:'AS-50809',tihi:[12,7],sup:'Sauer Brands',buyer:'Sean L.',gw:14.3,base:26.40,cat:'Sauces',basket:1,sub:[]},
+ {cin:'7740',name:'Honey Mustard Dip Cups',pack:'4 × 25 ct',mfr:'SB-HMD-100',pfg:'1045530',as:'AS-50811',tihi:[12,7],sup:'Sauer Brands',buyer:'Sean L.',gw:14.3,base:27.10,cat:'Sauces',basket:1,sub:[]},
+ {cin:'7305',name:'Mango Habanero Sauce (LTO)',pack:'4 × 1 gal',mfr:'SB-MH-4G',pfg:'1045987',as:'AS-50890',tihi:null,sup:'Sauer Brands',buyer:'Sean L.',gw:37.8,base:52.95,cat:'Sauces',basket:1,lto:1,sub:[]},
+ {cin:'9010',name:'Chicken Box, 8-pc',pack:'200 ct',mfr:'HU-BX8-200',pfg:'1049903',as:'AS-50902',tihi:[8,5],sup:'Huhtamaki',buyer:'Dana R.',gw:24.0,base:58.20,cat:'Packaging',basket:1,sub:[]},
+ {cin:'9020',name:'Side Cup 8 oz w/ Lid',pack:'500 ct',mfr:'HU-SC8-500',pfg:'1049917',as:'AS-50906',tihi:[8,6],sup:'Huhtamaki',buyer:'Dana R.',gw:18.5,base:44.80,cat:'Packaging',basket:1,sub:[]},
+ {cin:'9030',name:'Carry-out Bag #8',pack:'500 ct',mfr:'DB-B8-500',pfg:'1049960',as:'AS-50911',tihi:[10,6],sup:'Duro Bag',buyer:'Dana R.',gw:29.7,base:31.60,cat:'Packaging',basket:1,sub:[]},
+ {cin:'9040',name:'Fry Boat 6 oz',pack:'1,000 ct',mfr:'HU-FB6-1000',pfg:'1049978',as:'AS-50915',tihi:[10,7],sup:'Huhtamaki',buyer:'Dana R.',gw:15.2,base:28.95,cat:'Packaging',basket:1,sub:[]},
+ {cin:'2102',name:'Biscuit Mix, Buttermilk (alt)',pack:'50 lb bag',mfr:'PS-BM50',pfg:'1039931',as:'AS-50404',tihi:[5,8],sup:'Perfectly Southern',buyer:'Sean L.',gw:50.6,base:30.90,cat:'Biscuit',basket:0,sub:['2101']},
+ {cin:'2205',name:'Breading Flour (Perfectly Southern)',pack:'50 lb bag',mfr:'PS-BRD50',pfg:'1039997',as:'AS-50458',tihi:[5,8],sup:'Perfectly Southern',buyer:'Sean L.',gw:50.6,base:27.20,cat:'Breading',basket:0,sub:['2201']},
+ {cin:'5002',name:'Fryer Shortening, Clear (alt)',pack:'35 lb cube',mfr:'CG-FS35',pfg:'1036671',as:'AS-55126',tihi:[8,6],sup:'Cargill',buyer:'Sean L.',gw:36.1,base:42.05,cat:'Shortening',basket:0,sub:['5001']},
+ {cin:'4411',name:'Diced Jalapeños',pack:'4 × 1 gal',mfr:'DV-JAD-4G',pfg:'1044022',as:'AS-50514',tihi:[12,5],sup:'Del Valle Foods',buyer:'Sean L.',gw:36.4,base:28.10,cat:'Jalapeño',basket:0,sub:['4410']}
+];
+const IT=Object.fromEntries(ITEMS.map(i=>[i.cin,i]));
+const BASKET=ITEMS.filter(i=>i.basket);
+/* DC-specific item numbers (distributor item # differs by DC on some lanes) */
+const DCITEM={ '40118':[{cin:'4410',dc:'HOU'},{cin:'7720',dc:'ATL'},{cin:'2210',dc:'OKC'}],
+               '22871':[{cin:'3310',dc:'LAF'},{cin:'8150',dc:'VIC'}] };
+
+/* ---------- supplier ship-from points ---------- */
+const SUPPLIERS=[
+ {n:'McCain Foods',sup:'McCain',city:'Othello, WA',lat:46.83,lng:-119.18,items:'Fries, okra'},
+ {n:'McCain Foods',sup:'McCain',city:'Plover, WI',lat:44.46,lng:-89.54,items:'Fries'},
+ {n:'Lamb Weston',sup:'Lamb Weston',city:'American Falls, ID',lat:42.78,lng:-112.85,items:'Fries (alt)'},
+ {n:'Lamb Weston',sup:'Lamb Weston',city:'Hermiston, OR',lat:45.84,lng:-119.29,items:'Fries (alt)'},
+ {n:'Ardent Mills',sup:'Ardent Mills',city:'Saginaw, TX',lat:32.86,lng:-97.36,items:'Breading flour, biscuit mix'},
+ {n:'Ardent Mills',sup:'Ardent Mills',city:'Wichita, KS',lat:37.69,lng:-97.34,items:'Breading flour'},
+ {n:'Bunge',sup:'Bunge',city:'Port Arthur, TX',lat:29.90,lng:-93.93,items:'Fryer shortening'},
+ {n:'Bunge',sup:'Bunge',city:'Bradley, IL',lat:41.14,lng:-87.86,items:'Fryer shortening'},
+ {n:'Koch Foods',sup:'Koch Foods',city:'Gadsden, AL',lat:34.01,lng:-86.01,items:'Fresh chicken, wings'},
+ {n:'Koch Foods',sup:'Koch Foods',city:'Collinsville, AL',lat:34.26,lng:-85.86,items:'Fresh chicken'},
+ {n:'Case Farms',sup:'Case Farms',city:'Morganton, NC',lat:35.75,lng:-81.68,items:'Tenders'},
+ {n:'Sauer Brands',sup:'Sauer Brands',city:'Mesquite, TX',lat:32.77,lng:-96.60,items:'Glaze, sauces, dips'},
+ {n:'GreenGate Fresh',sup:'GreenGate Fresh',city:'Plant City, FL',lat:28.02,lng:-82.11,items:'Coleslaw mix'},
+ {n:'Rich Products',sup:'Rich Products',city:'Arlington, TX',lat:32.70,lng:-97.11,items:'Jalapeño bombers'},
+ {n:'Huhtamaki',sup:'Huhtamaki',city:'Visalia, CA',lat:36.33,lng:-119.29,items:'Boxes, cups, fry boats'},
+ {n:'Newly Weds Foods',sup:'Newly Weds Foods',city:'Memphis, TN',lat:35.12,lng:-89.97,items:'Seasonings'},
+ {n:'Del Valle Foods',sup:'Del Valle Foods',city:'McAllen, TX',lat:26.20,lng:-98.23,items:'Jalapeños'}
+];
+
+/* ---------- firedrills ---------- */
+const FD=[
+ {id:'F1',tier:'Severe',cin:'3310',dc:'HOU',trig:'Store cuts',runout:0,next:4,cuts:'22 lines · 8 stores',group:'mccain'},
+ {id:'F1b',tier:'Severe',cin:'3310',dc:'VIC',trig:'Store cuts',runout:1,next:4,cuts:'6 lines · 2 stores',group:'mccain'},
+ {id:'F1c',tier:'High',cin:'3310',dc:'LAF',trig:'Days on hand',runout:2,next:5,group:'mccain'},
+ {id:'F1d',tier:'High',cin:'3310',dc:'TMP',trig:'PO late',runout:3,next:5,group:'mccain'},
+ {id:'F2',tier:'Severe',cin:'4420',dc:'RGV',trig:'Store cuts',runout:0,next:3,cuts:'9 lines · 3 stores'},
+ {id:'F3',tier:'High',cin:'5001',dc:'LAF',trig:'Weather',runout:3,next:5,wx:'Tropical Storm Nadine cone touches PFG Lafayette and the Port Arthur ship-from'},
+ {id:'F4',tier:'High',cin:'2140',dc:'ATL',trig:'Days on hand',runout:2,next:6},
+ {id:'F5',tier:'High',cin:'2201',dc:'LBK',trig:'PO late',runout:3,next:7},
+ {id:'F6',tier:'High',cin:'7305',dc:'AZ',trig:'Days on hand',runout:4,next:8},
+ {id:'F7',tier:'Watch',cin:'8110',dc:'FLA',trig:'Days on hand',runout:3,next:2},
+ {id:'F8',tier:'Watch',cin:'1001',dc:'DAL',trig:'PO late',runout:3,next:2},
+ {id:'F9',tier:'Watch',cin:'7710',dc:'LR',trig:'Days on hand',runout:5,next:3},
+ {id:'F10',tier:'Watch',cin:'9010',dc:'BAK',trig:'Days on hand',runout:6,next:4}
+];
+const TIERV={Severe:3,High:2,Watch:1};
+function fdFor(cin,dc){return FD.find(f=>f.cin===cin&&f.dc===dc)}
+function worstAt(dc){let w=0;FD.forEach(f=>{if(f.dc===dc)w=Math.max(w,TIERV[f.tier])});return w}
+
+/* ---------- supply model (deterministic) ---------- */
+const CATDEM={Poultry:118,Fries:44,Biscuit:17,Breading:21,Shortening:29,Seasoning:6,Sides:11,Sauces:8,Jalapeño:7,Packaging:13};
+const DCSIZE={HOU:1.6,DAL:1.35,TMP:.95,VIC:.7,LBK:.65,RGV:1.1,ELP:.8,OKC:.85,AZ:.9,BAK:.75,LAF:.9,BTV:.8,LR:.7,MGM:.75,ATL:1.05,FLA:.8};
+const SHORT={McCain:{risk:['TMP','VIC','LAF','BTV'],note:'McCain allocating Othello output — 4 DCs shorted on 10/16 POs'}};
+const SPARE={
+ '3310':{DAL:140,OKC:210,BTV:75,TMP:0,VIC:0,LAF:0,LBK:40,RGV:0,MGM:30,LR:0},
+ '4420':Object.fromEntries(DCS.map(d=>[d.id,0])),
+ '5001':{BTV:96,HOU:48,MGM:120,LR:30,TMP:0,VIC:0,DAL:66},
+ '2140':{MGM:84,BTV:36,FLA:0,LR:24},
+ '2201':{OKC:160,DAL:80,ELP:0,TMP:40,AZ:0},
+ '7305':{BAK:30,ELP:12,LBK:0}
+};
+function miles(a,b){const R=3959,toR=Math.PI/180;const dLat=(b.lat-a.lat)*toR,dLng=(b.lng-a.lng)*toR;const x=Math.sin(dLat/2)**2+Math.cos(a.lat*toR)*Math.cos(b.lat*toR)*Math.sin(dLng/2)**2;return Math.round(2*R*Math.asin(Math.sqrt(x))*1.19)}
+function demandOf(cin,dc){const it=IT[cin];return Math.max(2,Math.round((CATDEM[it.cat]||10)*(DCSIZE[dc]||1)*(.85+hash(cin+dc+'d')*.3)))}
+function shipFrom(it){return SUPPLIERS.find(s=>s.sup===it.sup)||{city:'Supplier dock',lat:32,lng:-95}}
+function laneContract(cin,dc){
+  const row=allContractRows().find(r=>r.cin===cin&&r.dc===dc);
+  if(row) return {sup:IT[cin].sup,from:row.from,basis:row.basis,fob:row.fob,frt:row.basis==='Delivered'?0:row.frt,end:row.end,contract:row.contract};
+  const it=IT[cin],sf=shipFrom(it),h=hash(cin+dc+'c');
+  const basis=h<.55?'FOB':'Delivered';
+  const fob=+(it.base*(.97+h*.05)).toFixed(2);
+  const frt=basis==='FOB'?+(0.9+miles(sf,DC[dc])/1000*1.15).toFixed(2):0;
+  return {sup:it.sup,from:sf.city,basis,fob,frt,end:h<.15?'2026-11-15':h<.6?'2027-03-31':'2027-06-30',contract:it.sup+' — '+it.cat+' 2026-27'};
+}
+function gap(cin,dc){
+  const it=IT[cin],f=fdFor(cin,dc),r=prng(Math.floor(hash(cin+dc)*1e9));
+  const d=demandOf(cin,dc);
+  const pal=it.tihi?it.tihi[0]*it.tihi[1]:null;
+  let onHand,next,late=false;
+  if(f){onHand=Math.round(d*(f.runout+.4));next=f.next;late=f.trig==='PO late'||f.group==='mccain'}
+  else{const doh=6+r()*8;onHand=Math.round(d*doh);next=Math.max(1,Math.round(doh-2-r()*3))}
+  const committed=Math.round(d*(f&&f.runout===0?.9:.55));
+  const atp=Math.max(0,onHand-committed);
+  const q1=pal?Math.max(pal,Math.round(d*7/pal)*pal):Math.round(d*7);
+  const pos=[
+    {po:'PO 46'+String(Math.floor(hash(cin+dc+'p')*90000)+10000),sup:it.sup,qty:q1,day:next,status:late?'Late':'Confirmed',was:late?next-2:null},
+    {po:'PO 46'+String(Math.floor(hash(cin+dc+'q')*90000)+10000),sup:it.sup,qty:q1,day:next+7,status:'Confirmed'}
+  ];
+  if(f&&f.group==='mccain'&&dc==='HOU') pos[0].qty=Math.round(q1*.5/ (pal||1))*(pal||1);
+  /* projection, receipts land at start of day */
+  const proj=[];let oh=onHand,runout=null;
+  for(let i=0;i<=21;i++){pos.forEach(p=>{if(p.day===i)oh+=p.qty});const start=oh;oh=oh-d;if(oh<0&&runout===null)runout=i;proj.push({day:i,start,end:Math.max(0,oh)});if(oh<0)oh=0}
+  const donors=DCS.filter(o=>o.id!==dc).map(o=>{
+    const ov=SPARE[cin];let spare;
+    if(ov&&ov[o.id]!==undefined)spare=ov[o.id];else if(ov&&cin==='4420')spare=0;
+    else spare=Math.max(0,Math.round((hash(cin+o.id+'sp')-.4)*d*7));
+    if(fdFor(cin,o.id))spare=0;
+    const mi=miles(DC[dc],o);
+    const flag=SHORT[it.sup]&&SHORT[it.sup].risk.includes(o.id);
+    return {dc:o.id,mi,spare,flag,transit:Math.max(1,Math.ceil(mi/430))};
+  }).sort((a,b)=>a.mi-b.mi).slice(0,6);
+  return {it,dc,f,d,onHand,atp,committed,doh:onHand/d,pos,proj,runout,next,pal,donors,contract:laneContract(cin,dc)};
+}
+function palletSteps(spare,it){
+  if(!it.tihi)return null;const pal=it.tihi[0]*it.tihi[1],half=pal/2,out=[];
+  for(let k=1;k*half<=spare&&out.length<6;k++){const full=Math.floor(k/2),hf=k%2===1;out.push({q:k*half,lab:(full?full:'')+(hf?'½':'')+(k>2?' pallets':' pallet'),half:hf})}
+  return out;
+}
+
+/* ---------- shell: toast, sheet, modal, popover ---------- */
+let toastT;
+function toast(html,ms=4200){const t=$('#toast');t.innerHTML=html;t.classList.add('on');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('on'),ms)}
+function openSheet(title,body,foot){$('#sheetT').textContent=title;$('#sheetB').innerHTML=body;$('#sheetF').innerHTML=foot||'';$('#sheet').classList.add('on');$('#scrim').classList.add('on')}
+function openModal(title,body){$('#modalT').textContent=title;$('#modalB').innerHTML=body;$('#modal').classList.add('on');$('#scrim').classList.add('on')}
+function closeAll(){$('#sheet').classList.remove('on');$('#modal').classList.remove('on');$('#scrim').classList.remove('on');hidePop()}
+function hidePop(){$('#pop').classList.remove('on')}
+document.addEventListener('click',e=>{if(e.target.closest('[data-close]')||e.target.id==='scrim')closeAll()});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeAll();$('#sdrop').classList.remove('open')}});
+function showPop(x,y,html){const p=$('#pop');p.innerHTML=html;p.classList.add('on');const w=p.offsetWidth,h=p.offsetHeight;p.style.left=Math.max(8,Math.min(innerWidth-w-8,x-w/2))+'px';p.style.top=(y+h+20>innerHeight?y-h-14:y+16)+'px'}
+document.addEventListener('pointerdown',e=>{if(!e.target.closest('#pop')&&!e.target.closest('.lt'))hidePop()});
+
+/* ---------- firedrill history ---------- */
+const HIST_SEED=[
+ {when:'2026-10-17 15:42',cin:'2201',dc:'LBK',donor:'OKC',qty:80,date:'2026-10-18',frt:385,billed:true,by:'Sean Lawler'},
+ {when:'2026-10-14 09:05',cin:'8110',dc:'FLA',donor:'ATL',qty:60,date:'2026-10-15',frt:410,billed:false,by:'Sean Lawler'}
+];
+let HIST=store.get('hist',HIST_SEED);
+
+/* ---------- universal search ---------- */
+const SUGGEST=['1047382','CIN 2101','MC6833','AS-55120','40118'];
+function resolveId(q){
+  let s=q.trim().toUpperCase().replace(/\s+/g,' ');if(!s)return null;
+  let kind=null;
+  if(/^CIN\s*/.test(s)){s=s.replace(/^CIN\s*/,'');kind='CIN'}
+  const out=[];
+  if(DCITEM[s])DCITEM[s].forEach(m=>out.push({cin:m.cin,dc:m.dc,via:'DC item # '+s+' at '+DC[m.dc].name}));
+  ITEMS.forEach(it=>{
+    const asn=it.as.replace('AS-','');
+    if(it.cin===s)out.push({cin:it.cin,via:'CIN '+s});
+    else if(!kind&&it.pfg===s)out.push({cin:it.cin,via:'PFG item # '+s});
+    else if(!kind&&it.mfr.toUpperCase()===s)out.push({cin:it.cin,via:'Mfr # '+it.mfr});
+    else if(!kind&&(it.as===s||asn===s))out.push({cin:it.cin,via:'ArrowStream # '+it.as});
+  });
+  return {q:s,res:out};
+}
+function defaultDc(cin){const f=FD.filter(x=>x.cin===cin).sort((a,b)=>TIERV[b.tier]-TIERV[a.tier]||a.runout-b.runout)[0];return f?f.dc:'HOU'}
+function renderDrop(){
+  const q=$('#q').value,d=$('#sdrop');
+  let h='';
+  if(!q.trim()){
+    h='<div class="xs quiet" style="margin:2px 2px 8px;letter-spacing:.08em;text-transform:uppercase">Try an identifier from a DC email</div><div class="chips">'+SUGGEST.map(s=>'<button class="chip" data-sug="'+esc(s)+'"><span class="mono">'+esc(s)+'</span></button>').join('')+'</div><div class="xs quiet" style="margin-top:10px">Resolves PFG item #, DC item #, CIN, manufacturer # and ArrowStream # — never matched by description.</div>';
+  } else {
+    const r=resolveId(q);
+    if(!r.res.length){
+      h='<div style="padding:6px 4px"><div class="disp" style="font-size:18px">Not known to SCIP</div><div class="small muted" style="margin:4px 0 10px">“'+esc(r.q)+'” is not a CIN, PFG item #, DC item #, Mfr # or AS # on file. SCIP will not guess from a description.</div><button class="btn sm pri" id="startMap">Start a mapping</button></div>';
+    } else {
+      if(r.res.length>1)h+='<div class="xs" style="margin:2px 4px 8px;color:var(--amber)">'+r.res.length+' items carry this identifier — pick the lane. Never matched by description.</div>';
+      h+=r.res.map(m=>{const it=IT[m.cin],dc=m.dc||defaultDc(m.cin),f=fdFor(m.cin,dc);
+        return '<button class="invli" data-go="'+m.cin+'/'+dc+'" style="display:grid;grid-template-columns:1fr auto;gap:2px 10px;align-items:center"><span><b style="font-weight:600">'+esc(it.name)+'</b> <span class="mono quiet xs">CIN '+it.cin+'</span><br><span class="xs muted">'+esc(it.sup)+' · '+esc(DC[dc].name)+' · matched on '+esc(m.via)+'</span></span>'+(f?'<span class="tier '+f.tier+'">'+f.tier+'</span>':'<span class="tag ok">No firedrill</span>')+'</button>'}).join('');
+    }
+  }
+  d.innerHTML=h;d.classList.add('open');
+}
+$('#q').addEventListener('focus',renderDrop);
+$('#q').addEventListener('input',renderDrop);
+$('#q').addEventListener('keydown',e=>{if(e.key==='Enter'){const b=$('#sdrop [data-go]');if(b)b.click();else renderDrop()}});
+document.addEventListener('click',e=>{
+  const sg=e.target.closest('[data-sug]');if(sg){$('#q').value=sg.dataset.sug;renderDrop();return}
+  const go=e.target.closest('#sdrop [data-go]');if(go){location.hash='#gap/'+go.dataset.go;$('#sdrop').classList.remove('open');$('#q').blur();return}
+  if(e.target.id==='startMap'){const v=$('#q').value.trim();$('#sdrop').classList.remove('open');location.hash='#onboarding';toast('<div><b>Mapping started</b> for <span class="mono">'+esc(v)+'</span><div class="sig">Queued under Onboarding · Mapping proposals</div></div>');return}
+  if(!e.target.closest('#searchbox'))$('#sdrop').classList.remove('open');
+});
+
+/* ---------- TODAY ---------- */
+function badges(it){let h='';if(it.basket)h+='<span class="tag basket">Basket</span>';if(it.lto)h+='<span class="tag lto">LTO</span>';if(!it.sub.length)h+='<span class="tag nosub">No sub</span>';return h}
+function trigChip(f){return f.trig==='Weather'?'<span class="tag wx">⛈ Weather</span>':'<span class="tag trig">'+f.trig+'</span>'}
+function fdRank(list){return list.sort((a,b)=>TIERV[b.tier]-TIERV[a.tier]||(a.runout-.5*(IT[a.cin].basket||0)-.6*(IT[a.cin].sub.length?0:1))-(b.runout-.5*(IT[b.cin].basket||0)-.6*(IT[b.cin].sub.length?0:1)))}
+function fdCard(f,extra){
+  const it=IT[f.cin];
+  return '<button class="fd '+f.tier+'" data-gap="'+f.cin+'/'+f.dc+'"><div class="bar"></div><div class="body">'+
+   '<div class="l1"><span class="tier '+f.tier+'">'+f.tier+'</span><span class="nm">'+esc(it.name)+'</span><span class="cin">CIN '+it.cin+'</span>'+badges(it)+'</div>'+
+   (extra||'')+
+   '<div class="l2"><span><b>'+esc(DC[f.dc].name)+'</b></span>'+trigChip(f)+(f.cuts?'<span class="red">✂ '+f.cuts+'</span>':'')+'<span>Supplier <b>'+esc(it.sup)+'</b></span><span>Owner <b>'+esc(it.buyer)+'</b></span></div>'+
+   (f.wx?'<div class="small" style="margin-top:6px;color:#A9CBE6">'+esc(f.wx)+'</div>':'')+
+   '</div><div class="runout"><span class="lbl">Runs out</span><span class="d '+(f.tier==='Severe'?'red':f.tier==='High'?'goldt':'ambert')+'">'+(f.runout===0?'TODAY':fD(f.runout).toUpperCase())+'</span><span class="rc">'+(f.runout===0?'0 days':f.runout+' days')+' · next receipt '+fD(f.next)+'</span></div></button>';
+}
+function renderToday(){
+  const groups={};const singles=[];
+  FD.forEach(f=>{if(f.group){(groups[f.group]=groups[f.group]||[]).push(f)}else singles.push(f)});
+  const cards=[...singles.map(f=>({kind:'s',f,tier:f.tier,runout:f.runout,cin:f.cin}))];
+  Object.entries(groups).forEach(([g,list])=>{list.sort((a,b)=>a.runout-b.runout);const lead=list[0];cards.push({kind:'g',g,list,f:lead,tier:list.reduce((m,x)=>TIERV[x.tier]>TIERV[m]?x.tier:m,'Watch'),runout:lead.runout,cin:lead.cin})});
+  fdRank(cards);
+  const cnt={Severe:0,High:0,Watch:0};cards.forEach(c=>cnt[c.tier]++);
+  $('#navbdg').textContent=cnt.Severe;
+  let h='<div class="vhead"><div><h1>Today · Firedrills</h1><div class="sub">'+DOW[RUN.getDay()]+' 19 Oct 2026 · ranked by tier, then soonest run-out · basket and no-substitute items ranked up</div></div><div class="right"><a class="btn sm" href="#map">Open map</a><a class="btn sm" href="#basket">Market basket</a></div></div>';
+  h+='<div class="kpis">'+
+   '<div class="kpi"><div class="lb">Firedrills by tier</div><div class="tiers"><div><b class="red">'+cnt.Severe+'</b><span class="red">Severe</span></div><div><b class="goldt">'+cnt.High+'</b><span class="goldt">High</span></div><div><b class="ambert">'+cnt.Watch+'</b><span class="ambert">Watch</span></div></div></div>'+
+   '<div class="kpi"><div class="lb">Store cuts · last 24 h</div><div class="vl">37 <small>lines</small></div><div class="ft">12 stores · 3 DCs</div></div>'+
+   '<a class="kpi alarm" href="#pricing"><span class="redlight"></span><div class="lb">Spend on expired / missing price</div><div class="vl">$412K</div><div class="ft">of 60-day spend · <span class="greent">down from $3.9M</span></div></a>'+
+   '<a class="kpi" href="#onboarding"><div class="lb">Onboarding steps overdue</div><div class="vl red">3</div><div class="ft">across 2 tracked items</div></a>'+
+   '<a class="kpi" href="#feeds"><div class="lb">Feeds current</div><div class="vl">14<small>/15</small></div><div class="ft"><span class="ambert">PFG El Paso stopped arriving</span></div></a>'+
+  '</div>';
+  let lastTier='';
+  h+='<div class="fdlist">';
+  cards.forEach(c=>{
+    if(c.tier!==lastTier){lastTier=c.tier;h+='<div class="secthead"><span class="tier '+c.tier+'">'+c.tier+'</span><span class="xs quiet">'+({Severe:'Stores being cut, or DC runs out before next receipt with no reachable donor',High:'Runs out before next receipt — a nearby DC has spare',Watch:'Days on hand low, next receipt lands in time'})[c.tier]+'</span><span class="ln"></span></div>'}
+    if(c.kind==='s'){h+=fdCard(c.f);return}
+    const it=IT[c.cin];const sup=it.sup;
+    const extra='<div style="margin-top:6px;display:flex;gap:8px;align-items:center;flex-wrap:wrap"><span class="disp" style="font-size:15px;color:var(--red);letter-spacing:.08em">'+esc(sup)+' short — '+c.list.length+' DCs</span><span class="small muted">'+esc(SHORT[sup]?SHORT[sup].note:'')+'</span><span class="expand" data-exp="'+c.g+'">Show all ▾</span></div>';
+    h+='<div class="grp" id="grp-'+c.g+'">'+fdCard(Object.assign({},c.f,{tier:c.tier}),extra)+'<div class="kids">'+
+      c.list.map(k=>'<div class="kid" data-gap="'+k.cin+'/'+k.dc+'"><b>'+esc(DC[k.dc].name)+'</b><span>'+trigChip(k)+'</span><span>Runs out <b class="'+(k.tier==='Severe'?'red':'goldt')+'">'+(k.runout===0?'today':fD(k.runout))+'</b></span><span class="muted">Next receipt '+fD(k.next)+'</span><span class="tier '+k.tier+'">'+k.tier+'</span></div>').join('')+'</div></div>';
+  });
+  h+='</div>';
+  h+='<div class="secthead"><h3>Firedrill history</h3><span class="ln"></span></div><div class="panel"><ul class="hist" id="histToday"></ul></div>';
+  h+=footer();
+  $('#v-today').innerHTML=h;
+  renderHist('#histToday');
+}
+function renderHist(sel,filter){
+  const el=$(sel);if(!el)return;
+  const list=HIST.filter(x=>!filter||(x.cin===filter.cin));
+  el.innerHTML=list.length?list.map(x=>'<li><div style="display:flex;gap:10px;flex-wrap:wrap;align-items:baseline"><b>Transfer</b><span>'+x.qty+' cs '+esc(IT[x.cin].name)+'</span><span class="muted">'+esc(DC[x.donor].name)+' → '+esc(DC[x.dc].name)+'</span><span class="mono xs quiet" style="margin-left:auto">'+esc(x.when)+'</span></div><div class="xs muted" style="margin-top:3px">Ship '+esc(x.date)+' · freight '+money(x.frt)+' · '+(x.billed?'billed back to supplier':'not billed back')+' · <span class="greent">Signed as '+esc(x.by)+' (Entra verified)</span></div></li>').join(''):'<li class="muted small">No transfers recorded for this item yet.</li>';
+}
+function footer(){return '<div class="foot"><span>Preview build · mock data · SCIP v4 concept 2026-10-17</span><span>Sources: PFG SFTP · Daily Cuts · ArrowStream export · NWS · SensiWatch</span></div>'}
+document.addEventListener('click',e=>{
+  const ex=e.target.closest('[data-exp]');if(ex){e.stopPropagation();const g=$('#grp-'+ex.dataset.exp);g.classList.toggle('open');ex.textContent=g.classList.contains('open')?'Hide ▴':'Show all ▾';return}
+  const gp=e.target.closest('[data-gap]');if(gp){location.hash='#gap/'+gp.dataset.gap}
+});
+
+/* ---------- SUPPLY GAP ---------- */
+let curGap={cin:'3310',dc:'HOU'};
+function chartSVG(g){
+  const W=760,H=230,L=46,R=12,T=16,B=34,days=21;
+  const max=Math.max(...g.proj.map(p=>p.start),g.d*3)*1.1;
+  const x=i=>L+(W-L-R)*i/days,y=v=>T+(H-T-B)*(1-v/max);
+  let s='<svg viewBox="0 0 '+W+' '+H+'" role="img" aria-label="Projected on-hand next 21 days">';
+  for(let k=0;k<=4;k++){const v=max*k/4;s+='<line x1="'+L+'" x2="'+(W-R)+'" y1="'+y(v)+'" y2="'+y(v)+'" stroke="rgba(255,236,214,.07)"/><text x="'+(L-6)+'" y="'+(y(v)+4)+'" fill="#877C71" font-size="10.5" text-anchor="end" font-family="JetBrains Mono">'+Math.round(v)+'</text>'}
+  for(let i=0;i<=days;i+=3){s+='<text x="'+x(i)+'" y="'+(H-14)+'" fill="#877C71" font-size="10.5" text-anchor="middle" font-family="Barlow Semi Condensed">'+(i===0?'Today':fD(i).split(' ')[1])+'</text>'}
+  /* safety band = 2 days of demand */
+  s+='<rect x="'+L+'" width="'+(W-L-R)+'" y="'+y(g.d*2)+'" height="'+(y(0)-y(g.d*2))+'" fill="rgba(224,122,63,.06)"/>';
+  /* inbound PO bars */
+  g.pos.forEach(p=>{if(p.day>days)return;const bw=14,hh=y(0)-y(p.qty);const c=p.status==='Late'?'#E07A3F':'#6E8B2E';
+    s+='<rect x="'+(x(p.day)-bw/2)+'" y="'+y(p.qty)+'" width="'+bw+'" height="'+hh+'" rx="2" fill="'+c+'" opacity=".55"/><text x="'+x(p.day)+'" y="'+(y(p.qty)-5)+'" fill="'+c+'" font-size="10.5" text-anchor="middle" font-family="JetBrains Mono">+'+p.qty+'</text>';
+    if(p.was!=null&&p.was>=0)s+='<line x1="'+x(p.was)+'" x2="'+x(p.day)+'" y1="'+(y(0)-6)+'" y2="'+(y(0)-6)+'" stroke="#E07A3F" stroke-dasharray="3 3"/><circle cx="'+x(p.was)+'" cy="'+(y(0)-6)+'" r="3" fill="none" stroke="#E07A3F"/>';
+  });
+  /* projection line (sawtooth) */
+  let pts='';g.proj.forEach(p=>{pts+=x(p.day)+','+y(p.start)+' '+x(p.day+1>days?days:p.day+1)+','+y(p.end)+' '});
+  s+='<polyline points="'+pts+'" fill="none" stroke="#E1A626" stroke-width="2.4" stroke-linejoin="round"/>';
+  s+='<line x1="'+x(0)+'" x2="'+x(0)+'" y1="'+T+'" y2="'+y(0)+'" stroke="rgba(255,255,255,.35)" stroke-dasharray="2 3"/>';
+  if(g.runout!==null&&g.runout<=days){const rx=x(g.runout+1>days?days:g.runout+ (g.proj[g.runout].start>0?g.proj[g.runout].start/g.d:0));
+    s+='<line x1="'+rx+'" x2="'+rx+'" y1="'+T+'" y2="'+y(0)+'" stroke="#F76B52" stroke-width="1.5"/><circle cx="'+rx+'" cy="'+y(0)+'" r="5" fill="#F76B52"/><text x="'+(rx+7)+'" y="'+(T+12)+'" fill="#F76B52" font-size="12" font-family="Barlow Condensed" font-weight="700" letter-spacing=".08em">RUN-OUT '+(g.runout===0?'TODAY':fD(g.runout).toUpperCase())+'</text>'}
+  s+='</svg>';return s;
+}
+function renderGap(cin,dc){
+  if(!IT[cin])cin='3310';if(!DC[dc])dc=defaultDc(cin);
+  curGap={cin,dc};const g=gap(cin,dc),it=g.it,f=g.f,c=g.contract;
+  const tier=f?f.tier:(g.doh<4?'Watch':'OK');
+  const before=g.runout===null||g.next<=g.runout;
+  const otherDcs=FD.filter(x=>x.cin===cin&&x.dc!==dc);
+  let h='<div class="gaphead"><div style="flex:1;min-width:260px">'+
+   '<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:4px"><span class="tier '+tier+'">'+(tier==='OK'?'No firedrill':tier)+'</span>'+(f?trigChip(f):'')+badges(it)+(f&&f.cuts?'<span class="tag bad">✂ '+f.cuts+'</span>':'')+'</div>'+
+   '<h1>'+esc(it.name)+' <span class="quiet" style="font-weight:500">@</span> '+esc(DC[dc].name)+'</h1>'+
+   '<div class="ids"><span>CIN <b>'+it.cin+'</b></span><span>Mfr # <b>'+esc(it.mfr)+'</b></span><span>PFG item # <b>'+it.pfg+'</b></span><span>AS # <b>'+it.as+'</b></span><span>Pack <b>'+esc(it.pack)+'</b></span><span>Ti × Hi <b>'+(it.tihi?it.tihi[0]+'×'+it.tihi[1]+' = '+g.pal+' cs/pallet':'— not on file')+'</b></span><span>Supplier <b>'+esc(it.sup)+'</b></span><span>Owner <b>'+esc(it.buyer)+'</b></span></div>'+
+   (otherDcs.length?'<div class="xs" style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap;align-items:center"><span class="quiet">Same item also firedrilled at</span>'+otherDcs.map(o=>'<button class="chip" data-gap="'+cin+'/'+o.dc+'" style="min-height:30px">'+esc(DC[o.dc].name)+' · <span class="'+(o.tier==='Severe'?'red':'goldt')+'">'+o.tier+'</span></button>').join('')+'</div>':'')+
+   '</div><div style="display:flex;gap:8px;flex-wrap:wrap"><select class="f" id="gapDc" style="width:auto;min-width:190px">'+DCS.map(d=>'<option value="'+d.id+'"'+(d.id===dc?' selected':'')+'>'+esc(d.name)+'</option>').join('')+'</select><button class="btn pri" id="recBtn">Record transfer</button></div></div>';
+  h+='<div class="grid g4" style="margin-bottom:12px">'+
+   stat('On hand',int(g.onHand)+' cs',int(g.committed)+' cs committed to today\'s orders')+
+   stat('Available to purchase',int(g.atp)+' cs',g.atp===0?'<span class="red">Nothing free to sell</span>':'after committed orders')+
+   stat('Forecast daily demand',int(g.d)+' cs/day','14-day blended forecast')+
+   stat('Days on hand','<span class="'+(g.doh<1.5?'red':g.doh<4?'goldt':'greent')+'">'+g.doh.toFixed(1)+'</span>','Run-out '+(g.runout===null?'beyond 21 d':g.runout===0?'today':fD(g.runout)))+
+  '</div>';
+  h+='<div class="panel chart" style="margin-bottom:12px"><div class="ph"><h3>Projected on hand · next 21 days</h3><span class="r small '+(before?'greent':'red')+'" style="font-weight:600">'+(before?'✓ Next receipt '+fD(g.next)+' lands before run-out':'✕ Next receipt '+fD(g.next)+' lands '+(g.next-g.runout)+' day'+(g.next-g.runout===1?'':'s')+' AFTER run-out')+'</span></div>'+chartSVG(g)+
+   '<div class="legend" style="margin-top:6px"><span><i style="background:#E1A626;border-radius:2px;height:3px"></i>Projected on hand</span><span><i style="background:#6E8B2E;border-radius:2px"></i>Inbound PO (confirmed)</span><span><i style="background:#E07A3F;border-radius:2px"></i>Late PO · dashed = original date</span><span><i style="background:rgba(224,122,63,.25);border-radius:2px"></i>2-day safety band</span></div></div>';
+  h+='<div class="grid g2" style="margin-bottom:12px">';
+  h+='<div class="panel"><div class="ph"><h3>Inbound POs</h3></div><div class="tscroll"><table class="tbl"><thead><tr><th>PO #</th><th>Supplier</th><th class="n">Qty</th><th>Expected</th><th>Status</th></tr></thead><tbody>'+
+   g.pos.map(p=>'<tr><td class="mono small">'+p.po+'</td><td>'+esc(p.sup)+'</td><td class="n">'+int(p.qty)+'</td><td>'+fD(p.day)+(p.was!=null?' <span class="xs quiet">(was '+fD(p.was)+')</span>':'')+'</td><td><span class="tag '+(p.status==='Late'?'warn':'ok')+'">'+p.status+'</span></td></tr>').join('')+
+   '</tbody></table></div></div>';
+  h+='<div class="panel"><div class="ph"><h3>Contract on this lane</h3><span class="r xs quiet">'+esc(c.contract||'')+'</span></div><dl class="kv">'+
+   '<dt>Supplier</dt><dd>'+esc(c.sup)+'</dd><dt>Ship-from</dt><dd>'+esc(c.from)+'</dd><dt>Basis</dt><dd>'+c.basis+'</dd>'+
+   '<dt>FOB $/cs</dt><dd class="mono">'+money(c.fob)+'</dd><dt>Freight $/cs</dt><dd class="mono">'+(c.basis==='Delivered'?'<span class="quiet">0.00 · delivered</span>':money(c.frt))+'</dd>'+
+   '<dt>Landed $/cs</dt><dd class="mono" style="color:var(--gold);font-weight:600">'+money(c.fob+c.frt)+'</dd><dt>Valid through</dt><dd>'+c.end+(c.end<'2026-12-01'?' <span class="tag warn">Expiring</span>':'')+'</dd></dl></div>';
+  h+='</div>';
+  /* donors */
+  const anySpare=g.donors.some(d=>d.spare>0);
+  h+='<div class="panel" style="margin-bottom:12px"><div class="ph"><h3>Nearest donor DCs</h3><span class="xs quiet">ranked by road miles</span></div>';
+  if(!anySpare)h+='<div class="note red" style="margin-bottom:8px">No reachable donor has spare. This is why it is Severe — options are substitute, expedite or allocate.</div>';
+  if(!it.tihi)h+='<div class="note" style="margin-bottom:8px">Pallet steps unavailable — no Ti-Hi on file for CIN '+it.cin+'. Add it under Onboarding · Spec.</div>';
+  h+='<div class="donor hd"><span>DC</span><span class="n">Miles</span><span class="n">Qty to spare</span><span class="dsteps">Pallet steps that fit</span><span class="dtr">Transit</span></div>';
+  g.donors.forEach(d=>{const st=palletSteps(d.spare,it);
+    h+='<div class="donor"><span><b>'+esc(DC[d.dc].name)+'</b>'+(d.flag?'<br><span class="tag warn" style="margin-top:3px">⚠ Next receipt from '+esc(it.sup)+' (shorting)</span>':'')+'</span><span class="mono" style="text-align:right">'+int(d.mi)+'</span><span class="mono" style="text-align:right;font-size:15px;'+(d.spare>0?'color:var(--green-t)':'color:var(--tx3)')+'">'+(d.spare>0?'≤ '+d.spare:'0')+'</span><span class="dsteps">'+(st===null?'<span class="xs quiet">Pallet steps unavailable — no Ti-Hi on file</span>':st.length?'<span class="steps">'+st.map(s=>'<span class="step'+(s.half?' half':'')+'">'+s.lab+' ('+s.q+')</span>').join('')+'</span>':'<span class="xs quiet">'+(d.spare>0?'Under half a pallet':'—')+'</span>')+'</span><span class="dtr small muted">'+d.transit+' d</span></div>'});
+  h+='<div class="xs quiet" style="margin-top:8px">Qty to spare is a ceiling (floored at 0), computed after the donor\'s own forecast to its next receipt. Your recommendation goes in your own email.</div></div>';
+  /* subs + history */
+  h+='<div class="grid g2"><div class="panel"><div class="ph"><h3>Substitutes known</h3></div>'+
+   (it.sub.length?it.sub.map(s=>{const si=IT[s],sg=gap(s,dc);return '<div style="display:flex;gap:10px;align-items:center;padding:6px 0;flex-wrap:wrap"><div style="flex:1;min-width:180px"><b>'+esc(si.name)+'</b> <span class="mono xs quiet">CIN '+si.cin+'</span><div class="xs muted">'+esc(si.sup)+' · '+esc(si.mfr)+' · '+int(sg.onHand)+' cs on hand at '+esc(DC[dc].name)+'</div></div><span class="tag ok">Contract priced</span><button class="btn sm" data-gap="'+si.cin+'/'+dc+'">Open</button></div>'}).join(''):'<div class="note red">No approved substitute on file for this item.</div>')+
+   '</div><div class="panel"><div class="ph"><h3>Firedrill history · this item</h3></div><ul class="hist" id="histGap"></ul></div></div>';
+  h+=footer();
+  $('#v-gap').innerHTML=h;
+  renderHist('#histGap',{cin});
+  $('#gapDc').onchange=e=>{location.hash='#gap/'+cin+'/'+e.target.value};
+  $('#recBtn').onclick=()=>openTransfer(g);
+}
+function stat(lb,vl,ft){return '<div class="panel stat"><div class="lb">'+lb+'</div><div class="vl">'+vl+'</div><div class="ft">'+ft+'</div></div>'}
+function openTransfer(g){
+  const it=g.it,donors=g.donors.filter(d=>d.spare>0);
+  if(!donors.length){toast('<div><b>No donor with spare</b><div class="sig">Record a substitute, expedite or allocation in your own email instead.</div></div>');return}
+  let body='<div class="small muted" style="margin-bottom:6px">'+esc(it.name)+' → <b style="color:var(--tx)">'+esc(DC[g.dc].name)+'</b></div>'+
+   '<label class="fl">Donor DC</label><select class="f" id="trDonor">'+donors.map(d=>'<option value="'+d.dc+'">'+esc(DC[d.dc].name)+' · ≤ '+d.spare+' cs · '+d.mi+' mi</option>').join('')+'</select>'+
+   '<label class="fl">Quantity (cases)</label><div id="trQty" class="chips"></div>'+
+   '<label class="fl">Ship date</label><input class="f" id="trDate" type="date" value="'+fISO(1)+'">'+
+   '<label class="fl">Freight $</label><input class="f mono" id="trFrt" inputmode="decimal" value="'+(385+Math.round(g.donors[0].mi*.9))+'">'+
+   '<label class="switch" style="margin-top:10px"><input type="checkbox" id="trBill" checked> Billed back to '+esc(it.sup)+'</label>'+
+   '<div class="note" style="margin-top:12px">Records intent only. The apply step validates against tomorrow\'s PFG files before anything is final.</div>';
+  openSheet('Record transfer',body,'<button class="btn ghost" data-close style="flex:1">Cancel</button><button class="btn pri" id="trSave" style="flex:2">Save transfer</button>');
+  let qty=null;
+  const fillQty=()=>{const d=donors.find(x=>x.dc===$('#trDonor').value);const st=palletSteps(d.spare,it);
+    const opts=st===null?[Math.min(d.spare,Math.round(d.spare/2)),d.spare]:st.map(s=>s.q);qty=opts[opts.length-1];
+    $('#trQty').innerHTML=(st===null?'<div class="xs quiet" style="width:100%">Pallet steps unavailable — no Ti-Hi on file</div>':'')+opts.map(q=>'<button class="chip'+(q===qty?' on':'')+'" data-q="'+q+'" style="min-height:44px;font-family:var(--f-mono)">'+q+' cs</button>').join('');
+    $$('#trQty [data-q]').forEach(b=>{if(+b.dataset.q===qty)b.style.borderColor='var(--gold)';b.onclick=()=>{qty=+b.dataset.q;$$('#trQty [data-q]').forEach(x=>x.style.borderColor='');b.style.borderColor='var(--gold)'}})};
+  fillQty();$('#trDonor').onchange=fillQty;
+  $('#trSave').onclick=()=>{
+    const now=new Date();const when=now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0')+'-'+String(now.getDate()).padStart(2,'0')+' '+String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0');
+    HIST.unshift({when,cin:it.cin,dc:g.dc,donor:$('#trDonor').value,qty,date:$('#trDate').value,frt:+$('#trFrt').value||0,billed:$('#trBill').checked,by:'Sean Lawler'});
+    store.set('hist',HIST);closeAll();renderHist('#histGap',{cin:it.cin});
+    toast('<div><b>Intent recorded · validated by apply step</b><div class="sig">Signed as Sean Lawler (Entra verified)</div></div>',5200);
+  };
+}
+
+/* ---------- MAP ---------- */
+const CITIES=[
+ ['Houston',29.76,-95.37,95,.33],['Dallas',32.80,-96.80,70,.32],['Fort Worth',32.75,-97.36,25,.18],['San Antonio',29.45,-98.50,60,.24],['Austin',30.30,-97.74,22,.18],
+ ['El Paso',31.78,-106.42,26,.11],['McAllen',26.22,-98.23,22,.14],['Harlingen',26.19,-97.70,10,.07],['Brownsville',25.92,-97.50,12,.07],['Corpus Christi',27.76,-97.42,14,.11],
+ ['Beaumont',30.08,-94.13,10,.1],['Port Arthur',29.90,-93.95,5,.06],['Lake Charles',30.22,-93.22,6,.08],['Lafayette',30.22,-92.02,7,.09],['Laredo',27.53,-99.49,10,.08],
+ ['Atlanta',33.76,-84.40,60,.34],['New Orleans',29.96,-90.08,22,.16],['Baton Rouge',30.45,-91.15,14,.12],['Shreveport',32.50,-93.75,8,.09],['Memphis',35.13,-90.02,20,.14],
+ ['Birmingham',33.52,-86.80,14,.13],['Montgomery',32.37,-86.30,6,.08],['Mobile',30.69,-88.10,8,.09],['Jackson',32.30,-90.18,12,.11],['Phoenix',33.47,-112.07,28,.28],
+ ['Tucson',32.22,-110.95,10,.1],['Los Angeles',34.02,-118.22,26,.3],['Las Vegas',36.15,-115.15,10,.1],['Oklahoma City',35.47,-97.52,10,.12],['Tulsa',36.15,-95.99,7,.09],
+ ['Albuquerque',35.09,-106.63,8,.09],['Little Rock',34.75,-92.29,9,.1],['Tampa',27.97,-82.46,7,.12],['Jacksonville',30.33,-81.66,8,.12],['Waco',31.55,-97.15,6,.07],
+ ['Lubbock',33.58,-101.86,7,.07],['Midland-Odessa',31.93,-102.2,6,.15],['Victoria',28.80,-97.00,4,.05],['Killeen-Temple',31.10,-97.60,6,.12],['Bryan',30.65,-96.35,4,.05]
+];
+const TRACK=[[24.8,-90.4,.3],[26.0,-91.3,.55],[27.3,-92.2,.85],[28.6,-92.9,1.15],[29.9,-93.4,1.5],[31.3,-93.7,1.85],[32.7,-93.8,2.2]];
+const CONE=(()=>{const l=TRACK.map(p=>[p[0],p[1]-p[2]]),r=TRACK.map(p=>[p[0],p[1]+p[2]]).reverse();return l.concat(r)})();
+const ALERTS=[
+ {n:'Tropical Storm Warning',c:'#F76B52',poly:[[28.95,-95.65],[29.98,-95.65],[30.2,-93.0],[29.75,-92.2],[29.4,-93.0],[28.85,-94.9]]},
+ {n:'Storm Surge Watch',c:'#C76BE0',poly:[[29.05,-95.25],[29.5,-94.9],[29.85,-93.9],[29.92,-92.3],[29.5,-92.15],[29.4,-93.8],[28.9,-95.05]]},
+ {n:'Flash Flood Watch',c:'#7FA7C9',poly:[[30.1,-96.3],[31.25,-96.05],[31.45,-93.0],[30.65,-91.85],[30.0,-92.5],[30.15,-94.5]]}
+];
+function pip(pt,poly){let ins=false;for(let i=0,j=poly.length-1;i<poly.length;j=i++){const yi=poly[i][0],xi=poly[i][1],yj=poly[j][0],xj=poly[j][1];if(((yi>pt[0])!==(yj>pt[0]))&&(pt[1]<(xj-xi)*(pt[0]-yi)/(yj-yi)+xi))ins=!ins}return ins}
+function wxAt(lat,lng){const out=[];if(pip([lat,lng],CONE))out.push('Nadine forecast cone');ALERTS.forEach(a=>{if(pip([lat,lng],a.poly))out.push(a.n)});return out}
+function nearestDc(lat,lng){let b=null,bd=1e9;DCS.forEach(d=>{const m=(d.lat-lat)**2+(d.lng-lng)**2;if(m<bd){bd=m;b=d}});return b}
+const RESTS=(()=>{const r=prng(20261019),out=[];let n=1000;
+  CITIES.forEach(c=>{for(let i=0;i<c[3];i++){const a=r()*Math.PI*2,rad=Math.sqrt(r())*c[4];const lat=c[1]+Math.sin(a)*rad*.8,lng=c[2]+Math.cos(a)*rad;
+    const wx=wxAt(lat,lng);let st='open';const u=r();
+    if(wx.length&&lng>-95.25&&u<.6)st='closed';else if(wx.length&&u<.12)st='closed';else if(u<.03)st='amber';else if(u<.042)st='closed';
+    n+=1+Math.floor(r()*3);out.push({no:n,city:c[0],lat,lng,st,wx,dc:nearestDc(lat,lng).id})}});
+  return out})();
+const TRUCKS=[
+ {id:'T-118',sup:'McCain',from:'Othello, WA',lat:34.9,lng:-104.2,fix:38,mph:61,temp:-4,lo:-10,hi:0,join:{dc:'HOU',po:'PO 4661812',items:'Crinkle-Cut Fries 3/8" · 600 cs'}},
+ {id:'T-122',sup:'McCain',from:'Othello, WA',lat:35.2,lng:-101.6,fix:22,mph:64,temp:14,lo:-10,hi:0,join:{dc:'TMP',po:'PO 4673390',items:'Crinkle-Cut Fries 3/8" · 540 cs'}},
+ {id:'T-131',sup:'Bunge',from:'Port Arthur, TX',lat:30.05,lng:-93.3,fix:171,mph:0,temp:null,join:{dc:'LAF',po:'PO 4659021',items:'Fryer Shortening, Clear · 768 cs'}},
+ {id:'T-140',sup:'Ardent Mills',from:'Saginaw, TX',lat:33.1,lng:-99.4,fix:14,mph:58,temp:null,join:{dc:'LBK',po:'PO 4688104',items:'Seasoned Breading Flour · 800 cs'}},
+ {id:'T-144',sup:'Koch Foods',from:'Gadsden, AL',lat:33.0,lng:-90.6,fix:9,mph:66,temp:31,lo:28,hi:34,join:{dc:'DAL',po:'PO 4690117',items:'Fresh Chicken 8-pc Cut · 1,120 cs'}},
+ {id:'T-151',sup:'Koch Foods',from:'Collinsville, AL',lat:33.6,lng:-85.1,fix:51,mph:59,temp:33,lo:28,hi:34,join:{dc:'ATL',po:'PO 4690342',items:'Fresh Chicken 8-pc Cut · 980 cs'}},
+ {id:'T-156',sup:'Sauer Brands',from:'Mesquite, TX',lat:32.6,lng:-88.9,fix:44,mph:63,temp:null,join:null},
+ {id:'T-160',sup:'GreenGate Fresh',from:'Plant City, FL',lat:28.3,lng:-81.98,fix:12,mph:0,temp:36,lo:33,hi:38,join:{dc:'FLA',po:'PO 4691177',items:'Coleslaw Mix, Fresh-Cut · 360 cs'}},
+ {id:'T-163',sup:'Huhtamaki',from:'Visalia, CA',lat:35.9,lng:-119.2,fix:146,mph:0,temp:null,join:null},
+ {id:'T-170',sup:'Lamb Weston',from:'American Falls, ID',lat:37.6,lng:-112.4,fix:67,mph:62,temp:-6,lo:-10,hi:0,join:{dc:'AZ',po:'PO 4684420',items:'Crinkle-Cut Fries 3/8" (alt) · 600 cs'}},
+ {id:'T-174',sup:'Rich Products',from:'Arlington, TX',lat:28.9,lng:-98.3,fix:26,mph:67,temp:-2,lo:-10,hi:0,join:{dc:'RGV',po:'PO 4692003',items:'Jalapeño Bombers · 432 cs'}},
+ {id:'T-178',sup:'Newly Weds Foods',from:'Memphis, TN',lat:34.4,lng:-91.6,fix:31,mph:60,temp:null,join:null},
+ {id:'T-182',sup:'Case Farms',from:'Morganton, NC',lat:34.6,lng:-83.6,fix:205,mph:0,temp:30,lo:28,hi:34,join:{dc:'ATL',po:'PO 4690458',items:'Chicken Tenders, Marinated · 420 cs'}},
+ {id:'T-185',sup:'Del Valle Foods',from:'McAllen, TX',lat:27.4,lng:-98.1,fix:18,mph:55,temp:null,join:null},
+ {id:'T-190',sup:'Ardent Mills',from:'Wichita, KS',lat:36.4,lng:-97.6,fix:7,mph:65,temp:null,join:{dc:'OKC',po:'PO 4688220',items:'Honey-Butter Biscuit Mix · 640 cs'}}
+];
+const SEVC={3:'#F76B52',2:'#E1A626',1:'#E07A3F',0:'#6E8B2E'};
+let MAP=null,LAY={},layOn={rest:true,dc:true,sup:true,trk:true,wx:true};
+function fixTxt(m){return m<60?m+' min ago':Math.floor(m/60)+' h '+(m%60)+' min ago'}
+function initMap(){
+  if(MAP){setTimeout(()=>MAP.invalidateSize(),60);return}
+  if(typeof L==='undefined'){$('#mapoff').style.display='flex';renderLayers();return}
+  MAP=L.map('map',{preferCanvas:true,zoomSnap:.25,worldCopyJump:false,attributionControl:true}).fitBounds([[25.2,-119.5],[36.8,-81]]);
+  const tiles=L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',{attribution:'© OpenStreetMap contributors © CARTO',subdomains:'abcd',maxZoom:18});
+  let errs=0;tiles.on('tileerror',()=>{errs++;if(errs>4)$('#mapoff').style.display='flex'});tiles.on('tileload',()=>{errs=0;$('#mapoff').style.display='none'});
+  tiles.addTo(MAP);
+  if(!navigator.onLine)$('#mapoff').style.display='flex';
+  addEventListener('online',()=>{$('#mapoff').style.display='none';tiles.redraw()});
+  /* weather */
+  LAY.wx=L.layerGroup();
+  L.polygon(CONE,{color:'#F76B52',weight:1.5,fillColor:'#F76B52',fillOpacity:.10,dashArray:'5 4'}).bindPopup('<div class="pt">Tropical Storm Nadine</div><div class="small">NHC forecast cone · advisory 11A · max 60 mph, strengthening<br>Landfall window upper TX / SW LA coast Wed–Thu</div><div class="note red" style="margin-top:6px">Anything inside raises a firedrill: PFG Lafayette shortening (Weather) is High.</div>').addTo(LAY.wx);
+  L.polyline(TRACK.map(p=>[p[0],p[1]]),{color:'#F76B52',weight:2,opacity:.9}).addTo(LAY.wx);
+  TRACK.forEach((p,i)=>L.circleMarker([p[0],p[1]],{radius:i===0?7:4,color:'#141210',weight:1.5,fillColor:'#F76B52',fillOpacity:1}).bindTooltip(i===0?'Nadine · now':'+'+i*12+' h').addTo(LAY.wx));
+  ALERTS.forEach(a=>L.polygon(a.poly,{color:a.c,weight:1.2,fillColor:a.c,fillOpacity:.08}).bindPopup('<div class="pt">NWS · '+a.n+'</div><div class="small">Issued 05:21 CT · in effect through Thu</div><div class="small" style="margin-top:4px;color:var(--amber)">Restaurants, DCs and ship-froms inside raise a firedrill.</div>').addTo(LAY.wx));
+  /* restaurants */
+  LAY.rest=L.layerGroup();
+  const rc={open:'#9DBE4F',closed:'#F76B52',amber:'#E07A3F'};
+  RESTS.forEach(s=>{L.circleMarker([s.lat,s.lng],{radius:s.st==='open'?3.2:4.2,stroke:s.st!=='open',color:'#141210',weight:1,fillColor:rc[s.st],fillOpacity:s.st==='open'?.75:.95})
+    .bindPopup('<div class="pt">Church\'s #'+s.no+'</div><div class="prow"><span>Market</span><span>'+s.city+'</span></div><div class="prow"><span>Status</span><span style="color:'+rc[s.st]+'">'+(s.st==='open'?'Open':s.st==='closed'?'Closed'+(s.wx.length?' · storm prep':''):'Unconfirmed > 48 h')+'</span></div><div class="prow"><span>Served by</span><span>'+DC[s.dc].name+'</span></div>'+(s.wx.length?'<div class="small" style="margin-top:6px;color:var(--red)">Inside '+s.wx.join(' · ')+' — raises firedrill</div>':''))
+    .addTo(LAY.rest)});
+  /* suppliers */
+  LAY.sup=L.layerGroup();
+  SUPPLIERS.forEach(s=>{const wx=wxAt(s.lat,s.lng);L.marker([s.lat,s.lng],{icon:L.divIcon({className:'supm',html:'<i></i>',iconSize:[13,13],iconAnchor:[6,6]})})
+    .bindPopup('<div class="pt">'+esc(s.n)+'</div><div class="prow"><span>Ship-from</span><span>'+esc(s.city)+'</span></div><div class="prow"><span>Ships</span><span>'+esc(s.items)+'</span></div>'+(SHORT[s.sup]?'<div class="small" style="margin-top:6px;color:var(--red)">'+esc(SHORT[s.sup].note)+'</div>':'')+(wx.length?'<div class="small" style="margin-top:6px;color:var(--red)">Inside '+wx.join(' · ')+' — raises firedrill</div>':''))
+    .addTo(LAY.sup)});
+  /* DCs */
+  LAY.dc=L.layerGroup();
+  DCS.forEach(d=>{const w=worstAt(d.id),wx=wxAt(d.lat,d.lng),fds=FD.filter(f=>f.dc===d.id),n=RESTS.filter(s=>s.dc===d.id).length;
+    L.marker([d.lat,d.lng],{zIndexOffset:1000,icon:L.divIcon({className:'',html:'<div class="dcm"><i style="background:'+SEVC[w]+'"></i><span>'+esc(d.name)+'</span></div>',iconSize:null,iconAnchor:[0,0]})})
+    .bindPopup('<div class="pt">'+esc(d.name)+'</div><div class="prow"><span>Location</span><span>'+esc(d.city)+'</span></div><div class="prow"><span>Restaurants served</span><span class="mono">'+n+'</span></div>'+
+      (fds.length?fds.map(f=>'<div class="prow"><a href="#gap/'+f.cin+'/'+f.dc+'">'+esc(IT[f.cin].name)+'</a><span style="color:'+SEVC[TIERV[f.tier]]+'">'+f.tier+'</span></div>').join(''):'<div class="prow"><span>Firedrills</span><span class="greent">None</span></div>')+
+      (wx.length?'<div class="small" style="margin-top:6px;color:var(--red)">Inside '+wx.join(' · ')+' — raises firedrill</div>':''),{minWidth:240})
+    .addTo(LAY.dc)});
+  /* trucks */
+  LAY.trk=L.layerGroup();
+  const tsvg='<svg viewBox="0 0 24 24" fill="currentColor"><path d="M2 6h12v9H2zM14 9h4l3 3v3h-7z"/><circle cx="6" cy="17" r="2"/><circle cx="17" cy="17" r="2"/></svg>';
+  TRUCKS.forEach(t=>{const stale=t.fix>120,hot=t.temp!=null&&(t.temp>t.hi||t.temp<t.lo);
+    L.marker([t.lat,t.lng],{zIndexOffset:500,icon:L.divIcon({className:'',html:'<div class="trk'+(stale?' stale':'')+(hot?' hot':'')+'">'+tsvg+'</div>',iconSize:[26,26],iconAnchor:[13,13]})})
+    .bindPopup('<div class="pt">Truck '+t.id+'</div><div class="prow"><span>Supplier</span><span>'+esc(t.sup)+'</span></div><div class="prow"><span>Origin</span><span>'+esc(t.from)+'</span></div><div class="prow"><span>Last fix</span><span'+(stale?' class="quiet"':'')+'>'+fixTxt(t.fix)+(stale?' · stale':'')+'</span></div><div class="prow"><span>Speed</span><span class="mono">'+t.mph+' mph</span></div>'+
+      (t.temp==null?'<div class="prow"><span>Reefer</span><span class="quiet">Dry van · no reefer</span></div>':'<div class="prow"><span>Reefer temp</span><span class="mono" style="color:'+(hot?'var(--red)':'var(--green-t)')+'">'+t.temp+' °F · profile '+t.lo+' to '+t.hi+' °F'+(hot?' · OUT OF RANGE':'')+'</span></div>')+
+      (t.join?'<div class="prow"><span>Joined to</span><span>'+t.join.po+' → '+DC[t.join.dc].name+'</span></div><div class="prow"><span>Load</span><span>'+esc(t.join.items)+'</span></div>':'<div class="small quiet" style="margin-top:6px">Not joined to a PO — DC + items shown only when load joins a PFG open PO.</div>'),{minWidth:260})
+    .addTo(LAY.trk)});
+  Object.keys(LAY).forEach(k=>{if(layOn[k])LAY[k].addTo(MAP)});
+  MAP.on('moveend zoomend',updInView);
+  renderLayers();updInView();
+  $('#fitBtn').onclick=()=>MAP.fitBounds([[25.2,-119.5],[36.8,-81]]);
+  $('#stormBtn').onclick=()=>MAP.fitBounds([[26.5,-97],[32.4,-89.5]]);
+  setTimeout(()=>MAP.invalidateSize(),80);
+}
+function renderLayers(){
+  const defs=[['rest','Restaurants','<span class="dot" style="background:var(--green-t)"></span>'],['dc','Distribution centres','<i class="sw" style="background:var(--red)"></i>'],['sup','Supplier ship-froms','<i class="sw" style="background:#A9CBE6;transform:rotate(45deg) scale(.8)"></i>'],['trk','Inbound trucks','<span class="dot" style="background:#F3EBE1"></span>'],['wx','Weather (NHC · NWS)','<i class="sw" style="background:rgba(247,107,82,.35);border:1px solid var(--red)"></i>']];
+  $('#layers').innerHTML=defs.map(d=>'<label class="layer switch">'+d[2]+'<span>'+d[1]+'</span><input type="checkbox" data-lay="'+d[0]+'"'+(layOn[d[0]]?' checked':'')+'></label>').join('');
+  $$('#layers [data-lay]').forEach(c=>c.onchange=()=>{const k=c.dataset.lay;layOn[k]=c.checked;if(MAP&&LAY[k]){c.checked?LAY[k].addTo(MAP):MAP.removeLayer(LAY[k])}updInView()});
+}
+function updInView(){
+  const b=MAP?MAP.getBounds():null,inb=(lat,lng)=>!b||b.contains([lat,lng]);
+  const r={open:0,closed:0,amber:0};RESTS.forEach(s=>{if(inb(s.lat,s.lng))r[s.st]++});
+  const dv={3:0,2:0,1:0,0:0};DCS.forEach(d=>{if(inb(d.lat,d.lng))dv[worstAt(d.id)]++});
+  const tv=TRUCKS.filter(t=>inb(t.lat,t.lng)),ts=tv.filter(t=>t.fix>120).length,th=tv.filter(t=>t.temp!=null&&(t.temp>t.hi||t.temp<t.lo)).length;
+  $('#inview').innerHTML='<span>Restaurants open</span><b class="greent">'+r.open+'</b><span>Closed</span><b class="red">'+r.closed+'</b><span>Unconfirmed &gt; 48 h</span><b class="ambert">'+r.amber+'</b>'+
+   '<span style="margin-top:6px">DCs · Severe</span><b class="red" style="margin-top:6px">'+dv[3]+'</b><span>DCs · High</span><b class="goldt">'+dv[2]+'</b><span>DCs · Watch</span><b class="ambert">'+dv[1]+'</b><span>DCs · clear</span><b class="greent">'+dv[0]+'</b>'+
+   '<span style="margin-top:6px">Trucks</span><b style="margin-top:6px">'+tv.length+'</b><span>Fix &gt; 2 h</span><b class="quiet">'+ts+'</b><span>Reefer out of range</span><b class="red">'+th+'</b>';
+}
+
+/* ---------- MARKET BASKET ---------- */
+const BVIEWS=[['doh','Days on hand'],['run','Run-out / order-by'],['fill','Fill rate'],['fva','Forecast vs actual'],['sup','Supplier per lane'],['price','Price status']];
+let bview=store.get('bview','doh'),bpaused=false,pulseT;
+const GAPC={};function gapC(cin,dc){const k=cin+'|'+dc;return GAPC[k]||(GAPC[k]=gap(cin,dc))}
+const LTO_MKTS=['AZ','BAK','ELP','LBK','DAL','HOU'];
+const ALT_LANES={'3310':['AZ','BAK'],'5001':['FLA'],'2201':['ATL']};
+const NOPRICE=['2201|LBK','7305|AZ','8160|BAK'];
+function bval(v,cin,dc){
+  const it=IT[cin],f=fdFor(cin,dc),h=hash(cin+dc+v);
+  if((it.lto&&!LTO_MKTS.includes(dc))||hash(cin+dc+'nd')<.035)return {c:'nd',t:it.lto?'LTO not offered in this market':'No data on this lane'};
+  if(dc==='ELP'&&(v==='fill'||v==='fva'))return {c:'nd',t:'No data — PFG El Paso feed stopped arriving'};
+  const tc=f?{Severe:'r',High:'g',Watch:'a'}[f.tier]:null;
+  if(v==='doh'){const g=gapC(cin,dc);return {c:tc||(g.doh<3?'g':g.doh<5?'a':'k'),t:g.doh.toFixed(1)+' days on hand'}}
+  if(v==='run'){const g=gapC(cin,dc);const ob=Math.max(0,(g.runout===null?14:g.runout)-2);return {c:tc||'k',t:(g.runout===null?'No run-out inside 21 d':'Runs out '+(g.runout===0?'today':fD(g.runout)))+' · next receipt '+fD(g.next)+' · order by '+(g.runout!==null&&g.next>g.runout?'<b class="red">now</b>':fD(ob))}}
+  if(v==='fill'){let p=99.9-h*3.6;if(f&&f.tier==='Severe')p=81+h*7;else if(f&&f.tier==='High')p=94+h*3;return {c:p>=98?'k':p>=95?'a':'r',t:p.toFixed(1)+'% fill rate · trailing 4 wks'}}
+  if(v==='fva'){let d=(h-.5)*40;if(f)d=18+h*14;const a=Math.abs(d);return {c:a<=10?'k':a<=19?'a':'r',t:(d>0?'+':'')+d.toFixed(1)+'% actual vs forecast · last 2 wks'}}
+  if(v==='sup'){const alt=(ALT_LANES[cin]||[]).includes(dc);const s=alt?IT[it.sub[0]].sup:it.sup;const short=!alt&&SHORT[s]&&(SHORT[s].risk.includes(dc)||dc==='HOU');return {c:short?'r':alt?'b':'k',t:(alt?'Alternate: ':'Primary: ')+esc(s)+(short?' · shorting this lane':'')}}
+  if(v==='price'){if(NOPRICE.includes(cin+'|'+dc))return {c:'r',t:'Spend with no price in force'};const c=laneContract(cin,dc);if(c.end<'2026-11-19')return {c:'a',t:'Price ends '+c.end+' · renew before LCR 11/15'};return {c:'k',t:'Priced · landed '+money(c.fob+c.frt)+' through '+c.end}}
+}
+const BLEG={
+ doh:[['r','Severe firedrill'],['g','High'],['a','Watch / < 5 days'],['k','≥ 5 days'],['nd','No data']],
+ run:[['r','Runs out before receipt, no donor'],['g','Runs out before receipt'],['a','Tight, receipt in time'],['k','Clear'],['nd','No data']],
+ fill:[['r','< 95%'],['a','95–98%'],['k','≥ 98%'],['nd','No data']],
+ fva:[['r','> ±19%'],['a','±10–19%'],['k','within ±10%'],['nd','No data']],
+ sup:[['k','Primary supplier'],['b','Alternate supplier'],['r','Supplier shorting'],['nd','No data']],
+ price:[['r','Expired / missing price'],['a','Ends before next LCR'],['k','Priced'],['nd','No data']]
+};
+const LCOL={r:'var(--red)',g:'var(--gold)',a:'var(--amber)',k:'var(--green)',b:'#7FA7C9'};
+const CIDX=[106.2,106.9,107.4,107.1,108.0,108.8,109.5,109.1,110.2,110.9,111.3,111.8,112.4];
+function spark(vals,w=260,h=56){const mn=Math.min(...vals)-.3,mx=Math.max(...vals)+.3;const x=i=>4+i*(w-8)/(vals.length-1),y=v=>h-6-(v-mn)/(mx-mn)*(h-12);
+  return '<svg viewBox="0 0 '+w+' '+h+'" style="width:100%;height:'+h+'px"><polyline points="'+vals.map((v,i)=>x(i)+','+y(v)).join(' ')+'" fill="none" stroke="#E1A626" stroke-width="2"/><circle cx="'+x(vals.length-1)+'" cy="'+y(vals[vals.length-1])+'" r="3.5" fill="#E1A626"/></svg>'}
+function renderBasket(){
+  let h='<div class="vhead"><div><h1>Market basket</h1><div class="sub">'+BASKET.length+' items × '+DCS.length+' DCs · one light per lane · tap a light for detail</div></div><div class="right"><button class="btn sm" id="pauseBtn">'+(bpaused?'▶ Resume pulse':'❚❚ Pause pulse')+'</button></div></div>';
+  h+='<div style="margin-bottom:12px;overflow-x:auto"><div class="seg" id="bseg">'+BVIEWS.map(v=>'<button data-bv="'+v[0]+'" class="'+(v[0]===bview?'on':'')+'">'+v[1]+'</button>').join('')+'</div></div>';
+  h+='<div class="basketlay"><div class="panel" style="padding:12px 12px 8px"><div class="legend" id="bleg" style="margin-bottom:6px"></div><div class="tscroll"><div class="bgrid'+(bpaused?' paused':'')+'" id="bgrid" style="grid-template-columns:190px repeat('+DCS.length+',minmax(34px,1fr))"></div></div></div>';
+  const cur=CIDX[CIDX.length-1];
+  h+='<div class="grid" style="gap:12px"><div class="panel cidx"><div class="ph"><h3>Church\'s Cost Index</h3><span class="r tag">FY26 P10</span></div><div style="display:flex;align-items:baseline;gap:10px"><span class="big">'+cur.toFixed(1)+'</span><span class="small red">▲ 0.6 vs P9</span></div><div class="small muted">YTD <b style="color:var(--tx)">+3.1%</b> · base FY2024 P1 = 100</div>'+spark(CIDX)+
+   '<div class="xs quiet" style="display:flex;justify-content:space-between"><span>FY25 P10</span><span>13 periods</span><span>FY26 P10</span></div>'+
+   '<div class="xs muted" style="margin-top:10px;line-height:1.5">Computed from PFG invoice feed · weights = trailing-year case volume per basket item · chained Laspeyres, fixed basket of 28.</div>'+
+   '<div class="note" style="margin-top:10px">SCIP vs ArrowStream parallel run: <b class="mono">112.4</b> vs <b class="mono">112.1</b> (Δ 0.3)</div></div>'+
+   '<div class="panel"><div class="ph"><h3>Biggest movers · P10</h3></div><table class="tbl"><tbody>'+
+   [['Fryer Shortening, Clear','+4.8%','r'],['Crinkle-Cut Fries 3/8"','+2.1%','r'],['Seasoned Breading Flour','−1.6%','k'],['Chicken Box, 8-pc','+0.9%','r'],['Sliced Jalapeños','−0.7%','k']].map(m=>'<tr><td>'+m[0]+'</td><td class="n" style="color:'+(m[2]==='r'?'var(--red)':'var(--green-t)')+'">'+m[1]+'</td></tr>').join('')+'</tbody></table></div></div></div>';
+  h+=footer();
+  $('#v-basket').innerHTML=h;
+  drawBasket();
+  $$('#bseg [data-bv]').forEach(b=>b.onclick=()=>{bview=b.dataset.bv;store.set('bview',bview);$$('#bseg button').forEach(x=>x.classList.toggle('on',x===b));drawBasket()});
+  $('#pauseBtn').onclick=()=>{bpaused=!bpaused;$('#bgrid').classList.toggle('paused',bpaused);$('#pauseBtn').textContent=bpaused?'▶ Resume pulse':'❚❚ Pause pulse';if(!bpaused)startPulse()};
+}
+function drawBasket(){
+  let g='<div></div>'+DCS.map(d=>'<div class="ch" data-dch="'+d.id+'" title="'+esc(d.name)+'"><span>'+d.ab+'</span></div>').join('');
+  BASKET.forEach(it=>{g+='<div class="rh" title="'+esc(it.name)+'">'+esc(it.name)+'</div>'+DCS.map(d=>{const v=bval(bview,it.cin,d.id);return '<div class="cell"><button class="lt '+(v.c==='nd'?'nd':'c-'+v.c)+'" data-lt="'+it.cin+'|'+d.id+'" aria-label="'+esc(it.name+' at '+d.name)+'"'+(v.c==='b'?' style="background:#7FA7C9"':'')+'></button></div>'}).join('')});
+  $('#bgrid').innerHTML=g;
+  $('#bleg').innerHTML=BLEG[bview].map(l=>'<span><i style="'+(l[0]==='nd'?'border:1.5px solid var(--tx3);background:transparent':'background:'+LCOL[l[0]])+'"></i>'+l[1]+'</span>').join('');
+  startPulse();
+}
+function startPulse(){
+  clearTimeout(pulseT);$$('#bgrid .lt.c-r').forEach(l=>l.classList.add('pulse'));
+  pulseT=setTimeout(()=>$$('#bgrid .lt.pulse').forEach(l=>l.classList.remove('pulse')),5000);
+}
+document.addEventListener('click',e=>{
+  const lt=e.target.closest('[data-lt]');
+  if(lt){const [cin,dc]=lt.dataset.lt.split('|'),v=bval(bview,cin,dc),r=lt.getBoundingClientRect(),f=fdFor(cin,dc);
+    showPop(r.left+r.width/2,r.top,'<div class="disp" style="font-size:16px">'+esc(IT[cin].name)+'</div><div class="small muted">'+esc(DC[dc].name)+' · CIN '+cin+'</div><div style="margin:8px 0">'+v.t+'</div>'+(f?'<div style="margin-bottom:8px"><span class="tier '+f.tier+'">'+f.tier+' firedrill</span></div>':'')+'<a class="btn sm pri" href="#gap/'+cin+'/'+dc+'" style="width:100%;text-decoration:none">Open supply gap</a>');return}
+  const ch=e.target.closest('[data-dch]');
+  if(ch){const d=DC[ch.dataset.dch],r=ch.getBoundingClientRect(),n=FD.filter(f=>f.dc===d.id).length;showPop(r.left+r.width/2,r.bottom-20,'<div class="disp" style="font-size:16px">'+esc(d.name)+'</div><div class="small muted">'+esc(d.city)+'</div><div class="small" style="margin-top:6px">'+(n?n+' active firedrill'+(n>1?'s':''):'No active firedrills')+'</div>')}
+});
+
+/* ---------- PRICING & CONTRACTS ---------- */
+function R(cin,dc,from,basis,fob,frt,start,end,prev){return {cin,dc,from,basis,fob,frt,start,end,prev,orig:fob}}
+const CONTRACTS=[
+ {id:'lw',name:'Lamb Weston — Fries 2026-27',sup:'Lamb Weston',ver:6,term:['2026-07-01','2027-06-30'],lost:[{cin:'3311',dc:'ELP',was:'$38.12 FOB + $1.96 frt'}],nospend:{cin:'3311',dc:'VIC',amt:18420},wb:'LW_Churchs_FY27_Q3_pricing.xlsx',
+  rows:[R('3311','AZ','American Falls, ID','FOB',37.40,2.18,'2026-07-01','2027-06-30',39.31),R('3311','BAK','American Falls, ID','FOB',37.40,2.42,'2026-07-01','2027-06-30',39.82),R('3311','LBK','American Falls, ID','FOB',37.40,2.66,'2026-07-01','2027-06-30',40.06),
+        R('3311','DAL','Hermiston, OR','FOB',37.40,2.94,'2026-07-01','2027-06-30',40.34),R('3311','DAL','Hermiston, OR','FOB',37.95,2.94,'2026-12-01','2027-06-30',null),R('3311','HOU','Hermiston, OR','FOB',37.40,3.12,'2026-07-01','2027-06-30',40.52),R('3311','TMP','Hermiston, OR','FOB',37.40,null,'2026-07-01','2027-06-30',40.38)]},
+ {id:'am',name:'Ardent Mills — Breading Flour & Biscuit',sup:'Ardent Mills',ver:11,term:['2026-01-01','2026-12-31'],lost:[{cin:'2201',dc:'LBK',was:'$27.90 FOB + $1.44 frt'}],nospend:{cin:'2201',dc:'LBK',amt:24860},wb:'ArdentMills_CTC_Nov26.xlsx',
+  rows:[R('2201','DAL','Saginaw, TX','Delivered',28.95,0,'2026-10-01','2026-12-31',28.95),R('2201','TMP','Saginaw, TX','Delivered',29.20,0,'2026-10-01','2026-12-31',29.20),R('2201','HOU','Saginaw, TX','FOB',27.90,1.62,'2026-10-01','2026-12-31',29.34),
+        R('2201','OKC','Wichita, KS','FOB',27.90,1.18,'2026-10-01','2026-12-31',29.08),R('2201','AZ','Wichita, KS','FOB',27.90,2.36,'2026-10-01','2026-12-31',30.10),R('2101','DAL','Saginaw, TX','Delivered',32.60,0,'2026-10-01','2026-12-31',32.60),R('2101','HOU','Saginaw, TX','FOB',31.75,1.62,'2026-10-01','2026-12-31',33.21),R('2101','ATL','Saginaw, TX','FOB',31.75,2.88,'2026-10-01','2026-12-31',34.44)]},
+ {id:'bg',name:'Bunge — Fryer Shortening',sup:'Bunge',ver:4,term:['2026-04-01','2027-03-31'],lost:[],nospend:null,wb:'Bunge_shortening_Nov.xlsx',
+  rows:[R('5001','HOU','Port Arthur, TX','Delivered',41.18,0,'2026-10-01','2026-11-30',41.18),R('5001','LAF','Port Arthur, TX','Delivered',41.32,0,'2026-10-01','2026-11-30',41.32),R('5001','VIC','Port Arthur, TX','Delivered',41.40,0,'2026-10-01','2026-11-30',41.40),
+        R('5001','TMP','Port Arthur, TX','Delivered',41.55,0,'2026-10-01','2026-11-30',41.55),R('5001','BTV','Bradley, IL','Delivered',42.10,0,'2026-10-01','2026-11-30',42.10),R('5001','MGM','Bradley, IL','Delivered',42.24,0,'2026-10-01','2026-11-30',42.24),R('5001','ATL','Bradley, IL','FOB',39.60,2.31,'2026-10-01','2026-11-30',41.79)]}
+];
+CONTRACTS.forEach(c=>c.rows.forEach(r=>r.contract=c.name));
+function allContractRows(){return CONTRACTS.flatMap(c=>c.rows)}
+let pc=store.get('pc','lw'),pstate={dirty:0,saved:false,acks:{},pf:null,unit:'cs'};
+const landed=r=>+(r.fob+(r.basis==='Delivered'?0:(r.frt||0))).toFixed(2);
+function curC(){return CONTRACTS.find(c=>c.id===pc)||CONTRACTS[0]}
+function renderPricing(){
+  const c=curC();
+  let h='<div class="vhead"><div><h1>Pricing &amp; contracts</h1><div class="sub">Living price grid · item × lane · landed = FOB + freight, to the cent</div></div><div class="right"><select class="f" id="pcSel" style="width:auto;min-width:280px">'+CONTRACTS.map(x=>'<option value="'+x.id+'"'+(x.id===c.id?' selected':'')+'>'+esc(x.name)+'</option>').join('')+'</select></div></div>';
+  h+='<div class="panel" style="margin-bottom:12px"><div class="ph"><h3>Renewal calendar · next 3 months</h3><span class="r xs quiet">◆ LCR deadline is the 15th</span></div><div class="cal" id="cal"></div></div>';
+  h+='<div class="panel" style="margin-bottom:12px"><div class="ph"><h2>'+esc(c.name)+'</h2><span class="status-pill'+(pstate.saved?' saved':'')+'" id="dstat"></span><span class="xs quiet">Term '+c.term[0]+' → '+c.term[1]+' · v'+c.ver+' in force</span>'+
+   '<span class="r" style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn sm" id="addDc">+ Add DCs</button><button class="btn sm" id="pasteWb">Paste from supplier workbook</button><button class="btn sm pri" id="pfBtn">Pre-flight check</button></span></div>'+
+   '<div class="tscroll"><table class="tbl pgrid" style="min-width:980px"><thead><tr><th>Item</th><th>CIN</th><th>Mfr #</th><th>Ship-from</th><th>DC</th><th>Basis</th><th class="n">FOB $/cs</th><th class="n">Freight $/cs</th><th class="n">Landed $/cs</th><th class="n">In force</th><th>Start</th><th>End</th></tr></thead><tbody id="pbody"></tbody></table></div>'+
+   '<div id="pfOut"></div></div>';
+  h+='<div class="grid g2"><div class="panel"><div class="ph"><h3>Freight brackets · ship-from × DC</h3><div class="r seg" id="unitSeg"><button data-u="cs" class="'+(pstate.unit==='cs'?'on':'')+'">$/cs</button><button data-u="lb" class="'+(pstate.unit==='lb'?'on':'')+'">$/lb</button></div></div><div class="tscroll" id="frt"></div><div class="xs quiet" style="margin-top:6px">$/lb converted using gross weight per case from the item master. Grid uses the TL bracket.</div></div>'+
+   '<div class="panel"><div class="ph"><h3>Version history</h3></div><table class="tbl"><tbody id="vhist"></tbody></table></div></div>';
+  h+=footer();
+  $('#v-pricing').innerHTML=h;
+  drawCal();drawPGrid();drawFrt();drawVhist();
+  $('#pcSel').onchange=e=>{pc=e.target.value;store.set('pc',pc);pstate={dirty:0,saved:false,acks:{},pf:null,unit:pstate.unit};renderPricing()};
+  $('#pfBtn').onclick=runPreflight;
+  $('#addDc').onclick=openAddDc;
+  $('#pasteWb').onclick=()=>{let n=0;c.rows.forEach((r,i)=>{if(i<6){r.fob=+(r.fob+(i%3===0?0.42:i%3===1?0.38:0.45)).toFixed(2);r.dirty=true;n++}});pstate.dirty+=n;pstate.saved=false;pstate.pf=null;drawPGrid();$('#pfOut').innerHTML='';toast('<div><b>Pasted '+n+' rows</b> from <span class="mono">'+esc(c.wb)+'</span><div class="sig">Matched on Mfr # and DC · nothing matched by description</div></div>')};
+  $$('#unitSeg [data-u]').forEach(b=>b.onclick=()=>{pstate.unit=b.dataset.u;$$('#unitSeg button').forEach(x=>x.classList.toggle('on',x===b));drawFrt()});
+}
+function drawPGrid(){
+  const c=curC();
+  $('#dstat').textContent=pstate.saved?'SAVED · v'+c.ver:'DRAFT'+(pstate.dirty?' · '+pstate.dirty+' unsaved':'');
+  $('#dstat').classList.toggle('saved',pstate.saved);
+  $('#pbody').innerHTML=c.rows.map((r,i)=>{const it=IT[r.cin],L=landed(r),d=r.prev!=null?L-r.prev:null,miss=r.basis==='FOB'&&(r.frt==null||r.frt==='');
+    return '<tr class="'+(miss?'err':r.isNew?'newrow':r.dirty?'dirty':'')+'"><td>'+esc(it.name)+(r.isNew?' <span class="tag lto">New</span>':'')+'</td><td class="mono small">'+r.cin+'</td><td class="mono small">'+esc(it.mfr)+'</td><td>'+esc(r.from)+'</td><td>'+esc(DC[r.dc].name)+'</td><td>'+r.basis+'</td>'+
+     '<td class="n"><input class="cellin" data-fob="'+i+'" inputmode="decimal" value="'+r.fob.toFixed(2)+'"></td>'+
+     '<td class="n">'+(r.basis==='Delivered'?'<span class="quiet">0.00</span>':'<input class="cellin" data-frt="'+i+'" inputmode="decimal" placeholder="missing" value="'+(r.frt==null?'':Number(r.frt).toFixed(2))+'"'+(miss?' style="border-color:var(--red)"':'')+'>')+'</td>'+
+     '<td class="n" style="color:var(--gold);font-weight:600">'+(miss?'<span class="red">—</span>':L.toFixed(2))+'</td>'+
+     '<td class="n">'+(r.prev==null?'<span class="quiet">—</span>':r.prev.toFixed(2)+(d&&Math.abs(d)>=.005?'<br><span class="xs '+(d>0?'red':'greent')+'">'+(d>0?'+':'')+d.toFixed(2)+'</span>':''))+'</td>'+
+     '<td class="mono small">'+r.start+'</td><td class="mono small">'+r.end+'</td></tr>'}).join('');
+  $$('#pbody [data-fob]').forEach(inp=>inp.onchange=()=>{const r=c.rows[+inp.dataset.fob],v=parseFloat(inp.value);if(!isNaN(v)){if(!r.dirty)pstate.dirty++;r.fob=+v.toFixed(2);r.dirty=true;pstate.saved=false;pstate.pf=null;$('#pfOut').innerHTML='';drawPGrid()}});
+  $$('#pbody [data-frt]').forEach(inp=>inp.onchange=()=>{const r=c.rows[+inp.dataset.frt],v=parseFloat(inp.value);if(!r.dirty)pstate.dirty++;r.frt=isNaN(v)?null:+v.toFixed(2);r.dirty=true;pstate.saved=false;pstate.pf=null;$('#pfOut').innerHTML='';drawPGrid()});
+}
+function lanesOf(c){const m={};c.rows.forEach(r=>{const k=r.from+'|'+r.dc;if(!m[k])m[k]={from:r.from,dc:r.dc,cin:r.cin}});return Object.values(m)}
+function drawFrt(){
+  const c=curC();const ln=lanesOf(c);
+  $('#frt').innerHTML='<table class="tbl"><thead><tr><th>Lane</th><th class="n">10K lb</th><th class="n">20K lb</th><th class="n">TL</th></tr></thead><tbody>'+ln.map(l=>{
+    const sf=SUPPLIERS.find(s=>s.city===l.from)||shipFrom(IT[l.cin]),mi=miles(sf,DC[l.dc]),tl=+(0.9+mi/1000*1.15).toFixed(2),gw=IT[l.cin].gw;
+    const v=[tl*1.62,tl*1.28,tl].map(x=>pstate.unit==='cs'?'$'+x.toFixed(2):'$'+(x/gw).toFixed(4));
+    return '<tr><td>'+esc(l.from)+' → '+esc(DC[l.dc].name)+'<div class="xs quiet">'+int(mi)+' road mi · '+gw+' lb gross/cs</div></td><td class="n">'+v[0]+'</td><td class="n">'+v[1]+'</td><td class="n" style="color:var(--tx)">'+v[2]+'</td></tr>'}).join('')+'</tbody></table>';
+}
+function drawVhist(){const c=curC();const rows=[];for(let v=c.ver;v>Math.max(0,c.ver-4);v--)rows.push('<tr><td class="mono">v'+v+'</td><td>'+(v===c.ver?'<span class="tag ok">In force</span>':'<span class="quiet small">Superseded</span>')+'</td><td class="small muted">'+(v===c.ver?'Sean Lawler · 2026-09-28':['Sean Lawler · 2026-08-14','Sean Lawler · 2026-06-30','Sean Lawler · 2026-04-02'][c.ver-v-1])+'</td></tr>');$('#vhist').innerHTML=rows.join('')}
+function drawCal(){
+  const span=92,pct=off=>(off/span*100)+'%';
+  let h='';[['Oct',0],['Nov',13],['Dec',43],['Jan',74]].forEach(m=>{h+='<div class="mo" style="left:'+pct(m[1])+'">'+m[0]+'</div>'});
+  const ev=[[27,'LCR 11/15','var(--red)',30],[57,'LCR 12/15','var(--red)',30],[88,'LCR 1/15','var(--red)',30],[27,'Sauer glaze rows end','var(--amber)',58],[42,'Bunge rows end 11/30','var(--amber)',58],[73,'Ardent Mills term ends','var(--gold)',58],[13,'Ardent Mills v12 due','var(--tx2)',30]];
+  ev.forEach(e=>{h+='<div class="ev" style="left:'+pct(e[0])+';top:'+e[3]+'px"><i style="background:'+e[2]+'"></i><span style="color:'+e[2]+'">'+e[1]+'</span></div>'});
+  h+='<div class="today" style="left:0"></div>';
+  $('#cal').innerHTML=h;
+}
+function runPreflight(){
+  const c=curC(),errs=[],warns=[],info=[];
+  c.rows.forEach(r=>{if(r.basis==='FOB'&&(r.frt==null||r.frt===''))errs.push({k:'frt-'+r.dc,t:'Missing freight: '+IT[r.cin].name+' → '+DC[r.dc].name+' is FOB with no freight. Landed cannot be computed.'})});
+  c.lost.forEach(l=>warns.push({k:'lost-'+l.dc,t:'Lane lost since v'+c.ver+': '+IT[l.cin].name+' → '+DC[l.dc].name+' ('+l.was+') is not in this draft. Stores on this lane would have no price.'}));
+  const seen={};c.rows.forEach(r=>{const k=r.cin+'|'+r.dc;(seen[k]=seen[k]||[]).push(r)});
+  Object.values(seen).forEach(list=>{if(list.length>1){for(let i=0;i<list.length;i++)for(let j=i+1;j<list.length;j++){const a=list[i],b=list[j];if(a.start<=b.end&&b.start<=a.end)warns.push({k:'ov-'+a.dc,t:'Overlapping dates: '+IT[a.cin].name+' → '+DC[a.dc].name+' has '+a.start+'→'+a.end+' and '+b.start+'→'+b.end+'. PFG would see two prices from '+b.start+'.'})}}});
+  if(c.nospend)warns.push({k:'ns',t:'Spend with no price: '+IT[c.nospend.cin].name+' → '+DC[c.nospend.dc].name+' — '+money(c.nospend.amt,0)+' invoiced in the last 60 days, no row in this contract.'});
+  c.rows.forEach(r=>{if(r.prev!=null&&!(r.basis==='FOB'&&r.frt==null)){const d=landed(r)-r.prev;if(Math.abs(d)>=.005)info.push(IT[r.cin].name+' → '+DC[r.dc].name+': landed '+landed(r).toFixed(2)+' vs '+r.prev.toFixed(2)+' in force today ('+(d>0?'+':'')+d.toFixed(2)+')')}});
+  pstate.pf={errs,warns};
+  let h='<div style="margin-top:14px;border-top:1px solid var(--line);padding-top:12px"><div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:6px"><h2>Pre-flight results</h2><span class="tag '+(errs.length?'bad':'ok')+'">'+errs.length+' hard error'+(errs.length===1?'':'s')+'</span><span class="tag warn">'+warns.length+' warning'+(warns.length===1?'':'s')+'</span><span class="tag">'+info.length+' price change'+(info.length===1?'':'s')+'</span></div><ul class="pf">';
+  errs.forEach(e=>{h+='<li><span class="tag bad">Error</span><span style="flex:1">'+esc(e.t)+'<div class="xs quiet">Blocks save — fix the cell in the grid, then re-run.</div></span></li>'});
+  warns.forEach(w=>{h+='<li><span class="tag warn">Warning</span><span style="flex:1">'+esc(w.t)+'</span><label class="switch" style="min-height:36px;font-size:13px"><input type="checkbox" data-ack="'+w.k+'"'+(pstate.acks[w.k]?' checked':'')+'> Acknowledge</label></li>'});
+  h+='<li><span class="tag">Landed vs in force</span><span style="flex:1">'+(info.length?info.map(esc).join('<br>'):'No landed changes against prices in force today.')+'</span></li>';
+  h+='</ul><div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;align-items:center"><button class="btn pri" id="saveV">Save as v'+(c.ver+1)+'</button><span class="xs quiet" id="saveHint"></span></div></div>';
+  $('#pfOut').innerHTML=h;
+  const upd=()=>{const ok=!errs.length&&warns.every(w=>pstate.acks[w.k]);$('#saveV').disabled=!ok;$('#saveHint').textContent=errs.length?'Hard errors block save.':ok?'Ready — signed as Sean Lawler (Entra verified).':'Acknowledge each warning to save.'};
+  $$('#pfOut [data-ack]').forEach(cb=>cb.onchange=()=>{pstate.acks[cb.dataset.ack]=cb.checked;upd()});upd();
+  $('#saveV').onclick=()=>{
+    c.ver++;c.rows.forEach(r=>{r.dirty=false;r.isNew=false;if(!(r.basis==='FOB'&&r.frt==null))r.prev=landed(r)});pstate.saved=true;pstate.dirty=0;
+    drawPGrid();drawVhist();
+    $('#pfOut').innerHTML='<div class="note" style="margin-top:14px;display:flex;gap:10px;align-items:center;flex-wrap:wrap"><span><b>Version v'+c.ver+' committed</b> · signed as Sean Lawler (Entra verified)</span><span style="margin-left:auto;display:flex;gap:8px;flex-wrap:wrap"><button class="btn sm" id="exA">Exhibit A</button><button class="btn sm" id="pfgX">PFG pricing export</button></span></div>';
+    $('#exA').onclick=showExhibit;$('#pfgX').onclick=showPfgExport;
+    toast('<div><b>Version v'+c.ver+' committed</b><div class="sig">'+esc(c.name)+' · Signed as Sean Lawler (Entra verified)</div></div><button id="undoV">Undo (24h)</button><button id="exA2">Exhibit A</button>',7000);
+    $('#undoV').onclick=()=>{c.ver--;pstate.saved=false;drawPGrid();drawVhist();$('#pfOut').innerHTML='';toast('<div><b>Reverted to v'+c.ver+'</b><div class="sig">Undo recorded · v'+(c.ver+1)+' kept in history as withdrawn</div></div>')};
+    $('#exA2').onclick=showExhibit;
+  };
+}
+function showExhibit(){
+  const c=curC(),rows=[...c.rows].sort((a,b)=>DC[a.dc].name.localeCompare(DC[b.dc].name));
+  openModal('Exhibit A preview','<div class="exA"><div style="display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;border-bottom:3px solid #9B3324;padding-bottom:10px;margin-bottom:12px"><div><h4>Exhibit A — Pricing Schedule</h4><div>'+esc(c.name)+' · version v'+c.ver+'</div><div style="color:#6d6156">Between Cajun Operating Company d/b/a Church\'s Texas Chicken and '+esc(c.sup)+'</div></div><div style="text-align:right;color:#6d6156">Term '+c.term[0]+' – '+c.term[1]+'<br>Generated 2026-10-19 from SCIP v4<br><b style="color:#9B3324">PREVIEW · MOCK DATA</b></div></div>'+
+   '<div style="overflow-x:auto"><table style="min-width:760px"><thead><tr><th>DC</th><th>Item</th><th>CIN</th><th>Mfr #</th><th>Ship-from</th><th>Basis</th><th class="n">FOB $/cs</th><th class="n">Freight $/cs</th><th class="n">Landed $/cs</th><th>Effective</th><th>Through</th></tr></thead><tbody>'+
+   rows.map(r=>'<tr><td>'+esc(DC[r.dc].name)+'</td><td>'+esc(IT[r.cin].name)+'</td><td>'+r.cin+'</td><td>'+esc(IT[r.cin].mfr)+'</td><td>'+esc(r.from)+'</td><td>'+r.basis+'</td><td class="n">'+r.fob.toFixed(2)+'</td><td class="n">'+(r.basis==='Delivered'?'0.00':r.frt==null?'—':Number(r.frt).toFixed(2))+'</td><td class="n"><b>'+landed(r).toFixed(2)+'</b></td><td>'+r.start+'</td><td>'+r.end+'</td></tr>').join('')+
+   '</tbody></table></div><p style="margin-top:14px;color:#6d6156">Prices are per case in USD. FOB prices exclude freight; Delivered prices include freight to the named PFG distribution centre. Freight per the bracket schedule (TL). Supersedes all prior versions for the lanes listed.</p><div style="display:flex;gap:40px;margin-top:22px;flex-wrap:wrap"><div style="border-top:1px solid #1d1915;padding-top:4px;min-width:200px">Church\'s Texas Chicken<br><span style="color:#6d6156">Sean Lawler, Director of Strategic Sourcing</span></div><div style="border-top:1px solid #1d1915;padding-top:4px;min-width:200px">'+esc(c.sup)+'<br><span style="color:#6d6156">Authorized signatory</span></div></div></div>');
+}
+function showPfgExport(){
+  const c=curC();
+  openModal('PFG pricing export','<div class="small muted" style="margin-bottom:8px">One line per PFG item × DC, in the layout PFG pricing loads. Effective dates honour the LCR deadline (the 15th).</div><div class="tscroll"><table class="tbl"><thead><tr><th>PFG item #</th><th>DC</th><th>CIN</th><th>Description</th><th class="n">Landed $/cs</th><th>Eff. date</th><th>End date</th></tr></thead><tbody>'+
+   c.rows.map(r=>'<tr><td class="mono small">'+IT[r.cin].pfg+'</td><td>'+esc(DC[r.dc].name)+'</td><td class="mono small">'+r.cin+'</td><td>'+esc(IT[r.cin].name)+'</td><td class="n">'+landed(r).toFixed(2)+'</td><td class="mono small">'+(r.start<'2026-11-01'?'2026-11-01':r.start)+'</td><td class="mono small">'+r.end+'</td></tr>').join('')+'</tbody></table></div><div style="margin-top:12px;display:flex;gap:8px"><button class="btn pri" data-close>Done</button><span class="xs quiet" style="align-self:center">Preview only — nothing is sent from this build.</span></div>');
+}
+function openAddDc(){
+  const c=curC(),cins=[...new Set(c.rows.map(r=>r.cin))];
+  const body='<label class="fl">Item</label><select class="f" id="adItem">'+cins.map(x=>'<option value="'+x+'">'+esc(IT[x].name)+' · CIN '+x+'</option>').join('')+'</select><label class="fl">DCs to add (one row each)</label><div class="multi" id="adDcs"></div><div class="note" style="margin-top:12px">New rows start at the contract FOB with TL freight from the nearest ship-from. Pre-flight will check them.</div>';
+  openSheet('Add DCs',body,'<button class="btn ghost" data-close style="flex:1">Cancel</button><button class="btn pri" id="adGo" style="flex:2">Add rows</button>');
+  const fill=()=>{const cin=$('#adItem').value,have=c.rows.filter(r=>r.cin===cin).map(r=>r.dc);$('#adDcs').innerHTML=DCS.filter(d=>!have.includes(d.id)).map(d=>'<label><input type="checkbox" value="'+d.id+'"> '+esc(d.name)+'</label>').join('')};
+  fill();$('#adItem').onchange=fill;
+  $('#adGo').onclick=()=>{const cin=$('#adItem').value,sel=$$('#adDcs input:checked').map(i=>i.value);if(!sel.length){toast('<div>Pick at least one DC</div>');return}
+    const tmpl=c.rows.find(r=>r.cin===cin);
+    sel.forEach(dc=>{const sf=SUPPLIERS.filter(s=>s.sup===c.sup).sort((a,b)=>miles(a,DC[dc])-miles(b,DC[dc]))[0]||{city:tmpl.from,lat:32,lng:-95};
+      const r=R(cin,dc,sf.city,'FOB',tmpl.fob,+(0.9+miles(sf,DC[dc])/1000*1.15).toFixed(2),fISO(13),c.term[1],null);r.isNew=true;r.dirty=true;r.contract=c.name;c.rows.push(r);pstate.dirty++});
+    pstate.saved=false;pstate.pf=null;closeAll();drawPGrid();drawFrt();$('#pfOut').innerHTML='';toast('<div><b>'+sel.length+' row'+(sel.length>1?'s':'')+' added</b><div class="sig">'+esc(IT[cin].name)+' · draft only until saved</div></div>')};
+}
+
+/* ---------- INVOICES ---------- */
+const INVOICES=[
+ {no:'7741-203918',dc:'HOU',store:'1187',addr:'8420 Westheimer Rd, Houston, TX 77063',date:'2026-10-18',cust:'1187-CTC',lines:[['1001',30,30],['3310',18,6],['5001',8,8,43.06],['2101',6,6],['2201',10,10],['4410',3,3],['6110',2,2],['8110',4,4],['8120',3,3],['7720',2,2],['9010',5,5],['4420',2,0]]},
+ {no:'7741-203877',dc:'HOU',store:'1204',addr:'1702 Telephone Rd, Houston, TX 77023',date:'2026-10-18',cust:'1204-CTC',lines:[['1001',26,26],['3310',14,0],['5001',6,6],['2101',5,5],['2201',8,8],['8140',2,2],['7710',1,1],['9020',3,3]]},
+ {no:'7790-118204',dc:'LAF',store:'2231',addr:'2115 Johnston St, Lafayette, LA 70503',date:'2026-10-17',cust:'2231-CTC',lines:[['1001',18,18],['3310',10,8],['5001',5,5],['2140',2,2],['8150',2,2],['8160',1,1],['9010',3,3]]},
+ {no:'7712-560331',dc:'RGV',store:'3318',addr:'1401 N 10th St, McAllen, TX 78501',date:'2026-10-18',cust:'3318-CTC',lines:[['1001',22,22],['4420',6,0],['4410',4,4],['3310',12,12],['2201',8,8],['6120',2,2]]},
+ {no:'7703-441980',dc:'ATL',store:'4102',addr:'2880 Martin Luther King Jr Dr SW, Atlanta, GA 30311',date:'2026-10-17',cust:'4102-CTC',lines:[['1001',24,24],['2140',3,1],['2101',6,6],['5001',6,6],['7730',2,2],['9030',4,4]]},
+ {no:'7765-090214',dc:'AZ',store:'5560',addr:'3302 W Indian School Rd, Phoenix, AZ 85017',date:'2026-10-16',cust:'5560-CTC',lines:[['1001',16,16],['3310',8,8],['7305',3,2],['6110',1,1],['9040',2,2]]}
+];
+let curInv=0;
+function contractPrice(cin,dc){const c=laneContract(cin,dc);return +(c.fob+c.frt).toFixed(2)}
+function renderInvoices(){
+  let h='<div class="vhead"><div><h1>Invoices</h1><div class="sub">PFG invoice feed, rendered in the paper layout · every line tied to its CIN and contract price</div></div></div>';
+  h+='<div class="invlay"><div class="panel" style="padding:8px">'+INVOICES.map((v,i)=>{const t=v.lines.reduce((s,l)=>s+l[2]*(l[3]||contractPrice(l[0],v.dc)),0),mm=v.lines.some(l=>l[3]);return '<button class="invli'+(i===curInv?' on':'')+'" data-inv="'+i+'"><div style="display:flex;justify-content:space-between;gap:8px"><b>'+esc(DC[v.dc].name)+'</b><span class="mono small">'+money(t)+'</span></div><div class="xs muted" style="display:flex;justify-content:space-between;gap:8px;margin-top:2px"><span>Store #'+v.store+' · '+v.date+'</span>'+(mm?'<span class="red">Price ≠ contract</span>':'')+'</div></button>'}).join('')+'</div><div id="paper"></div></div>';
+  h+=footer();
+  $('#v-invoices').innerHTML=h;drawInvoice();
+  $$('[data-inv]').forEach(b=>b.onclick=()=>{curInv=+b.dataset.inv;$$('[data-inv]').forEach(x=>x.classList.toggle('on',x===b));drawInvoice()});
+}
+function drawInvoice(){
+  const v=INVOICES[curInv];let tot=0;
+  const rows=v.lines.map(l=>{const it=IT[l[0]],cp=contractPrice(l[0],v.dc),pr=l[3]||cp,ext=l[2]*pr;tot+=ext;const st=l[2]===0?'Out':l[2]<l[1]?'Partial':'Shipped',mm=l[3]&&Math.abs(l[3]-cp)>.004;
+    return '<tr class="'+(mm?'mismatch':'')+'"><td class="mono">'+it.pfg+'</td><td>'+esc(it.name.toUpperCase())+' <span class="cl">'+esc(it.pack)+'</span><div class="cl"><a href="#gap/'+it.cin+'/'+v.dc+'">CIN '+it.cin+'</a> · contract '+money(cp)+(mm?' · <b style="color:#9B3324">Contract '+money(cp)+' · billed '+money(pr)+' (+'+money(pr-cp)+')</b>':'')+'</div></td><td class="n">'+l[1]+'</td><td class="n">'+l[2]+'</td><td><span class="derived" style="'+(st!=='Shipped'?'color:#9B3324;font-weight:700':'')+'">'+st+'</span></td><td class="n">'+pr.toFixed(2)+'</td><td class="n">'+ext.toFixed(2)+'</td></tr>'}).join('');
+  $('#paper').innerHTML='<div class="paper"><div class="row" style="justify-content:space-between;align-items:flex-start;margin-bottom:12px"><div><div style="font-family:var(--f-disp);font-size:26px;font-weight:700;letter-spacing:.04em">PERFORMANCE FOODSERVICE</div><div class="cl">'+esc(DC[v.dc].name)+' · '+esc(DC[v.dc].city)+'</div></div><div style="text-align:right"><div style="font-family:var(--f-disp);font-size:22px;font-weight:700;letter-spacing:.1em">INVOICE</div><div class="mono">'+v.no+'</div><div class="cl">Invoice date '+v.date+'</div></div></div>'+
+   '<div class="row"><div class="box"><h5>Bill to</h5>Cajun Operating Company<br>d/b/a Church\'s Texas Chicken<br>Accounts Payable · Atlanta, GA</div><div class="box"><h5>Ship to <span class="mark">DERIVED</span></h5><span class="derived">Church\'s #'+v.store+'</span><br><span class="derived">'+esc(v.addr)+'</span></div><div class="box" style="max-width:260px"><h5>Account</h5>Customer # <span class="mono">'+v.cust+'</span><br>Route <span class="nif">not in feed</span> · Stop <span class="nif">not in feed</span><br>Terms Net 14</div></div>'+
+   '<table><thead><tr><th>Item #</th><th>Description</th><th style="text-align:right">Ord</th><th style="text-align:right">Ship</th><th>Status</th><th style="text-align:right">Unit price</th><th style="text-align:right">Extension</th></tr></thead><tbody>'+rows+'</tbody></table>'+
+   '<div class="row" style="justify-content:space-between;align-items:flex-end;margin-top:12px"><div class="cl" style="display:flex;gap:14px;flex-wrap:wrap"><span><b>Feed</b> — as sent by PFG</span><span><span class="derived">Derived</span> — computed by SCIP</span><span class="nif">Not in feed</span> — placeholder</div><div style="text-align:right"><div class="cl">Total excl. tax</div><div style="font-family:var(--f-mono);font-size:22px;font-weight:600">'+money(tot)+'</div></div></div></div>';
+}
+
+/* ---------- ONBOARDING ---------- */
+const STEPS=['Spec','Label','Synergy','Mapping','Per-DC pricing','Pickup locations','Store memo','Label photo'];
+const OB=[
+ {name:'Perfectly Southern',sub:'Vendor setup · breading flour & biscuit mix',kind:'Vendor',hist:'Stalled 9 weeks before SCIP tracking · moving since 10/02',s:[['d','SL','09/30'],['d','JS','10/03'],['d','GQ','10/07'],['d','SL','10/09'],['o','SL','10/16'],['p','TA','10/22'],['n','SL','10/29'],['n','GR','10/29']]},
+ {name:'Mango Habanero Sauce',sub:'New LTO item · CIN 7305 · Sauer Brands',kind:'New item · LTO',hist:'LTO launch 11/04 in 6 test markets',s:[['o','SL','10/14'],['d','JS','10/08'],['d','GQ','10/10'],['d','SL','10/12'],['p','SL','10/24'],['d','TA','10/15'],['o','SL','10/17'],['p','GR','10/21']]},
+ {name:'PFG Edinburg as vendor',sub:'Distributor-as-vendor · Del Valle pass-through jalapeños',kind:'Distributor as vendor',hist:'Opened 10/13',s:[['d','SL','10/14'],['n','JS','10/27'],['p','GQ','10/21'],['p','SL','10/22'],['n','SL','10/31'],['n','TA','11/03'],['n','SL','11/05'],['n','GR','11/05']]},
+ {name:'Diced Jalapeños',sub:'New item · CIN 4411 · Del Valle Foods',kind:'New item',hist:'Complete 10/15',s:[['d','SL','09/22'],['d','JS','09/25'],['d','GQ','09/29'],['d','SL','10/01'],['d','SL','10/06'],['d','TA','10/08'],['d','SL','10/13'],['d','GR','10/15']]}
+];
+const PROPS=store.get('props',[
+ {mfr:'PS-BRD50',cin:'2205',dc:'DAL',dci:'58213',file:'FOODSTAR_DAL_20261018.txt',st:null},
+ {mfr:'SB-MH-4G',cin:'7305',dc:'AZ',dci:'61177',file:'PORTAL_ARZ_20261018.csv',st:null},
+ {mfr:'DV-JAD-4G',cin:'4411',dc:'RGV',dci:'44990',file:'FOODSTAR_EDN_20261017.txt',st:null}
+]);
+function renderOnboarding(){
+  const lab={d:'Done',p:'In progress',o:'Overdue',n:'Not started'},cls={d:'done',p:'prog',o:'over',n:'ns'};
+  let h='<div class="vhead"><div><h1>Onboarding</h1><div class="sub">New items and vendors, tracked step by step · an item is Complete only when every step is done</div></div></div>';
+  h+='<div class="panel" style="margin-bottom:12px"><div class="tscroll"><table class="tbl ob"><thead><tr><th>Tracked</th>'+STEPS.map(s=>'<th style="text-align:center">'+s+'</th>').join('')+'<th>Status</th></tr></thead><tbody>'+
+   OB.map(o=>{const done=o.s.every(x=>x[0]==='d'),over=o.s.filter(x=>x[0]==='o').length;return '<tr><td style="min-width:200px"><b>'+esc(o.name)+'</b><div class="xs muted">'+esc(o.sub)+'</div><div class="xs quiet">'+esc(o.hist)+'</div></td>'+o.s.map(x=>'<td class="stp"><span class="sc '+cls[x[0]]+'" title="'+lab[x[0]]+'"><b>'+x[1]+'</b>'+x[2]+'<span>'+lab[x[0]]+'</span></span></td>').join('')+'<td>'+(done?'<span class="tag ok">Complete</span>':over?'<span class="tag bad">'+over+' overdue</span>':'<span class="tag warn">Open</span>')+'</td></tr>'}).join('')+
+   '</tbody></table></div><div class="xs quiet" style="margin-top:6px">Owners: SL Sean Lawler · JS Jennifer Scott-Ward · GQ Gustavo Quintero · TA Tasha · GR Grace</div></div>';
+  h+='<div class="grid g2"><div class="panel"><div class="ph"><h3>Mapping proposals</h3></div><div class="note" style="margin-bottom:6px">SCIP proposes CIN ↔ distributor item matches from Mfr #, never description.</div><div id="props"></div></div>';
+  h+='<div class="panel"><div class="ph"><h3>Renumber detected</h3><span class="r tag warn">Needs review</span></div><div style="font-size:14px;line-height:1.5">Known Mfr # <b class="mono">MC6833</b> (Crinkle-Cut Fries 3/8", CIN 3310) now arrives at <b>PFG Lafayette</b> under DC item <b class="mono">22871</b> — previously <span class="mono">20417</span>.</div><dl class="kv" style="margin-top:10px"><dt>First seen</dt><dd>FOODSTAR_LAF_20261017.txt · line 412</dd><dt>Old # last seen</dt><dd>FOODSTAR_LAF_20261016.txt</dd><dt>Also in use</dt><dd><span class="mono">22871</span> is Breaded Okra at PFG Victoria — search will show both</dd></dl><div style="display:flex;gap:8px;margin-top:12px"><button class="btn sm pri" id="renOk">Accept renumber</button><a class="btn sm" href="#gap/3310/LAF">Open supply gap</a></div></div></div>';
+  h+=footer();
+  $('#v-onboarding').innerHTML=h;drawProps();
+  $('#renOk').onclick=e=>{e.target.closest('.panel').querySelector('.tag').outerHTML='<span class="r tag ok">Accepted</span>';e.target.disabled=true;toast('<div><b>Renumber accepted</b><div class="sig">Signed as Sean Lawler (Entra verified) · 20417 retired at PFG Lafayette</div></div>')};
+}
+function drawProps(){
+  $('#props').innerHTML=PROPS.map((p,i)=>'<div class="prop"><div><b>'+esc(IT[p.cin].name)+'</b> <span class="mono xs quiet">CIN '+p.cin+'</span><div class="xs muted" style="margin-top:3px">Evidence: Mfr # <b class="mono" style="color:var(--tx)">'+p.mfr+'</b> match · DC item <span class="mono">'+p.dci+'</span> at '+esc(DC[p.dc].name)+' · first seen in <span class="mono">'+p.file+'</span></div>'+(p.st?'<div class="xs '+(p.st.ok?'greent':'red')+'" style="margin-top:3px">'+(p.st.ok?'Confirmed':'Rejected')+' by Sean Lawler · '+p.st.when+'</div>':'')+'</div><div style="display:flex;gap:6px">'+(p.st?'<button class="btn sm ghost" data-undo="'+i+'">Undo</button>':'<button class="btn sm pri" data-pc="'+i+'">Confirm</button><button class="btn sm" data-pr="'+i+'">Reject</button>')+'</div></div>').join('');
+  const stamp=()=>{const d=new Date();return '2026-10-19 '+String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0')};
+  $$('#props [data-pc]').forEach(b=>b.onclick=()=>{PROPS[+b.dataset.pc].st={ok:true,when:stamp()};store.set('props',PROPS);drawProps();toast('<div><b>Mapping confirmed</b><div class="sig">Signed as Sean Lawler (Entra verified)</div></div>')});
+  $$('#props [data-pr]').forEach(b=>b.onclick=()=>{PROPS[+b.dataset.pr].st={ok:false,when:stamp()};store.set('props',PROPS);drawProps()});
+  $$('#props [data-undo]').forEach(b=>b.onclick=()=>{PROPS[+b.dataset.undo].st=null;store.set('props',PROPS);drawProps()});
+}
+
+/* ---------- FEEDS & SYSTEM ---------- */
+const FEEDS=[
+ ['PFG SFTP · Foodstar format','11 DCs','FOODSTAR_*_20261019.txt','11 files · 48.2 MB','05:52','ok'],
+ ['PFG SFTP · Portal format','4 DCs','PORTAL_*_20261019.csv','4 files · 9.7 MB','05:47','ok'],
+ ['PFG SFTP · PFG El Paso','Portal format','PORTAL_ELP_20261016.csv','2.4 MB','3 days ago','stale'],
+ ['PFG Daily Cuts','All DCs','DAILYCUTS_20261019.csv','612 KB','05:31','ok'],
+ ['PFG invoice feed','All DCs','INV_20261018.zip','31.0 MB','04:58','ok'],
+ ['PFG open POs','All DCs','OPENPO_20261019.csv','3.3 MB','05:40','ok'],
+ ['ArrowStream export','Parallel run','AS_EXPORT_20261019.xlsx','6.1 MB','05:15','ok'],
+ ['Master data workbook','Item master','CTC_ItemMaster_v214.xlsx','2.2 MB','10/18 17:02','ok'],
+ ['NWS alerts','api.weather.gov','alerts · 3 active in footprint','—','06:05','ok'],
+ ['NHC forecast cone','Tropical Storm Nadine','AL15 advisory 11A','—','06:00','ok'],
+ ['SensiWatch','Reefer telemetry','trucks · 15 inbound','—','06:08','ok'],
+ ['Mail-drop','supplychain@ inbox','4 DC emails parsed','—','06:02','ok'],
+ ['Supplier price workbooks','SharePoint drop','ArdentMills_CTC_Nov26.xlsx','188 KB','10/17 16:20','ok'],
+ ['Store status','POS heartbeat','752 stores reporting','—','06:09','ok'],
+ ['Entra directory','Signer identity','sign-ins verified','—','06:00','ok']
+];
+const RUNS=[
+ ['r-20261019-0610','Firedrill rank','POs · on hand · cuts · NWS','13 firedrills · 10 cards','ok'],
+ ['r-20261019-0606','Cost index','INV_20261018.zip','FY26 P10 = 112.4','ok'],
+ ['r-20261019-0558','Ingest PFG SFTP','15 of 16 DC files','1.84 M rows','warn'],
+ ['r-20261019-0545','Map refresh','NHC · NWS · SensiWatch','cone + 3 alerts · 15 trucks','ok'],
+ ['r-20261019-0531','Daily cuts','DAILYCUTS_20261019.csv','37 lines · 12 stores','ok'],
+ ['r-20261018-1702','Apply step','2 recorded intents','2 validated · 0 rejected','ok']
+];
+function renderFeeds(){
+  let h='<div class="vhead"><div><h1>Feeds &amp; system</h1><div class="sub">Collected by Fabric directly · no PC in the path · each file opened exactly once</div></div></div>';
+  h+='<div class="note red" style="margin-bottom:12px;display:flex;gap:10px;align-items:center;flex-wrap:wrap"><span class="dot r"></span><span><b>PFG El Paso stopped arriving</b> — last file Fri 10/16. Treated as a defect, not a quiet week. Basket lights for PFG El Paso show “no data” on fill rate and forecast views.</span></div>';
+  h+='<div class="panel" style="margin-bottom:12px"><div class="ph"><h3>Source freshness</h3><span class="r small"><span class="greent">14</span> / 15 current</span></div><div class="tscroll"><table class="tbl" style="min-width:720px"><thead><tr><th>Source</th><th>Scope</th><th>Last file</th><th>Size</th><th>Arrived</th><th>Status</th></tr></thead><tbody>'+
+   FEEDS.map(f=>'<tr><td><b>'+esc(f[0])+'</b></td><td class="muted">'+esc(f[1])+'</td><td class="mono small">'+esc(f[2])+'</td><td class="n">'+esc(f[3])+'</td><td class="mono small'+(f[5]==='stale'?' red':'')+'">'+esc(f[4])+'</td><td>'+(f[5]==='ok'?'<span class="tag ok">Current</span>':'<span class="tag bad">Stopped arriving</span>')+'</td></tr>').join('')+'</tbody></table></div></div>';
+  h+='<div class="panel"><div class="ph"><h3>Run log</h3></div><div class="tscroll"><table class="tbl" style="min-width:720px"><thead><tr><th>Run id</th><th>Job</th><th>Inputs</th><th>Outputs</th><th>Outcome</th></tr></thead><tbody>'+
+   RUNS.map(r=>'<tr><td class="mono small">'+r[0]+'</td><td>'+esc(r[1])+'</td><td class="muted">'+esc(r[2])+'</td><td>'+esc(r[3])+'</td><td>'+(r[4]==='ok'?'<span class="tag ok">Succeeded</span>':'<span class="tag warn">Partial · 1 missing</span>')+'</td></tr>').join('')+'</tbody></table></div></div>';
+  h+=footer();
+  $('#v-feeds').innerHTML=h;
+}
+
+/* ---------- router ---------- */
+const VIEWS=['today','gap','map','basket','pricing','invoices','onboarding','feeds'];
+function route(){
+  const parts=(location.hash||'#today').slice(1).split('/');let v=parts[0];if(!VIEWS.includes(v))v='today';
+  $$('.view').forEach(s=>s.classList.toggle('on',s.id==='v-'+v));
+  $$('#nav a').forEach(a=>a.classList.toggle('on',a.dataset.v===v));
+  closeAll();
+  try{
+    if(v==='today')renderToday();
+    else if(v==='gap'){const cin=parts[1]||curGap.cin,dc=parts[2]||(parts[1]?defaultDc(parts[1]):curGap.dc);renderGap(cin,dc);$('#nav a[data-v="gap"]').href='#gap/'+curGap.cin+'/'+curGap.dc}
+    else if(v==='map')initMap();
+    else if(v==='basket')renderBasket();
+    else if(v==='pricing')renderPricing();
+    else if(v==='invoices')renderInvoices();
+    else if(v==='onboarding')renderOnboarding();
+    else if(v==='feeds')renderFeeds();
+  }catch(err){console.error(err);$('#v-'+v).insertAdjacentHTML('afterbegin','<div class="note red">This view hit an error in the preview build: '+esc(err.message)+'</div>')}
+  $('#main').scrollTop=0;
+  document.title=(v==='gap'?IT[curGap.cin].name+' · ':'')+'SCIP v4 · '+v.charAt(0).toUpperCase()+v.slice(1);
+}
+addEventListener('hashchange',route);
+$('#presentBtn').onclick=()=>{document.body.classList.toggle('present');$('#presentBtn').classList.toggle('on');store.set('present',document.body.classList.contains('present'));if(MAP)setTimeout(()=>MAP.invalidateSize(),100)};
+if(store.get('present',false)){document.body.classList.add('present');$('#presentBtn').classList.add('on')}
+addEventListener('resize',()=>{if(MAP)MAP.invalidateSize()});
+route();
+</script>
+<script>if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').catch(()=>{})}</script>
+</body>
+</html>
