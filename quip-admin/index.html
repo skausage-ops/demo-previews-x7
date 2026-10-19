@@ -1,0 +1,1545 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#1B1713">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<title>QUIP · QA Admin</title>
+<style>
+@font-face{font-family:"Archivo Black";src:url(../shared/fonts/archivo-black-400-latin.woff2) format("woff2");font-weight:400;font-display:swap}
+@font-face{font-family:"Barlow Condensed";src:url(../shared/fonts/barlow-condensed-400-latin.woff2) format("woff2");font-weight:400;font-display:swap}
+@font-face{font-family:"Barlow Condensed";src:url(../shared/fonts/barlow-condensed-500-latin.woff2) format("woff2");font-weight:500;font-display:swap}
+@font-face{font-family:"Barlow Condensed";src:url(../shared/fonts/barlow-condensed-600-latin.woff2) format("woff2");font-weight:600;font-display:swap}
+@font-face{font-family:"Barlow Condensed";src:url(../shared/fonts/barlow-condensed-700-latin.woff2) format("woff2");font-weight:700;font-display:swap}
+@font-face{font-family:"Barlow Semi Condensed";src:url(../shared/fonts/barlow-semi-condensed-400-latin.woff2) format("woff2");font-weight:400;font-display:swap}
+@font-face{font-family:"Barlow Semi Condensed";src:url(../shared/fonts/barlow-semi-condensed-500-latin.woff2) format("woff2");font-weight:500;font-display:swap}
+@font-face{font-family:"Barlow Semi Condensed";src:url(../shared/fonts/barlow-semi-condensed-600-latin.woff2) format("woff2");font-weight:600;font-display:swap}
+@font-face{font-family:"DM Sans";src:url(../shared/fonts/dm-sans-latin.woff2) format("woff2");font-weight:100 1000;font-display:swap}
+
+:root{
+  --gold:#F4A525;--gold-deep:#B8791A;--gold-soft:#FDF1DC;--red:#9A3324;--red-soft:#FBEAE6;--red-onblack:#F76B52;
+  --black-deep:#0A0908;--black-soft:#1B1713;--success:#15803D;--success-soft:#E7F5EC;
+  --blue:#1D4ED8;--blue-soft:#E6EEFC;--teal:#0F766E;--teal-soft:#E3F4F2;--grey-soft:#EFEDEA;
+  --bg:#FAFAF9;--surface:#FFFFFF;--raised:#F5F4F2;--border:#E2DDD9;--border-strong:#CFC8C2;
+  --text:#1B1713;--muted:#6B625C;--faint:#958B84;
+  --display:"Barlow Condensed","Arial Narrow",sans-serif;--semi:"Barlow Semi Condensed","Arial Narrow",sans-serif;
+  --body:"DM Sans",system-ui,-apple-system,"Segoe UI",sans-serif;--mono:ui-monospace,"SF Mono","Roboto Mono",Menlo,monospace;
+  --r:10px;--r-sm:6px;--shadow:0 1px 2px rgba(27,23,19,.06),0 2px 8px rgba(27,23,19,.05);--shadow-lg:0 12px 40px rgba(10,9,8,.22);
+  --side:236px;--top:60px;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%}
+body{background:var(--bg);color:var(--text);font:15px/1.45 var(--body);-webkit-font-smoothing:antialiased;overflow-x:hidden;-webkit-tap-highlight-color:transparent}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+a{color:inherit}
+svg.i{width:18px;height:18px;flex:none;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+
+/* ---------- shell ---------- */
+.app{display:grid;grid-template-columns:var(--side) 1fr;min-height:100vh;min-height:100dvh}
+.side{background:var(--black-soft);color:#E9E4DF;position:sticky;top:0;height:100vh;height:100dvh;display:flex;flex-direction:column;padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom);z-index:40;overflow-y:auto;overflow-x:hidden;scrollbar-width:none}
+.brand{display:flex;align-items:center;gap:12px;padding:18px 18px 16px;text-decoration:none;color:#fff}
+.brand img{width:44px;height:44px;object-fit:contain;flex:none}
+.brand b{display:block;font:700 26px/1 var(--display);letter-spacing:.06em}
+.brand small{display:block;font:500 12.5px/1.2 var(--semi);color:var(--gold);letter-spacing:.02em;margin-top:3px;white-space:nowrap}
+.nav{padding:6px 10px;display:flex;flex-direction:column;gap:2px}
+.nav h6{margin:14px 10px 6px;font:600 11.5px/1 var(--semi);text-transform:uppercase;letter-spacing:.12em;color:#8C8179}
+.nav a{position:relative;display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:8px;text-decoration:none;color:#D6CFC8;font:500 16.5px/1.1 var(--semi);white-space:nowrap}
+.nav a:hover{background:rgba(255,255,255,.05);color:#fff}
+.nav a.on{background:rgba(244,165,37,.12);color:#fff}
+.nav a.on::before{content:"";position:absolute;left:-10px;top:8px;bottom:8px;width:4px;border-radius:0 4px 4px 0;background:var(--gold)}
+.nav a.on svg{color:var(--gold)}
+.nav .cnt{margin-left:auto;background:var(--gold);color:var(--black-deep);font:700 12px/1 var(--body);padding:3px 7px;border-radius:99px}
+.nav .cnt.red{background:var(--red-onblack)}
+.side-foot{margin-top:auto;padding:14px 16px;border-top:1px solid rgba(255,255,255,.08);display:flex;align-items:center;gap:10px}
+.av{width:34px;height:34px;border-radius:50%;background:var(--gold);color:var(--black-deep);display:grid;place-items:center;font:700 15px/1 var(--display);flex:none}
+.side-foot .who{font:600 14.5px/1.15 var(--semi);color:#fff;white-space:nowrap}
+.side-foot .who small{display:block;font:400 12.5px var(--semi);color:#A39890}
+
+.main{min-width:0;display:flex;flex-direction:column}
+.top{position:sticky;top:0;z-index:30;height:calc(var(--top) + env(safe-area-inset-top));padding:env(safe-area-inset-top) 20px 0;background:rgba(250,250,249,.92);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px}
+.top .burger{display:none}
+.search{position:relative;flex:1;max-width:460px}
+.search input{width:100%;height:40px;border:1px solid var(--border);background:var(--surface);border-radius:99px;padding:0 14px 0 40px;outline:none;font-size:14.5px}
+.search input:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(244,165,37,.2)}
+.search > svg{position:absolute;left:14px;top:11px;color:var(--muted)}
+.drop{position:absolute;top:calc(100% + 6px);left:0;right:0;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);box-shadow:var(--shadow-lg);overflow:hidden;z-index:60;max-height:min(420px,70vh);overflow-y:auto}
+.drop .row{display:flex;gap:10px;align-items:center;padding:10px 14px;border-bottom:1px solid var(--raised);cursor:pointer;width:100%;text-align:left;background:none;border-left:0;border-right:0;border-top:0}
+.drop .row:hover,.drop .row.hl{background:var(--raised)}
+.drop .empty{padding:14px;color:var(--muted);font-size:14px}
+.top-sp{flex:1}
+.demo-pill{font:600 12.5px/1 var(--semi);letter-spacing:.04em;text-transform:uppercase;background:var(--gold-soft);color:#7A4E0C;border:1px solid #F2D6A6;padding:7px 10px;border-radius:99px;white-space:nowrap}
+.iconbtn{position:relative;width:42px;height:42px;border-radius:50%;border:1px solid var(--border);background:var(--surface);display:grid;place-items:center;flex:none}
+.iconbtn:hover{background:var(--raised)}
+.iconbtn .badge{position:absolute;top:-3px;right:-3px;min-width:19px;height:19px;padding:0 5px;border-radius:99px;background:var(--red);color:#fff;font:700 11px/19px var(--body);text-align:center;border:2px solid var(--bg)}
+.userbtn{display:flex;align-items:center;gap:8px;border:1px solid var(--border);background:var(--surface);border-radius:99px;padding:4px 12px 4px 4px;height:42px}
+.userbtn .av{width:32px;height:32px;font-size:14px}
+.userbtn span{font:600 14.5px/1 var(--semi);white-space:nowrap}
+.menu{position:absolute;right:0;top:calc(100% + 8px);min-width:270px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);box-shadow:var(--shadow-lg);padding:6px;z-index:60}
+.menu .mh{padding:10px 12px 8px;border-bottom:1px solid var(--raised);margin-bottom:4px}
+.menu .mh b{display:block;font:600 16px var(--semi)}
+.menu .mh small{color:var(--muted)}
+.menu button,.menu a{display:flex;align-items:center;gap:10px;width:100%;padding:10px 12px;border:0;background:none;border-radius:8px;text-align:left;text-decoration:none;font-size:14.5px}
+.menu button:hover,.menu a:hover{background:var(--raised)}
+.menu .danger{color:var(--red)}
+.notif{width:340px;max-width:calc(100vw - 24px);padding:0}
+.notif .mh{padding:12px 14px}
+.notif .nrow{display:block;padding:11px 14px;border-bottom:1px solid var(--raised);cursor:pointer}
+.notif .nrow:hover{background:var(--raised)}
+.notif .nrow b{font-weight:600;font-size:14px}
+.notif .nrow small{display:block;color:var(--muted);font-size:12.5px;margin-top:2px}
+.notif .nfoot{padding:10px 14px;font-size:12.5px;color:var(--muted);background:var(--raised)}
+.rel{position:relative}
+
+.view{padding:22px 24px 60px;max-width:1360px;width:100%;margin:0 auto;min-width:0}
+.scrim{display:none}
+
+/* ---------- type & primitives ---------- */
+h1,h2,h3{font-family:var(--display);font-weight:700;letter-spacing:.005em;margin:0;line-height:1.05}
+h1{font-size:34px}
+h2{font-size:23px}
+h3{font-size:19px;font-weight:600}
+.eyebrow{font:600 12.5px/1 var(--semi);text-transform:uppercase;letter-spacing:.12em;color:var(--gold-deep)}
+.muted{color:var(--muted)}
+.small{font-size:13px}
+.mono{font-family:var(--mono);font-size:.92em;letter-spacing:-.01em}
+.pagehead{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:18px}
+.pagehead p{margin:6px 0 0;color:var(--muted)}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);box-shadow:var(--shadow)}
+.card-h{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:14px 16px;border-bottom:1px solid var(--border)}
+.card-b{padding:16px}
+.grid{display:grid;gap:14px}
+.pill{display:inline-flex;align-items:center;gap:6px;padding:4px 10px 4px 8px;border-radius:99px;font:600 13px/1.1 var(--semi);letter-spacing:.02em;white-space:nowrap;border:1px solid transparent}
+.pill::before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor;flex:none}
+.t-gold{background:var(--gold-soft);color:#875708;border-color:#F3DDB4}
+.t-blue{background:var(--blue-soft);color:var(--blue);border-color:#CCDAF8}
+.t-red{background:var(--red-soft);color:var(--red);border-color:#F1CFC7}
+.t-green{background:var(--success-soft);color:var(--success);border-color:#C7E7D2}
+.t-grey{background:var(--grey-soft);color:#5C544E;border-color:#E0DBD6}
+.sev{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:5px;font:700 12px/1.1 var(--semi);text-transform:uppercase;letter-spacing:.06em;white-space:nowrap}
+.sev-High{background:var(--red);color:#fff}
+.sev-Medium{background:var(--gold-soft);color:#875708;box-shadow:inset 0 0 0 1px #F3DDB4}
+.sev-Low{background:var(--grey-soft);color:#5C544E}
+.sev-none{color:var(--faint);font:500 13px var(--semi)}
+.tag{display:inline-flex;align-items:center;gap:4px;padding:2px 7px;border-radius:5px;font:700 11px/1.2 var(--semi);text-transform:uppercase;letter-spacing:.08em;background:var(--black-soft);color:var(--gold)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:42px;padding:0 16px;border-radius:8px;border:1px solid var(--border-strong);background:var(--surface);font:600 15.5px/1 var(--semi);letter-spacing:.02em;white-space:nowrap;text-decoration:none;transition:background .15s,border-color .15s,transform .1s}
+.btn:hover{background:var(--raised)}
+.btn:active{transform:translateY(1px)}
+.btn.pri{background:var(--gold);border-color:var(--gold);color:var(--black-deep)}
+.btn.pri:hover{background:#E99A18}
+.btn.dark{background:var(--black-soft);border-color:var(--black-soft);color:#fff}
+.btn.dark:hover{background:#2E2721}
+.btn.danger{color:var(--red);border-color:#E8C3BB}
+.btn.danger:hover{background:var(--red-soft)}
+.btn.ghost{border-color:transparent;background:none}
+.btn.ghost:hover{background:var(--raised)}
+.btn.sm{height:34px;padding:0 12px;font-size:14.5px}
+.btn[disabled]{opacity:.45;pointer-events:none}
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.chip{height:36px;padding:0 13px;border-radius:99px;border:1px solid var(--border);background:var(--surface);font:600 14.5px/1 var(--semi);display:inline-flex;align-items:center;gap:7px;white-space:nowrap}
+.chip b{font-family:var(--body);font-size:12px;background:var(--raised);padding:2px 7px;border-radius:99px}
+.chip.on{background:var(--black-soft);color:#fff;border-color:var(--black-soft)}
+.chip.on b{background:var(--gold);color:var(--black-deep)}
+.field{display:flex;flex-direction:column;gap:6px}
+.field label,.lbl{font:600 13px/1 var(--semi);text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+.inp,select.inp,textarea.inp{height:42px;border:1px solid var(--border-strong);border-radius:8px;background:var(--surface);padding:0 12px;outline:none;width:100%;min-width:0}
+textarea.inp{height:auto;min-height:96px;padding:10px 12px;resize:vertical;line-height:1.45}
+.inp:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(244,165,37,.2)}
+.seg{display:inline-flex;border:1px solid var(--border-strong);border-radius:8px;overflow:hidden;background:var(--surface)}
+.seg button{border:0;background:none;height:42px;padding:0 16px;font:600 15px var(--semi);border-right:1px solid var(--border)}
+.seg button:last-child{border-right:0}
+.seg button.on{background:var(--black-soft);color:#fff}
+.seg button.on.High{background:var(--red)}
+.seg button.on.Medium{background:var(--gold);color:var(--black-deep)}
+.switch{position:relative;width:46px;height:26px;border-radius:99px;background:#D5CEC8;border:0;flex:none;transition:background .15s}
+.switch::after{content:"";position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.25);transition:transform .15s}
+.switch.on{background:var(--success)}
+.switch.on::after{transform:translateX(20px)}
+
+/* ---------- tables ---------- */
+.tablewrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+table.t{width:100%;border-collapse:collapse;font-size:14px}
+.t th{position:sticky;top:0;background:var(--raised);text-align:left;font:600 12.5px/1 var(--semi);text-transform:uppercase;letter-spacing:.08em;color:var(--muted);padding:11px 10px;border-bottom:1px solid var(--border);white-space:nowrap}
+.t td{padding:11px 10px;border-bottom:1px solid #EEEAE6;vertical-align:middle}
+.t tr:last-child td{border-bottom:0}
+.t tbody tr.click{cursor:pointer}
+.t tbody tr.click:hover td{background:#FBF8F3}
+.t .ref{font:600 13.5px var(--mono);white-space:nowrap}
+.t .nowrap{white-space:nowrap}
+.t .hl{min-width:180px;max-width:280px}
+.t .ty{min-width:96px;max-width:140px;line-height:1.3}
+.t .hl b{display:block;font-weight:600;line-height:1.3;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.t .hl small{color:var(--muted);font-size:12.5px}
+.thumbs{display:flex;align-items:center}
+.thumbs img,.thumbs .ph{width:34px;height:34px;border-radius:6px;object-fit:cover;border:2px solid var(--surface);margin-left:-10px;background:var(--raised)}
+.thumbs img:first-child,.thumbs .ph:first-child{margin-left:0}
+.thumbs em{font-style:normal;font-size:12.5px;color:var(--muted);margin-left:6px}
+.overdue{display:inline-flex;align-items:center;gap:4px;color:var(--red);font:700 12px var(--semi);text-transform:uppercase;letter-spacing:.06em}
+.newdot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--gold);margin-right:6px;box-shadow:0 0 0 3px rgba(244,165,37,.25)}
+
+/* ---------- brief ---------- */
+.hero{background:var(--black-soft);color:#fff;border-radius:14px;padding:22px 24px;display:flex;align-items:center;justify-content:space-between;gap:20px;position:relative;overflow:hidden;margin-bottom:16px}
+.hero::after{content:"";position:absolute;right:-60px;top:-60px;width:240px;height:240px;border-radius:50%;background:radial-gradient(circle,rgba(244,165,37,.28),transparent 70%)}
+.hero h1{font-size:40px;color:#fff}
+.hero p{margin:6px 0 0;color:#CFC6BE}
+.hero .quote{position:relative;z-index:1;max-width:320px;font:500 16px/1.3 var(--semi);color:var(--gold);border-left:3px solid var(--gold);padding-left:12px}
+.kpis{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:12px;margin-bottom:16px}
+.kpi{display:block;text-align:left;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);box-shadow:var(--shadow);padding:14px 14px 13px;text-decoration:none;position:relative;overflow:hidden;min-width:0}
+a.kpi:hover{border-color:var(--border-strong);transform:translateY(-1px)}
+.kpi .k{font:600 12.5px/1.2 var(--semi);text-transform:uppercase;letter-spacing:.07em;color:var(--muted);min-height:30px}
+.kpi .v{font:700 40px/1 var(--display);margin:8px 0 4px;font-variant-numeric:tabular-nums}
+.kpi .s{font-size:12.5px;color:var(--muted);line-height:1.3}
+.kpi.alert{border-color:#EBC2B9}
+.kpi.alert::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--red)}
+.kpi.alert .v{color:var(--red)}
+.kpi.good .v{color:var(--success)}
+.kpi.goldk::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--gold)}
+.todo{list-style:none;margin:0;padding:0}
+.todo li{display:grid;grid-template-columns:34px 1fr auto;gap:14px;align-items:center;padding:14px 16px;border-bottom:1px solid #EEEAE6;cursor:pointer}
+.todo li:last-child{border-bottom:0}
+.todo li:hover{background:#FBF8F3}
+.todo .n{width:30px;height:30px;border-radius:50%;background:var(--raised);display:grid;place-items:center;font:700 16px var(--display)}
+.todo li.urgent .n{background:var(--red);color:#fff}
+.todo .why{font:600 13px/1.2 var(--semi);text-transform:uppercase;letter-spacing:.06em;color:var(--gold-deep);margin-bottom:3px}
+.todo li.urgent .why{color:var(--red)}
+.todo .what{font-weight:600;line-height:1.3}
+.todo .meta{font-size:13px;color:var(--muted);margin-top:3px;display:flex;flex-wrap:wrap;gap:4px 10px;align-items:center}
+.brief-cols{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:16px}
+.mini{display:flex;flex-direction:column;gap:10px}
+.mini .r{display:flex;justify-content:space-between;gap:10px;font-size:14px;padding:8px 0;border-bottom:1px dashed var(--border)}
+.mini .r:last-child{border-bottom:0}
+
+/* ---------- queue ---------- */
+.filters{display:flex;flex-wrap:wrap;gap:10px;align-items:center;padding:14px 16px;border-bottom:1px solid var(--border)}
+.filters .inp{height:38px;width:auto;font-size:14px}
+.filters .q{flex:1;min-width:180px}
+.qsummary{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;padding:12px 16px;border-bottom:1px solid var(--border);background:#FDFCFA}
+.qsummary b{font:700 20px var(--display)}
+.toggle{display:inline-flex;align-items:center;gap:10px;font:600 14.5px var(--semi);background:none;border:0;padding:0}
+
+/* ---------- detail ---------- */
+.back{display:inline-flex;align-items:center;gap:6px;font:600 15px var(--semi);color:var(--muted);text-decoration:none;margin-bottom:12px}
+.back:hover{color:var(--text)}
+.dhead{padding:18px 20px}
+.dhead .row1{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:8px}
+.dhead h1{font-size:31px;line-height:1.1;max-width:900px}
+.dmeta{display:flex;flex-wrap:wrap;gap:8px 22px;margin-top:12px;font-size:14px;color:var(--muted)}
+.dmeta span{display:inline-flex;align-items:center;gap:6px}
+.dmeta b{color:var(--text);font-weight:600}
+.stepper{display:grid;grid-template-columns:repeat(5,1fr);border-top:1px solid var(--border);padding:16px 20px 18px}
+.st{position:relative;display:flex;flex-direction:column;align-items:center;text-align:center;gap:6px;font:600 13.5px/1.15 var(--semi);color:var(--faint)}
+.st::before{content:"";position:absolute;top:13px;left:-50%;right:50%;height:3px;background:var(--border);z-index:0}
+.st:first-child::before{display:none}
+.st .dot{position:relative;z-index:1;width:28px;height:28px;border-radius:50%;background:var(--surface);border:2px solid var(--border-strong);display:grid;place-items:center}
+.st .dot svg{width:15px;height:15px}
+.st small{font:400 12px var(--body);color:var(--faint)}
+.st.done{color:var(--text)}
+.st.done .dot{background:var(--success);border-color:var(--success);color:#fff}
+.st.done::before{background:var(--success)}
+.st.cur{color:var(--text)}
+.st.cur .dot{border-color:var(--gold);background:var(--gold-soft);box-shadow:0 0 0 4px rgba(244,165,37,.2)}
+.st.cur .dot::after{content:"";width:10px;height:10px;border-radius:50%;background:var(--gold)}
+.st.cur::before{background:linear-gradient(90deg,var(--success),var(--gold))}
+.st.warn .dot{border-color:var(--red);background:var(--red-soft)}
+.st.warn .dot::after{background:var(--red)}
+.st.warn small{color:var(--red);font-weight:600}
+.actionbar{position:sticky;top:calc(var(--top) + env(safe-area-inset-top));z-index:20;display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:10px 12px;margin:12px 0 14px;background:rgba(27,23,19,.97);border-radius:12px;box-shadow:var(--shadow-lg)}
+.actionbar .lead{color:#CFC6BE;font:500 14px var(--semi);margin-right:auto;padding:0 6px;display:flex;align-items:center;gap:8px;min-width:0}
+.actionbar .lead b{color:#fff;font-weight:600}
+.actionbar .btn{height:40px;background:#2B241F;border-color:#3D342D;color:#F2EDE8}
+.actionbar .btn:hover{background:#3A3029}
+.actionbar .btn.pri{background:var(--gold);border-color:var(--gold);color:var(--black-deep)}
+.actionbar .btn.danger{color:var(--red-onblack)}
+.dcols{display:grid;grid-template-columns:minmax(0,1.45fr) minmax(320px,1fr);gap:16px;align-items:start}
+.gallery .main-ph{position:relative;aspect-ratio:4/3;background:var(--black-deep);border-radius:var(--r) var(--r) 0 0;overflow:hidden;cursor:zoom-in;border:0;padding:0;width:100%;display:block}
+.gallery .main-ph img{width:100%;height:100%;object-fit:cover;display:block}
+.gallery .cap{position:absolute;left:12px;bottom:12px;background:rgba(10,9,8,.75);color:#fff;font:600 13.5px var(--semi);padding:6px 10px;border-radius:6px;display:flex;gap:8px;align-items:center}
+.gallery .zoom{position:absolute;right:12px;bottom:12px;background:rgba(10,9,8,.75);color:#fff;width:38px;height:38px;border-radius:50%;display:grid;place-items:center}
+.gallery .strip{display:flex;gap:8px;padding:10px;overflow-x:auto}
+.gallery .strip button{border:2px solid transparent;border-radius:8px;padding:0;background:none;flex:none;position:relative}
+.gallery .strip button.on{border-color:var(--gold)}
+.gallery .strip img{width:92px;height:68px;object-fit:cover;border-radius:6px;display:block}
+.gallery .strip span{position:absolute;left:4px;bottom:4px;background:rgba(10,9,8,.7);color:#fff;font:600 11px var(--semi);padding:1px 5px;border-radius:4px}
+.nophotos{padding:40px 20px;text-align:center;color:var(--muted)}
+.facts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0}
+.fact{padding:12px 16px;border-bottom:1px solid #EEEAE6;min-width:0}
+.fact:nth-child(odd){border-right:1px solid #EEEAE6}
+.fact.full{grid-column:1/-1;border-right:0}
+.fact .lbl{display:block;margin-bottom:5px;font-size:11.5px}
+.fact .val{font-weight:600;overflow-wrap:anywhere}
+.fact .sub{font-size:13px;color:var(--muted);margin-top:2px}
+.flag{display:inline-flex;align-items:center;gap:6px;color:var(--red);font-weight:700}
+.desc{font-size:15.5px;line-height:1.6;margin:0;white-space:pre-wrap}
+.tl{list-style:none;margin:0;padding:6px 16px 16px}
+.tl li{position:relative;padding:12px 0 12px 30px}
+.tl li::before{content:"";position:absolute;left:8px;top:0;bottom:0;width:2px;background:var(--border)}
+.tl li:first-child::before{top:18px}
+.tl li:last-child::before{bottom:calc(100% - 18px)}
+.tl .dot{position:absolute;left:1px;top:13px;width:16px;height:16px;border-radius:50%;border:3px solid var(--surface);box-shadow:0 0 0 1px var(--border)}
+.tl .who{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.tl .who b{font:600 15px var(--semi)}
+.tl .role{font:700 10.5px/1 var(--semi);text-transform:uppercase;letter-spacing:.09em;padding:3px 6px;border-radius:4px}
+.tl time{font-size:12.5px;color:var(--muted);margin-left:auto;white-space:nowrap}
+.tl p{margin:5px 0 0;font-size:14.5px;line-height:1.5}
+.tl li.internal p{background:#FFF9EC;border:1px dashed #EBCF97;border-radius:8px;padding:8px 10px}
+.r-store .dot{background:var(--gold)} .r-store .role{background:var(--gold-soft);color:#875708}
+.r-qa .dot{background:var(--red)} .r-qa .role{background:var(--red-soft);color:var(--red)}
+.r-supplier .dot{background:var(--blue)} .r-supplier .role{background:var(--blue-soft);color:var(--blue)}
+.r-dc .dot{background:var(--teal)} .r-dc .role{background:var(--teal-soft);color:var(--teal)}
+.r-system .dot{background:#A39890} .r-system .role{background:var(--grey-soft);color:#5C544E}
+.legend{display:flex;gap:12px;flex-wrap:wrap;font-size:12.5px;color:var(--muted)}
+.legend i{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:5px;vertical-align:0}
+.banner{display:flex;gap:12px;align-items:flex-start;padding:12px 14px;border-radius:var(--r);font-size:14px;line-height:1.45}
+.banner svg{margin-top:1px}
+.banner.red{background:var(--red-soft);color:#6E2418;border:1px solid #F1CFC7}
+.banner.gold{background:var(--gold-soft);color:#6B4508;border:1px solid #F3DDB4}
+.banner.green{background:var(--success-soft);color:#0F5A2B;border:1px solid #C7E7D2}
+.banner.blue{background:var(--blue-soft);color:#173C9E;border:1px solid #CCDAF8}
+
+/* ---------- charts ---------- */
+.kpi-row{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px;margin-bottom:16px}
+.charts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.chart{width:100%;height:auto;display:block;overflow:visible}
+.chart text{font-family:var(--body);font-size:11.5px;fill:var(--muted)}
+.chart .val{fill:var(--text);font-weight:600}
+.chart .bar{transition:opacity .15s}
+.chart .bar:hover{opacity:.8}
+.hbar{display:grid;grid-template-columns:minmax(110px,170px) 1fr 40px;gap:10px;align-items:center;padding:6px 0;font-size:13.5px}
+.hbar .lab{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hbar .track{height:14px;background:var(--raised);border-radius:0 4px 4px 0;overflow:hidden}
+.hbar .fill{height:100%;background:var(--gold-deep);border-radius:0 4px 4px 0}
+.hbar .num{text-align:right;font-weight:600;font-variant-numeric:tabular-nums}
+.stack{display:flex;height:22px;border-radius:5px;overflow:hidden;gap:2px;margin:6px 0 14px}
+.stack div{height:100%}
+.mocknote{display:inline-flex;align-items:center;gap:6px;font:600 12px var(--semi);letter-spacing:.04em;text-transform:uppercase;color:var(--muted);background:var(--raised);border:1px dashed var(--border-strong);padding:4px 8px;border-radius:6px}
+.tip{position:fixed;pointer-events:none;z-index:120;background:var(--black-soft);color:#fff;font-size:12.5px;padding:6px 9px;border-radius:6px;box-shadow:var(--shadow-lg);opacity:0;transition:opacity .1s;white-space:nowrap}
+.spark{display:block}
+
+/* ---------- suppliers ---------- */
+.sgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:14px}
+.scard{display:block;text-align:left;width:100%;padding:16px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);box-shadow:var(--shadow);transition:transform .12s,border-color .12s}
+.scard:hover{transform:translateY(-2px);border-color:var(--gold)}
+.scard .sh{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.logo-sq{width:40px;height:40px;border-radius:8px;display:grid;place-items:center;font:700 17px var(--display);color:#fff;flex:none}
+.scard h3{font-size:21px}
+.scard .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.scard .stat{background:var(--raised);border-radius:8px;padding:8px 10px}
+.scard .stat b{display:block;font:700 22px/1 var(--display);font-variant-numeric:tabular-nums}
+.scard .stat small{font-size:11.5px;color:var(--muted)}
+.scard .stat.bad b{color:var(--red)}
+.scard .foot{display:flex;justify-content:space-between;align-items:center;margin-top:12px;font-size:13px;color:var(--muted)}
+
+/* ---------- admin ---------- */
+.tabs{display:flex;gap:4px;border-bottom:1px solid var(--border);margin-bottom:16px;overflow-x:auto;scrollbar-width:none}
+.tabs a{padding:11px 14px;font:600 15.5px var(--semi);text-decoration:none;color:var(--muted);border-bottom:3px solid transparent;margin-bottom:-1px;white-space:nowrap}
+.tabs a.on{color:var(--text);border-bottom-color:var(--gold)}
+.empty-state{text-align:center;padding:56px 24px;max-width:560px;margin:0 auto}
+.empty-state .ico{width:72px;height:72px;border-radius:50%;background:var(--gold-soft);color:var(--gold-deep);display:grid;place-items:center;margin:0 auto 18px}
+.empty-state .ico svg{width:34px;height:34px}
+.empty-state h2{font-size:30px;margin-bottom:8px}
+.sop{counter-reset:s;list-style:none;margin:0;padding:0}
+.sop > li{counter-increment:s;position:relative;padding:16px 16px 16px 64px;border-bottom:1px solid #EEEAE6}
+.sop > li:last-child{border-bottom:0}
+.sop > li::before{content:counter(s);position:absolute;left:16px;top:14px;width:34px;height:34px;border-radius:50%;background:var(--black-soft);color:var(--gold);display:grid;place-items:center;font:700 18px var(--display)}
+.sop h3{margin-bottom:6px}
+.sop ul{margin:6px 0 0;padding-left:18px;color:#3D3530;font-size:14.5px}
+.sop ul li{margin:3px 0}
+
+/* ---------- overlays ---------- */
+.toasts{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom));transform:translateX(-50%);z-index:200;display:flex;flex-direction:column;gap:8px;align-items:center;pointer-events:none;width:max-content;max-width:calc(100vw - 32px)}
+.toast{pointer-events:auto;display:flex;align-items:center;gap:10px;background:var(--black-soft);color:#fff;padding:12px 16px;border-radius:10px;box-shadow:var(--shadow-lg);font-size:14.5px;animation:tin .25s ease-out;border-left:4px solid var(--gold)}
+.toast.ok{border-left-color:#3FBF6E}
+.toast.warn{border-left-color:var(--red-onblack)}
+.toast button{background:none;border:0;color:var(--gold);font:600 14px var(--semi);padding:0 0 0 6px}
+@keyframes tin{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.modal-bg{position:fixed;inset:0;background:rgba(10,9,8,.55);z-index:100;display:flex;align-items:center;justify-content:center;padding:20px;animation:fade .15s}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+.modal{background:var(--surface);border-radius:14px;box-shadow:var(--shadow-lg);width:min(620px,100%);max-height:calc(100dvh - 40px);display:flex;flex-direction:column;animation:pop .18s ease-out}
+.modal.wide{width:min(760px,100%)}
+@keyframes pop{from{opacity:0;transform:scale(.97) translateY(6px)}to{opacity:1;transform:none}}
+.modal .mh{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:18px 20px 12px}
+.modal .mh h2{font-size:26px}
+.modal .mh p{margin:4px 0 0;color:var(--muted);font-size:14px}
+.modal .mb{padding:4px 20px 16px;overflow-y:auto;display:flex;flex-direction:column;gap:14px}
+.modal .mf{display:flex;justify-content:flex-end;gap:10px;padding:14px 20px;border-top:1px solid var(--border);background:#FDFCFA;border-radius:0 0 14px 14px;flex-wrap:wrap}
+.radios{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.radio{display:flex;gap:10px;align-items:flex-start;border:1px solid var(--border-strong);border-radius:10px;padding:12px;cursor:pointer;text-align:left;background:var(--surface)}
+.radio.on{border-color:var(--gold);background:var(--gold-soft);box-shadow:0 0 0 2px rgba(244,165,37,.35)}
+.radio.dis{opacity:.5;cursor:not-allowed}
+.radio b{display:block;font:600 16px var(--semi)}
+.radio small{color:var(--muted);font-size:12.5px;line-height:1.35;display:block;margin-top:2px}
+.radio .rd{width:18px;height:18px;border-radius:50%;border:2px solid var(--border-strong);flex:none;margin-top:2px}
+.radio.on .rd{border:6px solid var(--black-soft)}
+.msgprev{border:1px solid var(--border);border-radius:10px;overflow:hidden;background:#fff}
+.msgprev .hd{background:var(--raised);padding:10px 14px;font-size:13.5px;border-bottom:1px solid var(--border);display:grid;grid-template-columns:62px 1fr;gap:4px 8px}
+.msgprev .hd span{color:var(--muted)}
+.msgprev .bd{padding:14px;font-size:14px;line-height:1.55;white-space:pre-wrap}
+.msgprev .att{display:flex;gap:8px;padding:0 14px 14px;flex-wrap:wrap}
+.msgprev .att figure{margin:0;width:96px}
+.msgprev .att img{width:96px;height:70px;object-fit:cover;border-radius:6px;display:block}
+.msgprev .att figcaption{font-size:11.5px;color:var(--muted);margin-top:3px}
+.msgprev.teams{border-left:4px solid #5B5FC7}
+.lightbox{position:fixed;inset:0;z-index:150;background:rgba(10,9,8,.96);display:flex;flex-direction:column;animation:fade .15s;touch-action:pan-y}
+.lightbox .lh{display:flex;align-items:center;justify-content:space-between;padding:calc(12px + env(safe-area-inset-top)) 16px 12px;color:#fff}
+.lightbox .lh b{font:600 18px var(--semi)}
+.lightbox .lh small{color:#A39890;margin-left:10px}
+.lightbox .stage{flex:1;position:relative;display:flex;align-items:center;justify-content:center;overflow:hidden;min-height:0}
+.lightbox .stage img{max-width:calc(100% - 140px);max-height:100%;object-fit:contain;border-radius:6px;user-select:none;-webkit-user-drag:none;transition:transform .2s}
+.lightbox .nav-b{position:absolute;top:50%;transform:translateY(-50%);width:54px;height:54px;border-radius:50%;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);color:#fff;display:grid;place-items:center}
+.lightbox .nav-b:hover{background:rgba(255,255,255,.2)}
+.lightbox .nav-b svg{width:26px;height:26px}
+.lightbox .prev{left:16px}.lightbox .next{right:16px}
+.lightbox .lf{display:flex;justify-content:center;gap:8px;padding:12px 12px calc(16px + env(safe-area-inset-bottom))}
+.lightbox .lf button{border:2px solid transparent;padding:0;border-radius:6px;background:none;opacity:.55}
+.lightbox .lf button.on{border-color:var(--gold);opacity:1}
+.lightbox .lf img{width:64px;height:48px;object-fit:cover;border-radius:4px;display:block}
+.lightbox .close{background:rgba(255,255,255,.1);border:0;color:#fff;width:44px;height:44px;border-radius:50%;display:grid;place-items:center}
+.celebrate{position:fixed;inset:0;z-index:180;display:grid;place-items:center;background:rgba(10,9,8,.5);animation:fade .2s;overflow:hidden}
+.celebrate .box{background:var(--surface);border-radius:18px;padding:24px 32px 26px;text-align:center;box-shadow:var(--shadow-lg);animation:pop .3s ease-out;max-width:380px;position:relative;z-index:2}
+.celebrate img{width:150px;height:150px;object-fit:contain;display:block;margin:0 auto 6px}
+.celebrate h2{font-size:32px}
+.confetti{position:absolute;top:-20px;width:10px;height:16px;border-radius:2px;animation:fall 1.8s ease-in forwards;z-index:1}
+@keyframes fall{to{transform:translateY(110vh) rotate(540deg)}}
+
+/* ---------- responsive ---------- */
+@media (max-width:1240px){
+  .kpis{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .kpi-row{grid-template-columns:repeat(3,minmax(0,1fr))}
+}
+@media (max-width:1100px){
+  :root{--side:76px}
+  .brand{justify-content:center;padding:16px 8px}
+  .brand div,.nav h6,.nav a span,.nav .cnt,.side-foot .who{display:none}
+  .nav h6{display:block;height:1px;background:rgba(255,255,255,.1);margin:10px 8px;font-size:0}
+  .nav a{justify-content:center;padding:12px}
+  .nav a svg{width:22px;height:22px}
+  .nav a .dotc{position:absolute;top:7px;right:12px;width:9px;height:9px;border-radius:50%;background:var(--gold);display:block}
+  .side-foot{justify-content:center;padding:14px 8px}
+  .dcols{grid-template-columns:1fr}
+  .brief-cols{grid-template-columns:1fr}
+  .hero .quote{display:none}
+}
+.nav a .dotc{display:none}
+@media (max-width:1100px){.nav a .dotc{display:block}}
+@media (max-width:860px){
+  .charts{grid-template-columns:1fr}
+  .userbtn span:not(.av){display:none}
+  .userbtn{padding:4px}
+  .view{padding:18px 16px 60px}
+  .kpis{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .kpi-row{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media (max-width:699px){
+  :root{--side:0px}
+  .app{grid-template-columns:1fr}
+  .side{position:fixed;left:0;top:0;bottom:0;width:272px;transform:translateX(-100%);transition:transform .22s ease-out}
+  body.drawer .side{transform:none;box-shadow:var(--shadow-lg)}
+  body.drawer .scrim{display:block;position:fixed;inset:0;background:rgba(10,9,8,.45);z-index:35}
+  .brand{justify-content:flex-start;padding:18px}
+  .brand div,.nav a span,.nav .cnt,.side-foot .who{display:block}
+  .nav h6{display:block;height:auto;background:none;margin:14px 10px 6px;font-size:11.5px}
+  .nav a{justify-content:flex-start;padding:10px 12px}
+  .nav a svg{width:18px;height:18px}
+  .nav a .dotc{display:none}
+  .nav .cnt{display:inline-block}
+  .side-foot{justify-content:flex-start;padding:14px 16px}
+  .top .burger{display:grid}
+  .todo li{grid-template-columns:30px 1fr;gap:10px}
+  .todo li > .btn{display:none}
+  .top{padding-left:12px;padding-right:12px;gap:8px}
+  .demo-pill{display:none}
+  h1{font-size:28px}
+  .hero{padding:18px}
+  .hero h1{font-size:32px}
+  .dhead h1{font-size:25px}
+  .stepper{grid-template-columns:1fr;gap:10px;padding:14px 16px}
+  .st{flex-direction:row;text-align:left;gap:10px}
+  .st::before{display:none}
+  .st small{margin-left:auto}
+  .facts{grid-template-columns:1fr}
+  .fact:nth-child(odd){border-right:0}
+  .radios{grid-template-columns:1fr}
+  .lightbox .stage img{max-width:100%}
+  .lightbox .nav-b{display:none}
+  .actionbar .lead{width:100%}
+  .scard .stats{grid-template-columns:repeat(3,1fr)}
+  .hbar{grid-template-columns:96px 1fr 34px}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}
+  .confetti{display:none}
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="side" id="side" aria-label="Main navigation">
+    <a class="brand" href="#/brief">
+      <img src="../shared/brand/logo-wht-yellow.webp" alt="Church's Texas Chicken">
+      <div><b>QUIP</b><small>QA Intelligence Portal</small></div>
+    </a>
+    <nav class="nav" id="nav"></nav>
+    <div class="side-foot">
+      <div class="av">T</div>
+      <div class="who">Tasha<small>QA Lead (demo)</small></div>
+    </div>
+  </aside>
+  <div class="scrim" id="scrim"></div>
+  <div class="main">
+    <header class="top">
+      <button class="iconbtn burger" id="burger" aria-label="Open menu"></button>
+      <div class="search" id="searchBox">
+        <span id="searchIco"></span>
+        <input id="search" type="search" placeholder="Search ref, lot, store, item…" autocomplete="off" aria-label="Search incidents">
+        <div class="drop" id="searchDrop" hidden></div>
+      </div>
+      <div class="top-sp"></div>
+      <span class="demo-pill">Demo · mock data</span>
+      <div class="rel">
+        <button class="iconbtn" id="bell" aria-label="Notifications"></button>
+        <div class="menu notif" id="bellMenu" hidden></div>
+      </div>
+      <div class="rel">
+        <button class="userbtn" id="userBtn" aria-haspopup="true"><span class="av">T</span><span>Tasha · QA Lead (demo)</span></button>
+        <div class="menu" id="userMenu" hidden></div>
+      </div>
+    </header>
+    <main class="view" id="view" tabindex="-1"></main>
+  </div>
+</div>
+<div class="toasts" id="toasts" aria-live="polite"></div>
+<div class="tip" id="tip"></div>
+<div id="overlay"></div>
+
+<script src="../shared/quip-data.js"></script>
+<script>
+(function(){
+'use strict';
+const Q = window.QUIP;
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
+const esc = v => String(v == null ? '' : v).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const H = 3600e3, D = 24 * H;
+const ME = 'Tasha (QA)';
+const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* ---------- icons (lucide-style) ---------- */
+const P = {
+  sun:'<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>',
+  inbox:'<path d="M22 12h-6l-2 3h-4l-2-3H2"/><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/>',
+  dash:'<rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/>',
+  factory:'<path d="M2 20a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8l-7 5V8l-7 5V4a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"/><path d="M17 18h1M12 18h1M7 18h1"/>',
+  recall:'<path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4M12 17h.01"/>',
+  chart:'<path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/>',
+  report:'<path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/>',
+  settings:'<path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/>',
+  key:'<circle cx="7.5" cy="15.5" r="5.5"/><path d="m21 2-9.6 9.6M15.5 7.5l3 3L22 7l-3-3"/>',
+  truck:'<path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/><path d="M15 18H9"/><path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.62l-3.48-4.35A1 1 0 0 0 17.52 8H14"/><circle cx="17" cy="18" r="2"/><circle cx="7" cy="18" r="2"/>',
+  book:'<path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>',
+  search:'<circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>',
+  bell:'<path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/>',
+  menu:'<path d="M4 6h16M4 12h16M4 18h16"/>',
+  left:'<path d="m15 18-6-6 6-6"/>', right:'<path d="m9 18 6-6-6-6"/>',
+  x:'<path d="M18 6 6 18M6 6l12 12"/>',
+  check:'<path d="M20 6 9 17l-5-5"/>',
+  checkc:'<circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/>',
+  clock:'<circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>',
+  mail:'<rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>',
+  send:'<path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/>',
+  msg:'<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>',
+  reply:'<path d="m9 17-5-5 5-5"/><path d="M20 18v-2a4 4 0 0 0-4-4H4"/>',
+  flag:'<path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><path d="M4 22v-7"/>',
+  zap:'<path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/>',
+  download:'<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5M12 15V3"/>',
+  user:'<path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>',
+  users:'<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/>',
+  refresh:'<path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/>',
+  tablet:'<rect x="4" y="2" width="16" height="20" rx="2"/><path d="M12 18h.01"/>',
+  phone:'<path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/>',
+  pin:'<path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/>',
+  thermo:'<path d="M14 4v10.54a4 4 0 1 1-4 0V4a2 2 0 0 1 4 0Z"/>',
+  pkg:'<path d="m7.5 4.27 9 5.15"/><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5M12 22V12"/>',
+  ext:'<path d="M15 3h6v6M10 14 21 3M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>',
+  route:'<circle cx="6" cy="19" r="3"/><path d="M9 19h8.5a3.5 3.5 0 0 0 0-7h-11a3.5 3.5 0 0 1 0-7H15"/><circle cx="18" cy="5" r="3"/>',
+  note:'<path d="M15.5 3H5a2 2 0 0 0-2 2v14c0 1.1.9 2 2 2h14a2 2 0 0 0 2-2V8.5L15.5 3Z"/><path d="M15 3v6h6"/>',
+  up:'<path d="M7 17 17 7M7 7h10v10"/>',
+  ban:'<circle cx="12" cy="12" r="10"/><path d="m4.9 4.9 14.2 14.2"/>',
+  zoom:'<path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/>',
+  image:'<rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.09-3.09a2 2 0 0 0-2.82 0L6 21"/>',
+  shield:'<path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/>',
+  dollar:'<path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>',
+  store:'<path d="m2 7 4.41-4.41A2 2 0 0 1 7.83 2h8.34a2 2 0 0 1 1.42.59L22 7"/><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><path d="M15 22v-4a2 2 0 0 0-2-2h-2a2 2 0 0 0-2 2v4M2 7h20M22 7v3a2 2 0 0 1-2 2 2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 16 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 12 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 8 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 4 12a2 2 0 0 1-2-2V7"/>',
+  plus:'<path d="M5 12h14M12 5v14"/>',
+  logout:'<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/>',
+  hash:'<path d="M4 9h16M4 15h16M10 3 8 21M16 3l-2 18"/>',
+};
+const ic = (n, cls) => `<svg class="i${cls ? ' ' + cls : ''}" viewBox="0 0 24 24" aria-hidden="true">${P[n] || ''}</svg>`;
+
+/* ---------- reference data ---------- */
+const SUPPLIERS = [
+  { key:'mccain', name:'McCain', vendor:'MCCAIN FOODS USA', contact:'McCain QA Desk', email:'qa.notifications@mccainfoods.example', color:'#B8791A' },
+  { key:'lambweston', name:'Lamb Weston', vendor:'LAMB WESTON', contact:'Lamb Weston Customer Quality', email:'customer.quality@lambweston.example', color:'#1D4ED8' },
+  { key:'koch', name:'Koch Foods', vendor:'KOCH FOODS OF AL', contact:'Koch Foods QA', email:'qa.desk@kochfoods.example', color:'#9A3324' },
+  { key:'casefarms', name:'Case Farms', vendor:'CASE FARMS, LLC', contact:'Case Farms QA', email:'quality@casefarms.example', color:'#0F766E' },
+  { key:'greengate', name:'GreenGate Fresh', vendor:'GreenGate Fresh', contact:'GreenGate Food Safety', email:'foodsafety@greengatefresh.example', color:'#15803D' },
+  { key:'ardent', name:'Ardent Mills', vendor:'ARDENT MILLS', contact:'Ardent Mills Quality', email:'quality.alerts@ardentmills.example', color:'#6B4E9B' },
+  { key:'huhtamaki', name:'Huhtamaki', vendor:'HUHTAMAKI CO. MFG.', contact:'Huhtamaki Customer Quality', email:'cq.na@huhtamaki.example', color:'#3D3530' },
+];
+const OTHER_SUP = { 'BUNGE LODERS':{ key:'bunge', name:'Bunge Loders', contact:'Bunge QA', email:'qa@bunge.example', color:'#6B625C' }, 'SAUER BRANDS':{ key:'sauer', name:'Sauer Brands', contact:'Sauer QA', email:'qa@sauer.example', color:'#6B625C' } };
+// Approved suppliers per CIN — only these can receive an incident for that item.
+const APPROVED = { '6247':['lambweston','mccain'], '1105':['koch','casefarms'], '7298':['casefarms','koch'] };
+const DCS = ['PFG Houston','PFG RFS Arizona','PFG Little Rock','PFG Bakersfield','PFG Victoria','PFG Atlanta'];
+const DC_CONTACT = dc => dc + ' Service Desk';
+const supByKey = k => SUPPLIERS.find(s => s.key === k) || Object.values(OTHER_SUP).find(s => s.key === k) || null;
+const supByVendor = v => SUPPLIERS.find(s => s.vendor === v) || OTHER_SUP[v] || null;
+const approvedFor = cin => { if (!cin) return []; if (APPROVED[cin]) return APPROVED[cin].map(supByKey); const it = Q.ITEMS.find(i => i.cin === cin); const s = it && supByVendor(it.vendor); return s ? [s] : []; };
+const REGIONS = [
+  { key:'rgv', name:'Rio Grande Valley', stores:['1147','1162','1188'], pilot:true },
+  { key:'hou', name:'Houston', stores:['10189'] },
+  { key:'wtx', name:'West Texas', stores:['3011'] },
+  { key:'ok', name:'Oklahoma', stores:['11598'] },
+  { key:'ca', name:'California', stores:['959'] },
+  { key:'ga', name:'Georgia', stores:['2240'] },
+];
+const PILOT = ['1147','1162','1188'];
+const TYPE_Q = Object.fromEntries(Q.INCIDENT_TYPES.map(t => [t.name, t]));
+
+/* ---------- data ---------- */
+function readEdits(){ try { return (JSON.parse(localStorage.getItem(Q.KEY)) || {}).edits || {}; } catch (e) { return {}; } }
+let ALL = [], KNOWN = null;
+function load(){
+  const edits = readEdits();
+  ALL = Q.all().map(i => {
+    const e = edits[i.ref] || {};
+    const dc = e.routeDc || i.dc || (i.store && i.store.dc) || null;
+    const baseSup = i.vendor ? supByVendor(i.vendor) : null;
+    const sup = e.routeSupplier ? supByKey(e.routeSupplier) : baseSup;
+    const credit = e.credit != null ? e.credit : (i.credit || 0);
+    const tl = i.timeline.slice().sort((a, b) => a.at - b.at);
+    const lastNotify = [...tl].reverse().find(s => s.kind === 'notify');
+    const respAfter = lastNotify ? tl.some(s => s.kind === 'response' && s.at >= lastNotify.at) : false;
+    const hasResponse = tl.some(s => s.kind === 'response');
+    const open = !['Resolved','ClosedNoAction'].includes(i.status);
+    const waiting = i.status === 'SupplierNotified' || i.status === 'AwaitingDcAction';
+    const overdue = open && waiting && (i.chaseOverdue || (lastNotify && !respAfter && Date.now() - lastNotify.at > 48 * H));
+    const resolvedAt = (tl.find(s => s.kind === 'resolve' || s.kind === 'close') || {}).at || null;
+    let waitingOn = i.statusInfo ? i.statusInfo.waitingOn : null;
+    if (i.status === 'SupplierNotified') waitingOn = sup ? sup.name : 'Supplier';
+    if (i.status === 'AwaitingDcAction') waitingOn = dc || 'Distribution center';
+    if (i.status === 'Escalated') waitingOn = 'QA lead';
+    const needsQA = open && (['PendingIntake','IntakeComplete','Escalated'].includes(i.status) || (waiting && respAfter) || overdue);
+    return { ...i, timeline: tl, dc, sup, credit, open, overdue, respAfter, hasResponse, lastNotify, resolvedAt, waitingOn, needsQA,
+      route: e.routeTo || (i.status === 'AwaitingDcAction' ? 'dc' : (i.service ? 'dc' : 'supplier')), photos: (i.photos || []).filter(p => p && p.src) };
+  });
+}
+function checkNew(silent){
+  load();
+  const refs = new Set(ALL.map(i => i.ref));
+  if (KNOWN && !silent) {
+    const fresh = ALL.filter(i => !KNOWN.has(i.ref));
+    if (fresh.length) {
+      const st = fresh[0].store ? fresh[0].store.num : '';
+      toast(`${fresh.length} new report${fresh.length > 1 ? 's' : ''} from Store ${st}`, 'gold', { label:'Open', fn:() => go('#/incident/' + fresh[0].ref) });
+    }
+  }
+  KNOWN = refs;
+}
+const byRef = ref => ALL.find(i => i.ref === ref);
+
+/* ---------- deterministic mock pilot history ---------- */
+function rng(seed){ let s = seed >>> 0; return () => { s = (s * 1664525 + 1013904223) >>> 0; return s / 4294967296; }; }
+const HIST = (() => {
+  const r = rng(1147), out = [];
+  const typesW = [['Foreign Object',3],['Spoilage',2],['Temperature',4],['Underfilled / Underweight',4],['External Damage',5],['Appearance and Size',4],['Mis-labeled / Missing label',2],['Off Flavor / Odor',1],['Driver Late',3],['Short / Missing Product',4]];
+  const supW = [['mccain',4],['lambweston',5],['koch',4],['casefarms',4],['greengate',3],['ardent',3],['huhtamaki',2]];
+  const storeW = [['1147',4],['1162',3],['1188',3],['10189',4],['3011',2],['11598',2],['959',2],['2240',2]];
+  const pick = w => { const t = w.reduce((a, b) => a + b[1], 0); let x = r() * t; for (const [k, n] of w) { if ((x -= n) < 0) return k; } return w[0][0]; };
+  const perWeek = [3,4,3,5,4,6,5,7,6,8,7,0]; // week 11 = this week (live data only)
+  perWeek.forEach((n, w) => { for (let k = 0; k < n; k++) {
+    const type = pick(typesW), service = TYPE_Q[type] && TYPE_Q[type].group === 'Service';
+    const store = pick(storeW);
+    out.push({ week:w, type, sup: service ? null : pick(supW), store, days: +(0.8 + r() * 4.2).toFixed(1), replyHrs: Math.round(8 + r() * 52),
+      complete: r() < .93, credit: service ? 0 : (r() < .55 ? Math.round(30 + r() * 220) : 0), sev: TYPE_Q[type] && TYPE_Q[type].high ? 'High' : (r() < .7 ? 'Medium' : 'Low') });
+  }});
+  return out;
+})();
+function weekIdx(t){ const now = Date.now(); const w = 11 - Math.floor((now - t) / (7 * D)); return w; }
+
+/* ---------- helpers ---------- */
+const fmtAgo = t => Q.fmtAgo(t);
+const fmtDate = t => Q.fmtDate(t);
+const fmtTime = t => new Date(t).toLocaleString('en-US', { month:'short', day:'numeric', hour:'numeric', minute:'2-digit' });
+const money = n => '$' + (n || 0).toLocaleString('en-US', { minimumFractionDigits:2, maximumFractionDigits:2 });
+const money0 = n => '$' + Math.round(n || 0).toLocaleString('en-US');
+const pill = i => `<span class="pill t-${i.statusInfo ? i.statusInfo.tone : 'grey'}">${esc(i.statusInfo ? i.statusInfo.label : i.status)}</span>`;
+const sev = s => s ? `<span class="sev sev-${esc(s)}">${s === 'High' ? ic('zap') : ''}${esc(s)}</span>` : '<span class="sev-none">Not set</span>';
+const storeLbl = s => s ? `Store ${esc(s.num)} · ${esc(s.name)}` : '—';
+const median = a => { if (!a.length) return 0; const s = [...a].sort((x, y) => x - y), m = s.length >> 1; return s.length % 2 ? s[m] : (s[m - 1] + s[m]) / 2; };
+const go = h => { if (location.hash === h) render(); else location.hash = h; };
+const thumbs = i => i.photos.length ? `<div class="thumbs">${i.photos.slice(0, 2).map(p => `<img src="${esc(p.src)}" alt="" loading="lazy">`).join('')}<em>${i.photos.length}</em></div>` : '<span class="muted small">None</span>';
+
+/* ---------- toast / modal ---------- */
+function toast(msg, tone, action){
+  const el = document.createElement('div');
+  el.className = 'toast ' + (tone === 'ok' ? 'ok' : tone === 'warn' ? 'warn' : '');
+  el.innerHTML = `${ic(tone === 'ok' ? 'checkc' : tone === 'warn' ? 'recall' : 'bell')}<span>${esc(msg)}</span>${action ? `<button>${esc(action.label)}</button>` : ''}`;
+  if (action) el.querySelector('button').onclick = () => { action.fn(); el.remove(); };
+  const box = $('#toasts'); while (box.children.length >= 2) box.firstElementChild.remove();
+  box.appendChild(el);
+  setTimeout(() => el.remove(), action ? 6500 : 3800);
+}
+let modalClose = null;
+function modal({ title, sub, body, actions, wide, onMount }){
+  closeModal();
+  const bg = document.createElement('div');
+  bg.className = 'modal-bg';
+  bg.innerHTML = `<div class="modal${wide ? ' wide' : ''}" role="dialog" aria-modal="true" aria-label="${esc(title)}">
+    <div class="mh"><div><h2>${esc(title)}</h2>${sub ? `<p>${sub}</p>` : ''}</div><button class="iconbtn" data-x aria-label="Close">${ic('x')}</button></div>
+    <div class="mb">${body}</div>
+    <div class="mf">${(actions || []).map((a, k) => `<button class="btn ${a.cls || ''}" data-a="${k}">${a.icon ? ic(a.icon) : ''}${esc(a.label)}</button>`).join('')}</div></div>`;
+  $('#overlay').appendChild(bg);
+  const m = bg.querySelector('.modal');
+  const close = () => { bg.remove(); modalClose = null; };
+  modalClose = close;
+  bg.addEventListener('click', e => { if (e.target === bg) close(); });
+  bg.querySelector('[data-x]').onclick = close;
+  (actions || []).forEach((a, k) => bg.querySelector(`[data-a="${k}"]`).onclick = () => { if (!a.fn || a.fn(m) !== false) close(); });
+  if (onMount) onMount(m);
+  const f = m.querySelector('textarea,input,select'); if (f && matchMedia('(min-width:700px)').matches) setTimeout(() => f.focus(), 30);
+  return m;
+}
+function closeModal(){ if (modalClose) modalClose(); }
+
+/* ---------- nav ---------- */
+const NAV = [
+  { h:'#/brief', label:'Morning Brief', icon:'sun' },
+  { h:'#/queue', label:'Intake Queue', icon:'inbox', count:true },
+  { h:'#/dashboard', label:'Dashboard', icon:'dash' },
+  { h:'#/suppliers', label:'Supplier View', icon:'factory' },
+  { h:'#/recalls', label:'Recalls', icon:'recall' },
+  { h:'#/analytics', label:'Analytics', icon:'chart' },
+  { h:'#/reports', label:'Reports', icon:'report' },
+  { sec:'Admin' },
+  { h:'#/admin', label:'Admin', icon:'settings' },
+  { h:'#/supplier-access', label:'Supplier Access', icon:'key' },
+  { h:'#/dc-access', label:'DC Access', icon:'truck' },
+  { h:'#/docs', label:'Documentation', icon:'book' },
+];
+function renderNav(route){
+  const need = ALL.filter(i => i.needsQA).length;
+  $('#nav').innerHTML = NAV.map(n => n.sec ? `<h6>${n.sec}</h6>` :
+    `<a href="${n.h}" class="${route === n.h.slice(2) || (n.h === '#/queue' && route === 'incident') ? 'on' : ''}" title="${n.label}">${ic(n.icon)}<span>${n.label}</span>${n.count && need ? `<b class="cnt">${need}</b><i class="dotc"></i>` : ''}</a>`).join('');
+  const bell = $('#bell');
+  bell.innerHTML = ic('bell') + (need ? `<span class="badge">${need}</span>` : '');
+}
+
+/* ---------- router ---------- */
+function render(){
+  const parts = (location.hash || '#/brief').slice(2).split('/');
+  const route = (parts[0] || 'brief').split('?')[0] || 'brief';
+  load();
+  renderNav(route);
+  document.body.classList.remove('drawer');
+  const v = $('#view');
+  const R = { brief:viewBrief, queue:viewQueue, incident:() => viewIncident(decodeURIComponent(parts[1] || '')), dashboard:viewDashboard, suppliers:viewSuppliers,
+    recalls:viewRecalls, analytics:viewAnalytics, reports:viewReports, admin:() => viewAdmin(parts[1] || 'users'), 'supplier-access':() => viewAccess('supplier'),
+    'dc-access':() => viewAccess('dc'), docs:viewDocs };
+  (R[route] || viewBrief)(v);
+}
+let lastRoute = '';
+window.addEventListener('hashchange', () => { const r = (location.hash.split('/')[1] || '').split('?')[0]; render(); if (r !== lastRoute) window.scrollTo(0, 0); lastRoute = r; });
+
+/* ================= MORNING BRIEF ================= */
+function viewBrief(v){
+  const now = new Date(), open = ALL.filter(i => i.open);
+  const hr = now.getHours(), greet = hr < 12 ? 'Good morning' : hr < 17 ? 'Good afternoon' : 'Good evening';
+  const pending = ALL.filter(i => i.status === 'PendingIntake');
+  const newSince = ALL.filter(i => Date.now() - i.submittedAt < 24 * H);
+  const overdue = open.filter(i => i.overdue);
+  const dcWait = open.filter(i => i.status === 'AwaitingDcAction');
+  const high = open.filter(i => i.severity === 'High');
+  const credits = ALL.filter(i => i.status === 'Resolved' && i.credit && i.resolvedAt && Date.now() - i.resolvedAt < 31 * D);
+  const creditSum = credits.reduce((a, i) => a + i.credit, 0);
+  const weekStores = new Set(ALL.filter(i => Date.now() - i.submittedAt < 7 * D).map(i => i.store.num));
+  const todo = rankTodo();
+  const firstOver = overdue[0];
+  v.innerHTML = `
+  <section class="hero">
+    <div style="position:relative;z-index:1">
+      <div class="eyebrow" style="color:var(--gold)">Morning Brief</div>
+      <h1 style="margin-top:6px">${greet}, Tasha</h1>
+      <p>${now.toLocaleDateString('en-US', { weekday:'long', month:'long', day:'numeric', year:'numeric' })} · ${open.length} open, ${todo.length} need${todo.length === 1 ? 's' : ''} you today</p>
+    </div>
+    <div class="quote">Fewer, targeted alerts — not an email for every click.</div>
+  </section>
+  <div class="kpis">
+    <a class="kpi goldk" href="#/queue?f=PendingIntake"><div class="k">New since yesterday</div><div class="v">${newSince.length}</div><div class="s">${pending.length} pending intake</div></a>
+    <a class="kpi ${overdue.length ? 'alert' : ''}" href="${firstOver ? '#/incident/' + firstOver.ref : '#/queue'}"><div class="k">Overdue supplier replies</div><div class="v">${overdue.length}</div><div class="s">${firstOver ? esc(firstOver.ref.slice(-6)) + ' · ' + esc(firstOver.waitingOn) : 'All suppliers inside 48 h'}</div></a>
+    <a class="kpi" href="#/queue?f=dc"><div class="k">Waiting on a DC</div><div class="v">${dcWait.length}</div><div class="s">${[...new Set(dcWait.map(i => i.dc))].map(esc).join(', ') || 'None'}</div></a>
+    <a class="kpi ${high.length ? 'alert' : ''}" href="#/queue?sev=High"><div class="k">Food-safety High open</div><div class="v">${high.length}</div><div class="s">Posted to QA Teams channel</div></a>
+    <a class="kpi good" href="#/reports"><div class="k">Credits recovered this month</div><div class="v">${money0(creditSum)}</div><div class="s">${credits.length} incident${credits.length === 1 ? '' : 's'} · ${money(creditSum)}</div></a>
+    <a class="kpi" href="#/analytics"><div class="k">Stores reporting this week</div><div class="v">${weekStores.size}</div><div class="s">${[...weekStores].map(s => 'Store ' + s).join(', ')}</div></a>
+  </div>
+  <div class="brief-cols">
+    <section class="card">
+      <div class="card-h"><div><h2>What needs you today</h2><div class="muted small" style="margin-top:3px">Ranked: food safety and overdue first, then intake, then answers waiting to be closed out.</div></div><a class="btn sm" href="#/queue">${ic('inbox')}Queue</a></div>
+      ${todo.length ? `<ol class="todo">${todo.map((t, k) => `<li class="${t.urgent ? 'urgent' : ''}" data-ref="${t.i.ref}">
+        <span class="n">${k + 1}</span>
+        <div><div class="why">${esc(t.why)}</div><div class="what">${esc(t.i.headline)}</div>
+          <div class="meta"><span class="mono">${t.i.ref}</span>·<span>${storeLbl(t.i.store)}</span>·<span>${fmtAgo(t.i.submittedAt)}</span>${t.i.severity === 'High' ? sev('High') : ''}</div></div>
+        <span class="btn sm">${esc(t.cta)}${ic('right')}</span></li>`).join('')}</ol>`
+      : `<div class="empty-state" style="padding:36px">${'<div class="ico">' + ic('checkc') + '</div>'}<h2>Queue is clear</h2><p class="muted">Nothing needs QA right now.</p></div>`}
+    </section>
+    <div class="grid" style="align-content:start">
+      <section class="card"><div class="card-h"><h3>Since yesterday</h3><span class="muted small">last 24 h</span></div>
+        <div class="card-b mini">${ALL.flatMap(i => i.timeline.filter(s => Date.now() - s.at < 24 * H).map(s => ({ i, s }))).sort((a, b) => b.s.at - a.s.at).slice(0, 6).map(({ i, s }) =>
+          `<div class="r"><span><b class="mono" style="font-size:12.5px">${i.ref.slice(-6)}</b> ${esc(stepSummary(s, i))}</span><span class="muted small nowrap">${fmtAgo(s.at)}</span></div>`).join('') || '<div class="muted">Quiet night.</div>'}</div></section>
+      <section class="card"><div class="card-h"><h3>How alerts reach you</h3></div>
+        <div class="card-b mini">
+          <div class="r"><span>${ic('zap')} High severity</span><b>Teams · instant</b></div>
+          <div class="r"><span>${ic('clock')} Supplier reply overdue</span><b>Teams · once</b></div>
+          <div class="r"><span>${ic('mail')} Everything else</span><b>Daily digest 7:00</b></div>
+          <div class="muted small">One alert per decision point — not an email for every click.</div>
+        </div></section>
+    </div>
+  </div>`;
+  $$('.todo li', v).forEach(li => li.onclick = () => go('#/incident/' + li.dataset.ref));
+}
+function stepSummary(s, i){
+  const k = { submit:'filed by ' + (i.by || 'store'), intake:'intake completed', notify: s.text.replace(/ · .*$/, ''), response:'response from ' + (s.who || ''), resolve:'resolved', close:'closed', note:'internal note', escalate:'escalated' }[s.kind];
+  return k || s.kind;
+}
+function rankTodo(){
+  const out = [];
+  ALL.filter(i => i.open).forEach(i => {
+    let score = 0, why = '', cta = 'Open', urgent = false;
+    if (i.status === 'Escalated') { score = 95; why = 'Escalated · needs a decision'; urgent = true; }
+    else if (i.overdue) { score = i.severity === 'High' ? 100 : 80; why = `Reply overdue · ${i.waitingOn}${i.severity === 'High' ? ' · food safety' : ''}`; cta = 'Chase'; urgent = true; }
+    else if (i.status === 'PendingIntake') { score = (TYPE_Q[i.type] && TYPE_Q[i.type].high ? 90 : 70) + (Date.now() - i.submittedAt) / D; why = 'New report · intake'; cta = 'Start intake'; }
+    else if (i.status === 'IntakeComplete') { score = 65; why = 'Intake done · notify ' + (i.route === 'dc' ? 'DC' : 'supplier'); cta = 'Notify'; }
+    else if ((i.status === 'SupplierNotified' || i.status === 'AwaitingDcAction') && i.respAfter) { score = 60; why = `${i.status === 'AwaitingDcAction' ? 'DC' : 'Supplier'} answered · ready to resolve`; cta = 'Resolve'; }
+    else if (i.status === 'AwaitingDcAction' && i.severity === 'High') { score = 55; why = 'Food safety · waiting on ' + i.dc; cta = 'Check'; }
+    if (score) out.push({ i, score, why, cta, urgent });
+  });
+  return out.sort((a, b) => b.score - a.score);
+}
+
+/* ================= INTAKE QUEUE ================= */
+const QF = { status:'open', sev:'', store:'', sup:'', q:'', finished:false };
+function applyHashQuery(){
+  const qs = (location.hash.split('?')[1] || '');
+  if (!qs) return;
+  const p = new URLSearchParams(qs);
+  Object.assign(QF, { status:'all', sev:'', store:'', sup:'', q:'', finished:false });
+  if (p.get('f') === 'PendingIntake') QF.status = 'intake';
+  if (p.get('f') === 'dc') QF.status = 'dc';
+  if (p.get('sev')) QF.sev = p.get('sev');
+  if (p.get('sup')) QF.sup = p.get('sup');
+  history.replaceState(null, '', '#/queue');
+}
+const STATUS_CHIPS = [
+  ['all','All open', i => i.open], ['needs','Needs QA', i => i.needsQA], ['intake','Pending intake', i => i.status === 'PendingIntake'],
+  ['supplier','Waiting on supplier', i => i.status === 'SupplierNotified'], ['dc','Waiting on DC', i => i.status === 'AwaitingDcAction'], ['esc','Escalated', i => i.status === 'Escalated'],
+];
+function viewQueue(v){
+  applyHashQuery();
+  if (QF.status === 'open') QF.status = 'all';
+  const open = ALL.filter(i => i.open);
+  const need = open.filter(i => i.needsQA);
+  v.innerHTML = `
+  <div class="pagehead"><div><div class="eyebrow">Intake Queue</div><h1 style="margin-top:6px">Incident reports</h1><p>Every report from every store tablet, in one place. Tap a row to work it.</p></div>
+    <a class="btn" href="../quip/" >${ic('tablet')}Crew tablet app</a></div>
+  <section class="card">
+    <div class="filters">
+      <div class="chips" id="qchips"></div>
+    </div>
+    <div class="filters">
+      <input class="inp q" id="qq" type="search" placeholder="Filter by ref, lot, item, headline…" value="${esc(QF.q)}">
+      <select class="inp" id="qsev"><option value="">Any severity</option><option>High</option><option>Medium</option><option>Low</option><option value="none">Not set</option></select>
+      <select class="inp" id="qstore"><option value="">All stores</option>${Q.STORES.map(s => `<option value="${s.num}">${s.num} · ${esc(s.name)}${PILOT.includes(s.num) ? ' (Pilot)' : ''}</option>`).join('')}</select>
+      <select class="inp" id="qsup"><option value="">All suppliers</option>${SUPPLIERS.map(s => `<option value="${s.key}">${esc(s.name)}</option>`).join('')}</select>
+    </div>
+    <div class="qsummary"><div><b>${need.length}</b> <span class="muted">need action of</span> <b>${open.length}</b> <span class="muted">open</span></div>
+      <button class="toggle" id="qfin" aria-pressed="${QF.finished}"><span class="switch ${QF.finished ? 'on' : ''}"></span>Show finished (Resolved / Closed)</button></div>
+    <div class="tablewrap"><table class="t"><thead><tr><th>Ref · Received</th><th>Store</th><th>Type</th><th>Item / Vendor</th><th>Severity</th><th>Status</th><th>Waiting on</th><th>Photos</th></tr></thead><tbody id="qbody"></tbody></table></div>
+  </section>`;
+  $('#qsev').value = QF.sev; $('#qstore').value = QF.store; $('#qsup').value = QF.sup;
+  const draw = () => {
+    const base = ALL.filter(i => QF.finished ? true : i.open);
+    $('#qchips').innerHTML = STATUS_CHIPS.map(([k, l, f]) => `<button class="chip ${QF.status === k ? 'on' : ''}" data-k="${k}">${l}<b>${open.filter(f).length}</b></button>`).join('');
+    $$('#qchips .chip').forEach(c => c.onclick = () => { QF.status = c.dataset.k; draw(); });
+    const sf = (STATUS_CHIPS.find(c => c[0] === QF.status) || STATUS_CHIPS[0])[2];
+    const q = QF.q.trim().toLowerCase();
+    const rows = base.filter(i => (!i.open || sf(i)) && (QF.status === 'all' || i.open)
+      && (!QF.sev || (QF.sev === 'none' ? !i.severity : i.severity === QF.sev))
+      && (!QF.store || i.store.num === QF.store)
+      && (!QF.sup || (i.sup && i.sup.key === QF.sup))
+      && (!q || [i.ref, i.lot, i.headline, i.type, i.store.num, i.store.name, i.itemObj && i.itemObj.name, i.vendor, i.by].join(' ').toLowerCase().includes(q)));
+    $('#qbody').innerHTML = rows.length ? rows.map(i => `<tr class="click" data-ref="${i.ref}">
+      <td><div class="ref">${i.status === 'PendingIntake' ? '<span class="newdot"></span>' : ''}${i.ref}</div><div class="muted small nowrap" title="${fmtTime(i.submittedAt)}">${fmtAgo(i.submittedAt)} · ${new Date(i.submittedAt).toLocaleDateString('en-US', { month:'short', day:'numeric' })}</div></td>
+      <td class="nowrap"><b>${esc(i.store.num)}</b> ${PILOT.includes(i.store.num) ? '<span class="tag">Pilot</span>' : ''}<div class="muted small">${esc(i.store.name)}</div></td>
+      <td class="ty">${esc(i.type)}</td>
+      <td class="hl"><b>${esc(i.itemObj ? i.itemObj.name : (i.service ? 'Service · no product' : '—'))}</b><small>${esc(i.sup ? i.sup.name : (i.vendor || i.dc || ''))}${i.lot ? ' · ' + esc(i.lot) : ''}</small></td>
+      <td>${sev(i.severity)}</td>
+      <td>${pill(i)}</td>
+      <td class="nowrap">${i.waitingOn ? esc(i.waitingOn) : '<span class="muted">—</span>'}${i.overdue ? `<div class="overdue" style="display:flex">${ic('clock')}Overdue</div>` : ''}</td>
+      <td>${thumbs(i)}</td></tr>`).join('') : `<tr><td colspan="8"><div class="empty-state" style="padding:30px"><h2 style="font-size:22px">No incidents match</h2><p class="muted">Try clearing a filter.</p><button class="btn" id="qclear">Clear filters</button></div></td></tr>`;
+    $$('#qbody tr.click').forEach(tr => tr.onclick = () => go('#/incident/' + tr.dataset.ref));
+    const c = $('#qclear'); if (c) c.onclick = () => { Object.assign(QF, { status:'all', sev:'', store:'', sup:'', q:'' }); viewQueue(v); };
+  };
+  $('#qq').oninput = e => { QF.q = e.target.value; draw(); };
+  $('#qsev').onchange = e => { QF.sev = e.target.value; draw(); };
+  $('#qstore').onchange = e => { QF.store = e.target.value; draw(); };
+  $('#qsup').onchange = e => { QF.sup = e.target.value; draw(); };
+  $('#qfin').onclick = () => { QF.finished = !QF.finished; viewQueue(v); };
+  draw();
+}
+
+/* ================= INCIDENT DETAIL ================= */
+let galIdx = 0, galRef = '';
+function role(s, i){
+  if (s.kind === 'submit') return { r:'store', who: (i.by || 'Store crew'), tag:'Store ' + i.store.num };
+  if (!s.who) return { r:'system', who:'QUIP', tag:'System' };
+  if (/\(QA\)/.test(s.who)) return { r:'qa', who:s.who.replace(' (QA)', ''), tag:'QA' };
+  if (/^PFG|Service Desk|DC/i.test(s.who)) return { r:'dc', who:s.who, tag:'DC' };
+  return { r:'supplier', who:s.who, tag:'Supplier' };
+}
+function stages(i){
+  const has = k => i.timeline.find(s => s.kind === k);
+  const at = k => (has(k) || {}).at;
+  const finished = !i.open;
+  const closed = i.status === 'ClosedNoAction';
+  const st = [
+    { l:'Received', done:true, at:i.submittedAt },
+    { l:'Intake', done: !!has('intake') || (finished && !!has('close')) || ['IntakeComplete','SupplierNotified','AwaitingDcAction'].includes(i.status), at: at('intake') || at('close') },
+    { l: i.route === 'dc' || i.status === 'AwaitingDcAction' ? 'DC notified' : 'Supplier notified', done: !!has('notify'), at: at('notify') },
+    { l:'Response', done: i.hasResponse, at: at('response') },
+    { l: closed ? 'Closed' : 'Resolved', done: finished, at: i.resolvedAt },
+  ];
+  if (closed) { st[2].skip = st[2].done ? false : true; st[3].skip = !st[3].done; }
+  const cur = st.findIndex(s => !s.done && !s.skip);
+  return { st, cur };
+}
+function viewIncident(v, ref){
+  if (typeof v === 'string') { ref = v; v = $('#view'); }
+  const i = byRef(ref);
+  if (!i) { v.innerHTML = `<a class="back" href="#/queue">${ic('left')}Intake queue</a><div class="card empty-state"><h2>Incident not found</h2><p class="muted">${esc(ref)} isn't in this demo's data. It may have been cleared by a reset.</p><a class="btn pri" href="#/queue">Back to queue</a></div>`; return; }
+  if (galRef !== ref) { galIdx = 0; galRef = ref; }
+  const t = TYPE_Q[i.type] || {};
+  const { st, cur } = stages(i);
+  const useBy = i.useByDate ? Math.round((i.useByDate - Date.now()) / D) : null;
+  const ph = i.photos;
+  v.innerHTML = `
+  <a class="back" href="#/queue">${ic('left')}Intake queue</a>
+  <section class="card">
+    <div class="dhead">
+      <div class="row1"><span class="mono" style="font-weight:700;font-size:15px">${i.ref}</span>${pill(i)}${sev(i.severity)}${i.overdue ? `<span class="overdue">${ic('clock')}Reply overdue</span>` : ''}${i.tempConcern ? `<span class="pill t-red">Temperature concern</span>` : ''}</div>
+      <h1>${esc(i.headline)}</h1>
+      <div class="dmeta">
+        <span>${ic('store')}<b>${storeLbl(i.store)}</b>${PILOT.includes(i.store.num) ? ' <span class="tag">Pilot</span>' : ''}</span>
+        <span>${ic('user')}Filed by <b>${esc(i.by || '—')}</b></span>
+        ${i.phone ? `<span>${ic('phone')}<a href="tel:${esc(i.phone.replace(/[^\d+]/g, ''))}">${esc(i.phone)}</a></span>` : ''}
+        <span>${ic('clock')}Received <b>${fmtTime(i.submittedAt)}</b> (${fmtAgo(i.submittedAt)})</span>
+      </div>
+    </div>
+    <div class="stepper" aria-label="Progress">${st.map((s, k) => `<div class="st ${s.done ? 'done' : ''} ${k === cur ? 'cur' : ''} ${k === cur && i.overdue && k === 3 ? 'warn' : ''}" ${s.skip ? 'style="opacity:.45"' : ''}>
+      <span class="dot">${s.done ? ic('check') : ''}</span>${esc(s.l)}<small>${s.skip ? 'Skipped' : s.at ? fmtAgo(s.at) : k === cur ? (i.overdue && k === 3 ? 'Overdue' : 'Now') : ''}</small></div>`).join('')}</div>
+  </section>
+  ${actionBar(i)}
+  <div class="dcols">
+    <div class="grid">
+      <section class="card gallery">
+        ${ph.length ? `<button class="main-ph" id="gmain" aria-label="Open photo full screen"><img src="${esc(ph[galIdx].src)}" alt="${esc(ph[galIdx].label)}"><span class="cap">${ic('image')}${esc(ph[galIdx].label)} · ${galIdx + 1} of ${ph.length}</span><span class="zoom">${ic('zoom')}</span></button>
+          <div class="strip">${ph.map((p, k) => `<button class="${k === galIdx ? 'on' : ''}" data-k="${k}" aria-label="${esc(p.label)}"><img src="${esc(p.src)}" alt=""><span>${esc(p.label)}</span></button>`).join('')}</div>`
+        : `<div class="nophotos">${ic('image')}<div style="margin-top:6px">No photos on this report${i.service ? ' — service issue, no product involved' : ''}.</div></div>`}
+      </section>
+      <section class="card"><div class="card-h"><h3>What the store saw</h3><span class="muted small">in their words</span></div><div class="card-b"><p class="desc">${esc(i.desc || '—')}</p></div></section>
+      <section class="card"><div class="card-h"><h3>Facts</h3><span class="muted small">captured on the tablet</span></div>
+        <div class="facts">
+          <div class="fact full"><span class="lbl">Type</span><div class="val">${esc(i.type)} <span class="muted small">· ${esc(t.group || '')}</span></div>${t.q ? `<div class="sub">Store was asked: “${esc(t.q)}”</div>` : ''}</div>
+          <div class="fact"><span class="lbl">Item</span><div class="val">${esc(i.itemObj ? i.itemObj.name : '—')}</div>${i.itemObj ? `<div class="sub">CIN ${esc(i.itemObj.cin)}</div>` : ''}</div>
+          <div class="fact"><span class="lbl">Vendor</span><div class="val">${esc(i.vendor || '—')}</div>${i.itemObj ? `<div class="sub">Vendor # ${esc(i.itemObj.vnum)}</div>` : ''}</div>
+          <div class="fact"><span class="lbl">Lot</span><div class="val mono">${esc(i.lot || '—')}</div></div>
+          <div class="fact"><span class="lbl">Use-by</span><div class="val">${i.useByDate ? fmtDate(i.useByDate) : '—'}</div>${useBy != null ? `<div class="sub" ${useBy < 0 ? 'style="color:var(--red);font-weight:600"' : ''}>${useBy < 0 ? 'Past use-by by ' + (-useBy) + ' d' : useBy + ' days left'}</div>` : ''}</div>
+          <div class="fact"><span class="lbl">Delivery date</span><div class="val">${fmtDate(i.deliveryDate)}</div></div>
+          <div class="fact"><span class="lbl">Quantity affected</span><div class="val">${esc(i.qty || '—')}</div></div>
+          <div class="fact"><span class="lbl">DC serving store</span><div class="val">${esc(i.store.dc || i.dc || '—')}</div>${i.store.addr ? `<div class="sub">${esc(i.store.addr)}</div>` : ''}</div>
+          <div class="fact"><span class="lbl">Temperature</span><div class="val">${i.tempConcern ? `<span class="flag">${ic('thermo')}Temperature concern flagged</span>` : '<span class="muted">No concern flagged</span>'}</div></div>
+          <div class="fact full"><span class="lbl">Routing</span><div class="val">${i.route === 'dc' ? 'Distribution center · ' + esc(i.dc || '—') : 'Supplier · ' + esc(i.sup ? i.sup.name : '—')}</div>${i.sup && i.route === 'supplier' ? `<div class="sub">${esc(i.sup.contact)} · ${esc(i.sup.email)}</div>` : ''}</div>
+        </div></section>
+    </div>
+    <section class="card">
+      <div class="card-h" style="flex-wrap:wrap"><h3>Timeline</h3><div class="legend"><span><i style="background:var(--gold)"></i>Store</span><span><i style="background:var(--red)"></i>QA</span><span><i style="background:var(--blue)"></i>Supplier</span><span><i style="background:var(--teal)"></i>DC</span><span><i style="background:#A39890"></i>System</span></div></div>
+      <ol class="tl">${i.timeline.map(s => { const r = role(s, i); return `<li class="r-${r.r} ${s.kind === 'note' ? 'internal' : ''}"><span class="dot"></span>
+        <div class="who"><b>${esc(r.who)}</b><span class="role">${esc(r.tag)}</span>${s.kind === 'note' ? '<span class="role" style="background:#FFF3D6;color:#875708">Internal</span>' : ''}${s.kind === 'escalate' ? '<span class="role" style="background:var(--red);color:#fff">Escalated</span>' : ''}<time title="${fmtTime(s.at)}">${fmtAgo(s.at)}</time></div>
+        <p>${esc(s.text)}</p></li>`; }).join('')}</ol>
+    </section>
+  </div>`;
+  if (ph.length) {
+    $('#gmain').onclick = () => lightbox(i, galIdx);
+    $$('.strip button', v).forEach(b => b.onclick = () => { galIdx = +b.dataset.k; viewIncident(v, ref); });
+  }
+  $$('[data-act]', v).forEach(b => b.onclick = () => ACTIONS[b.dataset.act](byRef(ref)));
+}
+function actionBar(i){
+  const B = (act, label, icon, cls) => `<button class="btn ${cls || ''}" data-act="${act}">${ic(icon)}${label}</button>`;
+  let lead = '', btns = [];
+  const s = i.status;
+  if (s === 'PendingIntake') { lead = `<b>New report.</b> Check it, set severity, route it.`; btns = [B('intake','Complete intake','check','pri'), B('close','Close · no action','ban'), B('note','Internal note','note'), B('escalate','Escalate','flag','danger')]; }
+  else if (s === 'IntakeComplete') { lead = `<b>Intake done.</b> Routed to ${esc(i.route === 'dc' ? i.dc : (i.sup ? i.sup.name : 'supplier'))}.`;
+    btns = i.route === 'dc' ? [B('notifyDc','Notify DC','send','pri'), B('notifySup','Notify supplier','mail')] : [B('notifySup','Notify supplier','send','pri'), B('notifyDc','Notify DC','truck')];
+    btns.push(B('route','Correct routing','route'), B('note','Internal note','note'), B('escalate','Escalate','flag','danger')); }
+  else if (s === 'SupplierNotified' || s === 'AwaitingDcAction' || s === 'Escalated') {
+    const who = s === 'AwaitingDcAction' ? i.dc : (i.sup ? i.sup.name : 'Supplier');
+    lead = s === 'Escalated' ? `<b>Escalated.</b> Decide next step.` : i.respAfter ? `<b>${esc(who)} answered.</b> Ready to resolve.` : i.overdue ? `<b style="color:var(--red-onblack)">${esc(who)} is overdue.</b> Reply was due in 48 h.` : `<b>Waiting on ${esc(who)}.</b> Notified ${i.lastNotify ? fmtAgo(i.lastNotify.at) : ''}.`;
+    btns = i.respAfter ? [B('resolve','Resolve','checkc','pri'), B('response','Record response','reply')] : [B('response','Record response','reply','pri'), B('resolve','Resolve','checkc')];
+    if (i.overdue) { btns[0] = btns[0].replace('btn pri', 'btn'); btns.unshift(B('chase','Chase ' + esc(who), 'bell', 'pri')); }
+    if (s === 'Escalated') btns.push(B('notifySup','Notify supplier','mail'), B('notifyDc','Notify DC','truck'));
+    btns.push(B('route','Correct routing','route'), B('note','Internal note','note'));
+    if (s !== 'Escalated') btns.push(B('escalate','Escalate','flag','danger'));
+  } else { lead = s === 'Resolved' ? `<b style="color:#7EE2A1">Resolved.</b> ${i.credit ? 'Credit ' + money(i.credit) + ' recovered.' : ''}` : `<b>Closed · no action.</b>`; btns = [B('note','Internal note','note')]; }
+  return `<div class="actionbar"><div class="lead">${lead}</div>${btns.join('')}</div>`;
+}
+function stamp(ref, patch, step, msg, tone){
+  Q.act(ref, patch, step ? { who: ME, ...step } : null);
+  render();
+  if (msg) toast(msg, tone || 'ok');
+}
+
+const ACTIONS = {
+  intake(i){
+    const t = TYPE_Q[i.type] || {};
+    const appr = approvedFor(i.itemObj && i.itemObj.cin);
+    let sv = i.severity || (t.high ? 'High' : 'Medium');
+    let route = i.service || !appr.length ? 'dc' : 'supplier';
+    modal({ title:'Complete intake', sub:`${esc(i.ref)} · ${esc(i.type)}`, wide:true,
+      body:`<div class="field"><span class="lbl">Severity</span><div class="seg" id="sevseg">${['Low','Medium','High'].map(s => `<button type="button" class="${s} ${s === sv ? 'on' : ''}" data-s="${s}">${s}</button>`).join('')}</div>
+        <div class="muted small" id="sevhint">${t.high ? `${esc(i.type)} defaults to High — a food-safety report. High posts to the QA Teams channel.` : 'High posts to the QA Teams channel immediately.'}</div></div>
+        <div class="field"><span class="lbl">Route to</span><div class="radios" id="rt">
+          <button type="button" class="radio ${appr.length ? '' : 'dis'}" data-r="supplier"><span class="rd"></span><span><b>Supplier</b><small>${appr.length ? 'Product quality at pack — the manufacturer answers.' : 'No product on this report.'}</small></span></button>
+          <button type="button" class="radio" data-r="dc"><span class="rd"></span><span><b>Distribution center</b><small>Damage, temperature or service in transit — the DC answers.</small></span></button></div></div>
+        <div class="field" id="supf"><label for="supsel">Supplier</label><select class="inp" id="supsel">${appr.map(s => `<option value="${s.key}" ${i.sup && i.sup.key === s.key ? 'selected' : ''}>${esc(s.name)} — ${esc(s.contact)}</option>`).join('')}</select>
+          <div class="muted small">Only suppliers approved to ship CIN ${esc(i.itemObj ? i.itemObj.cin : '—')} are listed.</div></div>
+        <div class="field" id="dcf"><label for="dcsel">Distribution center</label><select class="inp" id="dcsel">${DCS.map(d => `<option ${d === i.dc ? 'selected' : ''}>${esc(d)}</option>`).join('')}</select><div class="muted small">${esc(i.store.dc || '')} serves Store ${esc(i.store.num)}.</div></div>
+        <div class="field"><label for="inote">Intake note</label><textarea class="inp" id="inote" placeholder="What you checked and why it's routed this way">${esc(defaultIntakeNote(i))}</textarea></div>`,
+      onMount(m){
+        const sync = () => { $$('#rt .radio', m).forEach(r => r.classList.toggle('on', r.dataset.r === route)); $('#supf', m).hidden = route !== 'supplier'; $('#dcf', m).hidden = route !== 'dc'; };
+        $$('#sevseg button', m).forEach(b => b.onclick = () => { sv = b.dataset.s; $$('#sevseg button', m).forEach(x => x.classList.toggle('on', x === b)); });
+        $$('#rt .radio', m).forEach(r => r.onclick = () => { if (r.classList.contains('dis')) return; route = r.dataset.r; sync(); });
+        sync();
+      },
+      actions:[{ label:'Cancel' }, { label:'Complete intake', cls:'pri', icon:'check', fn(m){
+        const supK = $('#supsel', m).value, dc = $('#dcsel', m).value, note = $('#inote', m).value.trim();
+        const tgt = route === 'dc' ? dc : (supByKey(supK) || {}).name;
+        stamp(i.ref, { status:'IntakeComplete', severity:sv, routeTo:route, routeSupplier: route === 'supplier' ? supK : undefined, routeDc: route === 'dc' ? dc : undefined },
+          { kind:'intake', text:`Intake complete${sv === 'High' ? ', severity High' : ', severity ' + sv}. Routed to ${tgt}. ${note}`.trim() },
+          `Intake complete · routed to ${tgt}${sv === 'High' ? ' · posted to QA Teams' : ''}`);
+      } }] });
+  },
+  notifySup(i){ notifyModal(i, 'supplier'); },
+  notifyDc(i){ notifyModal(i, 'dc'); },
+  response(i){
+    const opts = [];
+    if (i.sup) opts.push(i.sup.contact);
+    if (i.dc) opts.push(DC_CONTACT(i.dc));
+    modal({ title:'Record response', sub:'Paste or summarise what the supplier or DC told you. Stamped with their name.',
+      body:`<div class="field"><label for="rfrom">Response from</label><select class="inp" id="rfrom">${opts.map(o => `<option>${esc(o)}</option>`).join('')}</select></div>
+        <div class="field"><label for="rtext">Their answer</label><textarea class="inp" id="rtext" placeholder="e.g. Root cause, corrective action, credit offered…"></textarea></div>
+        <div class="field"><label>Received via</label><div class="seg" id="via"><button type="button" class="on">Email</button><button type="button">Phone</button><button type="button">Teams</button></div></div>`,
+      onMount(m){ if (i.status === 'AwaitingDcAction') $('#rfrom', m).value = DC_CONTACT(i.dc); $$('#via button', m).forEach(b => b.onclick = () => $$('#via button', m).forEach(x => x.classList.toggle('on', x === b))); },
+      actions:[{ label:'Cancel' }, { label:'Save response', cls:'pri', icon:'reply', fn(m){
+        const txt = $('#rtext', m).value.trim();
+        if (!txt) { $('#rtext', m).focus(); $('#rtext', m).style.borderColor = 'var(--red)'; return false; }
+        const via = $('#via .on', m).textContent;
+        Q.act(i.ref, null, { kind:'response', who: $('#rfrom', m).value, text: txt + (via !== 'Email' ? ` (by ${via.toLowerCase()}, recorded by Tasha)` : '') });
+        render(); toast('Response recorded · ready to resolve', 'ok');
+      } }] });
+  },
+  resolve(i){
+    if (!i.hasResponse) {
+      modal({ title:'Record a response first', body:`<div class="banner gold">${ic('reply')}<div><b>Record the supplier's or DC's answer first — nothing resolves on a note alone.</b><br>Every resolved incident carries the root cause from the party that owns it, so the supplier scorecard stays honest.</div></div>`,
+        actions:[{ label:'Not now' }, { label:'Record response', cls:'pri', icon:'reply', fn(){ setTimeout(() => ACTIONS.response(byRef(i.ref)), 10); } }] });
+      return;
+    }
+    const last = [...i.timeline].reverse().find(s => s.kind === 'response');
+    modal({ title:'Resolve incident', sub:`${esc(i.ref)} · based on ${esc(last.who)}'s response`,
+      body:`<div class="banner blue">${ic('reply')}<div><b>${esc(last.who)}:</b> ${esc(last.text.length > 220 ? last.text.slice(0, 220) + '…' : last.text)}</div></div>
+        <div class="field"><label for="rnote">Resolution note</label><textarea class="inp" id="rnote">Resolved. ${esc(i.route === 'dc' ? 'DC accepted responsibility' : 'Supplier confirmed root cause and corrective action')}. Store told what to do with held product.</textarea></div>
+        <div class="field"><label for="rcred">Credit recovered (optional)</label><input class="inp" id="rcred" type="number" inputmode="decimal" min="0" step="0.01" placeholder="0.00" style="max-width:200px"></div>
+        <label class="small" style="display:flex;gap:8px;align-items:center"><input type="checkbox" id="rtell" checked> Let Store ${esc(i.store.num)} know on their tablet</label>`,
+      actions:[{ label:'Cancel' }, { label:'Resolve', cls:'pri', icon:'checkc', fn(m){
+        const c = parseFloat($('#rcred', m).value) || 0;
+        const note = $('#rnote', m).value.trim() || 'Resolved.';
+        Q.act(i.ref, { status:'Resolved', credit: c || i.credit || undefined }, { kind:'resolve', who: ME, text: note + (c ? ` Credit ${money(c)}.` : '') });
+        render(); celebrate(i, c);
+      } }] });
+  },
+  close(i){
+    modal({ title:'Close · no action', sub:'Only for reports that need nothing from a supplier or DC.',
+      body:`<div class="field"><label>Reason</label><div class="radios" id="cr">${['Duplicate of another report','Not a product or service issue','Store resolved on site','Logged for trend only'].map((r, k) => `<button type="button" class="radio ${k === 3 ? 'on' : ''}" data-v="${esc(r)}"><span class="rd"></span><span><b style="font-size:15px">${esc(r)}</b></span></button>`).join('')}</div></div>
+        <div class="field"><label for="cnote">Note</label><textarea class="inp" id="cnote" placeholder="Optional"></textarea></div>`,
+      onMount(m){ $$('#cr .radio', m).forEach(r => r.onclick = () => $$('#cr .radio', m).forEach(x => x.classList.toggle('on', x === r))); },
+      actions:[{ label:'Cancel' }, { label:'Close incident', cls:'dark', icon:'ban', fn(m){
+        const why = $('#cr .on', m).dataset.v, n = $('#cnote', m).value.trim();
+        stamp(i.ref, { status:'ClosedNoAction' }, { kind:'close', text:`Closed, no action — ${why.toLowerCase()}.${n ? ' ' + n : ''}` }, 'Closed · no action. Store notified.');
+      } }] });
+  },
+  route(i){
+    const appr = approvedFor(i.itemObj && i.itemObj.cin);
+    let route = i.route;
+    const from = i.route === 'dc' ? i.dc : (i.sup ? i.sup.name : '—');
+    modal({ title:'Correct routing', sub:'Same incident, same ref, full history kept — no more cancel-and-refile.',
+      body:`<div class="banner gold">${ic('route')}<div>Currently routed to <b>${esc(from)}</b>. The new party gets notified next; the old one is told it's been re-routed.</div></div>
+        <div class="field"><span class="lbl">Route to</span><div class="radios" id="rt">
+          <button type="button" class="radio ${appr.length ? '' : 'dis'}" data-r="supplier"><span class="rd"></span><span><b>Supplier</b><small>${appr.length ? appr.map(s => s.name).join(' or ') : 'No product on this report'}</small></span></button>
+          <button type="button" class="radio" data-r="dc"><span class="rd"></span><span><b>Distribution center</b><small>Any PFG DC</small></span></button></div></div>
+        <div class="field" id="supf"><label for="supsel">Supplier</label><select class="inp" id="supsel">${appr.map(s => `<option value="${s.key}" ${i.sup && i.sup.key === s.key ? '' : 'selected'}>${esc(s.name)}</option>`).join('')}</select><div class="muted small">Only suppliers approved to ship CIN ${esc(i.itemObj ? i.itemObj.cin : '—')}.</div></div>
+        <div class="field" id="dcf"><label for="dcsel">Distribution center</label><select class="inp" id="dcsel">${DCS.map(d => `<option ${d === i.dc ? 'selected' : ''}>${esc(d)}</option>`).join('')}</select></div>
+        <div class="field"><label for="rwhy">Why</label><input class="inp" id="rwhy" placeholder="e.g. Damage happened in transit, not at pack"></div>`,
+      onMount(m){ const sync = () => { $$('#rt .radio', m).forEach(r => r.classList.toggle('on', r.dataset.r === route)); $('#supf', m).hidden = route !== 'supplier'; $('#dcf', m).hidden = route !== 'dc'; };
+        $$('#rt .radio', m).forEach(r => r.onclick = () => { if (!r.classList.contains('dis')) { route = r.dataset.r; sync(); } }); sync(); },
+      actions:[{ label:'Cancel' }, { label:'Save routing', cls:'pri', icon:'route', fn(m){
+        const supK = $('#supsel', m).value, dc = $('#dcsel', m).value, why = $('#rwhy', m).value.trim();
+        const to = route === 'dc' ? dc : (supByKey(supK) || {}).name;
+        if (to === from) { toast('Already routed to ' + to, 'warn'); return false; }
+        stamp(i.ref, { status: i.status === 'PendingIntake' ? 'PendingIntake' : 'IntakeComplete', routeTo:route, routeSupplier: route === 'supplier' ? supK : null, routeDc: route === 'dc' ? dc : null },
+          { kind:'note', text:`Routing corrected: ${from} → ${to}.${why ? ' ' + why + '.' : ''} Same incident, no refile.` }, `Routing corrected to ${to} — no more cancel-and-refile`);
+      } }] });
+  },
+  note(i){
+    modal({ title:'Internal note', sub:'Visible to the QA team only — not the store, supplier or DC.',
+      body:`<div class="field"><label for="nt">Note</label><textarea class="inp" id="nt" placeholder="What you checked, who you spoke to…"></textarea></div>`,
+      actions:[{ label:'Cancel' }, { label:'Add note', cls:'pri', icon:'note', fn(m){
+        const t = $('#nt', m).value.trim(); if (!t) { $('#nt', m).focus(); return false; }
+        stamp(i.ref, null, { kind:'note', text:t }, 'Note added · QA only');
+      } }] });
+  },
+  escalate(i){
+    modal({ title:'Escalate', sub:'Raises severity to High and pulls the QA lead and supply chain in.',
+      body:`<div class="banner red">${ic('flag')}<div>Use for possible injury, multiple stores, or a supplier that isn't answering on a High.</div></div>
+        <div class="field"><label for="ew">Reason</label><textarea class="inp" id="ew" placeholder="Why this needs more than the normal path"></textarea></div>
+        <label class="small" style="display:flex;gap:8px;align-items:center"><input type="checkbox" id="et" checked> Post to the QA Teams channel</label>
+        <label class="small" style="display:flex;gap:8px;align-items:center"><input type="checkbox" id="esc2"> Copy SVP Global Supply Chain</label>`,
+      actions:[{ label:'Cancel' }, { label:'Escalate', cls:'danger', icon:'flag', fn(m){
+        const w = $('#ew', m).value.trim() || 'Escalated for QA lead review.';
+        const teams = $('#et', m).checked;
+        stamp(i.ref, { status:'Escalated', severity:'High' }, { kind:'escalate', text: w + (teams ? ' Posted to QA Teams channel.' : '') }, 'Escalated' + (teams ? ' · posted to QA Teams' : ''), 'warn');
+      } }] });
+  },
+  chase(i){
+    const who = i.status === 'AwaitingDcAction' ? DC_CONTACT(i.dc) : (i.sup ? i.sup.contact : 'Supplier');
+    Q.act(i.ref, null, { kind:'notify', text:`Reminder sent to ${who} by email and Teams · reply now due in 24 h` });
+    Q.act(i.ref, null, { kind:'note', who: ME, text:`Chased ${who}: reply was due in 48 h. Reminder sent; will phone if nothing by tomorrow.` });
+    render(); toast(`Reminder sent to ${who} · due in 24 h`, 'ok');
+  },
+};
+function defaultIntakeNote(i){
+  if (i.type === 'Mis-labeled / Missing label') return 'Two uncoded bags in an otherwise coded case points at the coder skipping at pack, not the store. Asked the store to hold both bags unopened.';
+  if (TYPE_Q[i.type] && TYPE_Q[i.type].high) return 'Store has held the product and retained evidence.';
+  return 'Photos and lot checked against the description.';
+}
+function notifyModal(i, kind){
+  const isDc = kind === 'dc';
+  const to = isDc ? { name: DC_CONTACT(i.dc), email: (i.dc || 'dc').toLowerCase().replace(/[^a-z]+/g, '.') + '.service@pfgc.example' } : (i.sup ? { name: i.sup.contact, email: i.sup.email } : null);
+  if (!to) { toast('No supplier on this report — route it to the DC instead', 'warn'); return; }
+  const due = i.severity === 'High' ? 24 : 48;
+  const subj = `[QUIP ${i.ref}] ${i.type}${i.lot ? ' · Lot ' + i.lot : ''} · Store ${i.store.num}`;
+  const body = `${isDc ? 'Hello ' + i.dc + ' team' : 'Hello ' + to.name},
+
+Church's QA is raising a ${(i.severity || 'Medium').toLowerCase()}-severity ${i.type.toLowerCase()} report from Store ${i.store.num} (${i.store.name}).
+
+${i.headline}.
+
+Item: ${i.itemObj ? i.itemObj.name + ' (CIN ' + i.itemObj.cin + ')' : 'Service issue'}
+Lot: ${i.lot || '—'}    Use-by: ${i.useByDate ? fmtDate(i.useByDate) : '—'}
+Delivered: ${fmtDate(i.deliveryDate)}    Qty affected: ${i.qty || '—'}
+
+Store's description: "${i.desc}"
+
+${isDc ? 'Please send the trailer temperature record / delivery detail and a pickup or disposal instruction.' : 'Please confirm root cause and corrective action for this lot, and whether any other Church\'s shipments are affected.'}
+
+Reply due within ${due} h. Reply to this message or in your QUIP ${isDc ? 'DC' : 'supplier'} portal — you'll only see your own incidents.
+
+Tasha · QA Lead, Church's Texas Chicken`;
+  let ch = 'email';
+  const draw = m => {
+    $('#prev', m).innerHTML = `<div class="msgprev ${ch === 'teams' ? 'teams' : ''}"><div class="hd">${ch === 'email'
+      ? `<span>To</span><b>${esc(to.name)} &lt;${esc(to.email)}&gt;</b><span>Cc</span><div>qa@churchs.example</div><span>Subject</span><b>${esc(subj)}</b>`
+      : `<span>Teams</span><b>Shared channel · Church's × ${esc(isDc ? i.dc : i.sup.name)}</b><span>Mention</span><div>@${esc(to.name)}</div>`}</div>
+      <div class="bd">${esc(ch === 'email' ? body : body.split('\n\n').slice(1, 5).join('\n\n') + `\n\nReply due within ${due} h.`)}</div>
+      ${i.photos.length ? `<div class="att">${i.photos.map(p => `<figure><img src="${esc(p.src)}" alt=""><figcaption>${esc(p.label)}.jpg</figcaption></figure>`).join('')}</div>` : ''}</div>`;
+  };
+  modal({ title: isDc ? 'Notify distribution center' : 'Notify supplier', sub:`Preview exactly what ${esc(to.name)} will receive.`, wide:true,
+    body:`<div class="seg" id="chs"><button type="button" class="on" data-c="email">${ic('mail')} Email</button><button type="button" data-c="teams">${ic('msg')} Teams</button></div><div id="prev"></div>
+      <div class="muted small">${i.photos.length} photo${i.photos.length === 1 ? '' : 's'} and lot attached · reply due in ${due} h · overdue replies surface on the Morning Brief</div>`,
+    onMount(m){ draw(m); $$('#chs button', m).forEach(b => b.onclick = () => { ch = b.dataset.c; $$('#chs button', m).forEach(x => x.classList.toggle('on', x === b)); draw(m); }); },
+    actions:[{ label:'Cancel' }, { label:'Send', cls:'pri', icon:'send', fn(){
+      const via = ch === 'email' ? 'email' : 'Teams';
+      Q.act(i.ref, { status: isDc ? 'AwaitingDcAction' : 'SupplierNotified', routeTo: kind, routeDc: isDc ? i.dc : undefined }, { kind:'notify', text:`${to.name} notified by ${via} · reply due in ${due} h` });
+      render(); toast(`Notified by ${via} · reply due in ${due} h`, 'ok');
+    } }] });
+}
+function celebrate(i, c){
+  const el = document.createElement('div');
+  el.className = 'celebrate';
+  const colors = ['#F4A525','#9A3324','#15803D','#1D4ED8','#F76B52'];
+  const conf = reduced ? '' : Array.from({ length: 36 }, (_, k) => `<i class="confetti" style="left:${(k * 37) % 100}%;background:${colors[k % 5]};animation-delay:${(k % 9) * 0.07}s;animation-duration:${1.4 + (k % 5) * 0.2}s"></i>`).join('');
+  el.innerHTML = `${conf}<div class="box"><img src="../shared/brand/churchie-celebrate.webp" alt=""><h2>Resolved</h2><p class="muted" style="margin:6px 0 14px">${esc(i.ref)} closed out with a recorded answer${c ? ` and <b style="color:var(--success)">${money(c)}</b> credit` : ''}. Store ${esc(i.store.num)} has been told.</p><button class="btn pri">Nice</button></div>`;
+  document.body.appendChild(el);
+  const done = () => el.remove();
+  el.onclick = done;
+  setTimeout(done, 3200);
+  toast('Resolved · store notified', 'ok');
+}
+
+/* ---------- lightbox ---------- */
+function lightbox(i, idx){
+  const ph = i.photos; let k = idx;
+  const el = document.createElement('div');
+  el.className = 'lightbox'; el.setAttribute('role', 'dialog'); el.setAttribute('aria-label', 'Photo viewer');
+  const draw = () => {
+    el.innerHTML = `<div class="lh"><div><b>${esc(ph[k].label)}</b><small>${k + 1} / ${ph.length} · ${esc(i.ref)}</small></div><button class="close" aria-label="Close">${ic('x')}</button></div>
+      <div class="stage"><button class="nav-b prev" aria-label="Previous">${ic('left')}</button><img src="${esc(ph[k].src)}" alt="${esc(ph[k].label)}" draggable="false"><button class="nav-b next" aria-label="Next">${ic('right')}</button></div>
+      <div class="lf">${ph.map((p, n) => `<button class="${n === k ? 'on' : ''}" data-n="${n}"><img src="${esc(p.src)}" alt=""></button>`).join('')}</div>`;
+    el.querySelector('.close').onclick = close;
+    el.querySelector('.prev').onclick = () => step(-1);
+    el.querySelector('.next').onclick = () => step(1);
+    $$('.lf button', el).forEach(b => b.onclick = () => { k = +b.dataset.n; draw(); });
+  };
+  const step = d => { k = (k + d + ph.length) % ph.length; draw(); };
+  const key = e => { if (e.key === 'ArrowRight') step(1); else if (e.key === 'ArrowLeft') step(-1); else if (e.key === 'Escape') close(); };
+  function close(){ el.remove(); document.removeEventListener('keydown', key); galIdx = k; if (galRef === i.ref && location.hash.startsWith('#/incident/')) viewIncident($('#view'), i.ref); }
+  let sx = null, sy = 0;
+  el.addEventListener('pointerdown', e => { if (e.target.closest('.stage')) { sx = e.clientX; sy = e.clientY; } });
+  el.addEventListener('pointerup', e => { if (sx == null) return; const dx = e.clientX - sx, dy = Math.abs(e.clientY - sy); if (Math.abs(dx) > 50 && dy < 80) step(dx < 0 ? 1 : -1); sx = null; });
+  document.addEventListener('keydown', key);
+  draw();
+  document.body.appendChild(el);
+}
+
+/* ================= DASHBOARD ================= */
+function weeks(){
+  const now = Date.now(); return Array.from({ length: 12 }, (_, w) => new Date(now - (11 - w) * 7 * D));
+}
+function liveByWeek(){ const a = Array(12).fill(0); ALL.forEach(i => { const w = weekIdx(i.submittedAt); if (w >= 0 && w < 12) a[w]++; }); return a; }
+function histByWeek(filter){ const a = Array(12).fill(0); HIST.forEach(h => { if (!filter || filter(h)) a[h.week]++; }); return a; }
+function vbars(vals, labels, opts = {}){
+  const W = 560, Hh = 200, pl = 28, pb = 26, pt = 18, max = Math.max(4, ...vals), n = vals.length, bw = (W - pl) / n;
+  const nice = Math.ceil(max / 4) * 4, ticks = [0, nice / 2, nice];
+  const y = v => pt + (Hh - pt - pb) * (1 - v / nice);
+  return `<svg class="chart" viewBox="0 0 ${W} ${Hh}" role="img" aria-label="${esc(opts.aria || 'Bar chart')}">
+    ${ticks.map(t => `<line x1="${pl}" x2="${W}" y1="${y(t)}" y2="${y(t)}" stroke="#EEEAE6"/><text x="${pl - 6}" y="${y(t) + 4}" text-anchor="end">${t}</text>`).join('')}
+    ${vals.map((v, k) => { const x = pl + k * bw + bw * 0.18, w = bw * 0.64, h = Hh - pb - y(v), last = k === n - 1;
+      return `<g class="bar" data-tip="${esc(labels[k])}: ${v} incident${v === 1 ? '' : 's'}${opts.tipx ? opts.tipx(k) : ''}"><rect x="${pl + k * bw}" y="${pt}" width="${bw}" height="${Hh - pt - pb}" fill="transparent"/>
+        ${v ? `<path d="M${x},${Hh - pb} v${-(h - 4)} q0,-4 4,-4 h${w - 8} q4,0 4,4 v${h - 4} z" fill="${last ? '#F4A525' : '#B8791A'}"/>` : ''}
+        ${(last || k % 3 === 2 || v === Math.max(...vals)) && v ? `<text class="val" x="${x + w / 2}" y="${y(v) - 5}" text-anchor="middle">${v}</text>` : ''}
+        ${k % 2 === (n - 1) % 2 ? `<text x="${x + w / 2}" y="${Hh - 8}" text-anchor="middle">${esc(labels[k])}</text>` : ''}</g>`; }).join('')}
+    <line x1="${pl}" x2="${W}" y1="${Hh - pb}" y2="${Hh - pb}" stroke="#CFC8C2"/></svg>`;
+}
+function hbars(rows){
+  const max = Math.max(1, ...rows.map(r => r[1]));
+  return rows.map(([l, v, extra]) => `<div class="hbar" data-tip="${esc(l)}: ${v}${extra ? ' · ' + esc(extra) : ''}"><span class="lab" title="${esc(l)}">${esc(l)}</span><span class="track"><span class="fill" style="display:block;width:${(v / max * 100).toFixed(1)}%"></span></span><span class="num">${v}</span></div>`).join('');
+}
+function viewDashboard(v){
+  const open = ALL.filter(i => i.open);
+  const product = ALL.filter(i => !i.service);
+  const complete = product.filter(i => i.photos.length && i.lot && i.vendor && i.itemObj).length;
+  const histProd = HIST.filter(h => h.sup);
+  const compPct = Math.round((complete + histProd.filter(h => h.complete).length) / (product.length + histProd.length) * 100);
+  const liveDays = ALL.filter(i => i.status === 'Resolved' && i.resolvedAt).map(i => (i.resolvedAt - i.submittedAt) / D);
+  const medDays = median(liveDays.concat(HIST.map(h => h.days)));
+  const liveReplies = ALL.flatMap(i => { const n = i.timeline.find(s => s.kind === 'notify'), r = i.timeline.find(s => s.kind === 'response'); if (!n) return []; if (r) return [(r.at - n.at) <= 48 * H]; if (Date.now() - n.at > 48 * H || i.overdue) return [false]; return []; });
+  const histReplies = HIST.filter(h => h.sup).map(h => h.replyHrs <= 48);
+  const allR = liveReplies.concat(histReplies), onTime = Math.round(allR.filter(Boolean).length / allR.length * 100);
+  const wk = weeks(), lbl = wk.map(d => d.toLocaleDateString('en-US', { month:'numeric', day:'numeric' }));
+  const live = liveByWeek(), hist = histByWeek(), tot = live.map((x, k) => x + hist[k]);
+  const byType = {}; ALL.forEach(i => byType[i.type] = (byType[i.type] || 0) + 1); HIST.forEach(h => byType[h.type] = (byType[h.type] || 0) + 1);
+  const bySup = {}; ALL.forEach(i => { if (i.sup) bySup[i.sup.name] = (bySup[i.sup.name] || 0) + 1; }); HIST.forEach(h => { if (h.sup) { const n = supByKey(h.sup).name; bySup[n] = (bySup[n] || 0) + 1; } });
+  const sm = {}; ALL.forEach(i => sm[i.status] = (sm[i.status] || 0) + 1);
+  const toneC = { gold:'#F4A525', blue:'#1D4ED8', red:'#9A3324', green:'#15803D', grey:'#A39890' };
+  const stTot = ALL.length;
+  v.innerHTML = `
+  <div class="pagehead"><div><div class="eyebrow">Dashboard</div><h1 style="margin-top:6px">How the program is running</h1><p>Live demo incidents plus 12 weeks of pilot history.</p></div><span class="mocknote">${ic('chart')}incl. pilot history (mock)</span></div>
+  <div class="kpi-row">
+    <a class="kpi goldk" href="#/queue"><div class="k">Open incidents</div><div class="v">${open.length}</div><div class="s">${open.filter(i => i.needsQA).length} need QA · ${open.filter(i => i.severity === 'High').length} High</div></a>
+    <div class="kpi"><div class="k">Median time to submit</div><div class="v">2 m 10 s</div><div class="s">Store tablet, open → sent</div></div>
+    <div class="kpi good"><div class="k">Report completeness</div><div class="v">${compPct}%</div><div class="s">Photos + lot + supplier + item · vs FSIM baseline ~35%</div></div>
+    <div class="kpi"><div class="k">Median days to resolve</div><div class="v">${medDays.toFixed(1)}</div><div class="s">Received → resolved with a recorded answer</div></div>
+    <div class="kpi ${onTime < 80 ? '' : 'good'}"><div class="k">Supplier on-time reply</div><div class="v">${onTime}%</div><div class="s">Within 48 h of notification · ${allR.length} notifications</div></div>
+  </div>
+  <div class="charts">
+    <section class="card"><div class="card-h"><h3>Incidents by week</h3><span class="muted small">last 12 weeks · this week in gold</span></div><div class="card-b">${vbars(tot, lbl, { aria:'Incidents per week over the last 12 weeks', tipx: k => ` (${live[k]} live, ${hist[k]} pilot history)` })}</div></section>
+    <section class="card"><div class="card-h"><h3>By type</h3><span class="muted small">${ALL.length + HIST.length} incidents</span></div><div class="card-b">${hbars(Object.entries(byType).sort((a, b) => b[1] - a[1]))}</div></section>
+    <section class="card"><div class="card-h"><h3>By supplier</h3><span class="muted small">product incidents</span></div><div class="card-b">${hbars(Object.entries(bySup).sort((a, b) => b[1] - a[1]))}</div></section>
+    <section class="card"><div class="card-h"><h3>Status mix</h3><span class="muted small">live incidents · ${stTot}</span></div><div class="card-b">
+      <div class="stack" role="img" aria-label="Status mix">${Object.keys(Q.STATUS).filter(k => sm[k]).map(k => `<div data-tip="${esc(Q.STATUS[k].label)}: ${sm[k]}" style="flex:${sm[k]};background:${toneC[Q.STATUS[k].tone]}${Q.STATUS[k].label === 'Intake complete' ? ';opacity:.6' : ''}"></div>`).join('')}</div>
+      <table class="t"><tbody>${Object.keys(Q.STATUS).map(k => `<tr><td><span class="pill t-${Q.STATUS[k].tone}">${esc(Q.STATUS[k].label)}</span></td><td class="muted small">${Q.STATUS[k].waitingOn ? 'Waiting on ' + esc(Q.STATUS[k].waitingOn) : 'Finished'}</td><td style="text-align:right;font-weight:700">${sm[k] || 0}</td></tr>`).join('')}</tbody></table>
+    </div></section>
+  </div>`;
+}
+
+/* ================= SUPPLIER VIEW ================= */
+function supStats(s){
+  const live = ALL.filter(i => i.sup && i.sup.key === s.key);
+  const hist = HIST.filter(h => h.sup === s.key);
+  const replies = live.flatMap(i => { const n = i.timeline.find(x => x.kind === 'notify'), r = i.timeline.find(x => x.kind === 'response'); return n && r && role(r, i).r === 'supplier' ? [(r.at - n.at) / H] : []; }).concat(hist.map(h => h.replyHrs));
+  return { open: live.filter(i => i.open).length, resolved: live.filter(i => i.status === 'Resolved' && Date.now() - i.resolvedAt < 30 * D).length + hist.filter(h => h.week >= 7).length,
+    reply: replies.length ? Math.round(replies.reduce((a, b) => a + b, 0) / replies.length) : null, overdue: live.filter(i => i.overdue).length,
+    credits: live.reduce((a, i) => a + (i.credit || 0), 0) + hist.reduce((a, h) => a + h.credit, 0), total: live.length + hist.length };
+}
+function viewSuppliers(v){
+  v.innerHTML = `
+  <div class="pagehead"><div><div class="eyebrow">Supplier View</div><h1 style="margin-top:6px">Suppliers</h1><p>Tap a supplier to see its incidents in the queue.</p></div><span class="mocknote">${ic('chart')}incl. pilot history (mock)</span></div>
+  <div class="banner blue" style="margin-bottom:16px">${ic('shield')}<div><b>Suppliers see only their own incidents in their portal.</b> McCain never sees a Koch Foods report — and replies land straight on the incident timeline here.</div></div>
+  <div class="sgrid">${SUPPLIERS.map(s => { const st = supStats(s); return `<button class="scard" data-k="${s.key}">
+    <div class="sh"><span class="logo-sq" style="background:${s.color}">${esc(s.name.split(' ').map(w => w[0]).join('').slice(0, 2))}</span><div style="min-width:0"><h3>${esc(s.name)}</h3><div class="muted small" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(s.contact)}</div></div>${st.overdue ? `<span class="overdue" style="margin-left:auto">${ic('clock')}${st.overdue} overdue</span>` : ''}</div>
+    <div class="stats"><div class="stat"><b>${st.open}</b><small>Open</small></div><div class="stat"><b>${st.resolved}</b><small>Resolved 30 d</small></div><div class="stat ${st.reply > 48 ? 'bad' : ''}"><b>${st.reply == null ? '—' : st.reply + ' h'}</b><small>Avg reply</small></div></div>
+    <div class="foot"><span>Credits <b style="color:var(--success)">${money0(st.credits)}</b></span><span>${st.total} incidents · ${ic('right')}</span></div></button>`; }).join('')}</div>`;
+  $$('.scard', v).forEach(b => b.onclick = () => { Object.assign(QF, { status:'all', sev:'', store:'', q:'', sup:b.dataset.k, finished:true }); go('#/queue'); });
+}
+
+/* ================= RECALLS ================= */
+function viewRecalls(v){
+  v.innerHTML = `<div class="pagehead"><div><div class="eyebrow">Recalls</div><h1 style="margin-top:6px">Recalls &amp; withdrawals</h1></div></div>
+  <section class="card"><div class="empty-state"><div class="ico">${ic('recall')}</div><h2>Coming after the pilot</h2>
+    <p class="muted">Recalls will run on the same rails as incidents: pick a lot, see every store that received it from the DC data, push a hold notice to those store tablets, and track each store's confirmation.</p>
+    <div class="grid" style="text-align:left;margin-top:18px;gap:8px">
+      <div class="banner gold">${ic('pkg')}<div><b>Lot → stores</b> from DC shipment data, not a phone tree.</div></div>
+      <div class="banner gold">${ic('tablet')}<div><b>Hold notice on the tablet</b> with a one-tap “product pulled” confirmation and photo.</div></div>
+      <div class="banner gold">${ic('checkc')}<div><b>Live completion</b> — which stores haven't confirmed, by DC.</div></div>
+    </div></div></section>`;
+}
+
+/* ================= ANALYTICS ================= */
+function spark(vals, color){
+  const W = 140, Hh = 34, max = Math.max(1, ...vals), n = vals.length;
+  const pts = vals.map((v, k) => `${(k / (n - 1) * (W - 4) + 2).toFixed(1)},${(Hh - 3 - v / max * (Hh - 8)).toFixed(1)}`);
+  return `<svg class="spark" width="${W}" height="${Hh}" viewBox="0 0 ${W} ${Hh}" aria-hidden="true"><polyline points="${pts.join(' ')}" fill="none" stroke="${color}" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/><circle cx="${pts[n - 1].split(',')[0]}" cy="${pts[n - 1].split(',')[1]}" r="3.5" fill="${color}"/></svg>`;
+}
+function viewAnalytics(v){
+  const regionRows = REGIONS.map(r => {
+    const w = Array(12).fill(0);
+    ALL.forEach(i => { const k = weekIdx(i.submittedAt); if (k >= 0 && k < 12 && r.stores.includes(i.store.num)) w[k]++; });
+    HIST.forEach(h => { if (r.stores.includes(h.store)) w[h.week]++; });
+    const last4 = w.slice(8).reduce((a, b) => a + b, 0), prev4 = w.slice(4, 8).reduce((a, b) => a + b, 0);
+    return { r, w, last4, prev4, total: w.reduce((a, b) => a + b, 0) };
+  });
+  const storeRows = Q.STORES.map(s => {
+    const live = ALL.filter(i => i.store.num === s.num), hist = HIST.filter(h => h.store === s.num);
+    return { s, n: live.length + hist.length, open: live.filter(i => i.open).length, high: live.filter(i => i.severity === 'High').length + hist.filter(h => h.sev === 'High').length,
+      last: live.length ? Math.max(...live.map(i => i.submittedAt)) : null };
+  }).sort((a, b) => b.n - a.n);
+  v.innerHTML = `
+  <div class="pagehead"><div><div class="eyebrow">Analytics</div><h1 style="margin-top:6px">Trends by region</h1><p>RGV pilot stores are tagged. Weekly incident counts, last 12 weeks.</p></div><span class="mocknote">${ic('chart')}incl. pilot history (mock)</span></div>
+  <section class="card" style="margin-bottom:16px"><div class="tablewrap"><table class="t"><thead><tr><th>Region</th><th>Stores</th><th>12-week trend</th><th style="text-align:right">Last 4 wks</th><th style="text-align:right">Prior 4 wks</th><th style="text-align:right">Total</th></tr></thead><tbody>
+    ${regionRows.map(x => `<tr><td class="nowrap"><b>${esc(x.r.name)}</b> ${x.r.pilot ? '<span class="tag">Pilot</span>' : ''}</td><td class="nowrap muted small">${x.r.stores.join(', ')}</td><td>${spark(x.w, x.r.pilot ? '#F4A525' : '#6B625C')}</td>
+      <td style="text-align:right;font-weight:700">${x.last4}</td><td style="text-align:right" class="muted">${x.prev4}</td><td style="text-align:right">${x.total}</td></tr>`).join('')}
+  </tbody></table></div></section>
+  <div class="charts">
+    <section class="card"><div class="card-h"><h3>Stores</h3><span class="muted small">incidents, 12 weeks</span></div><div class="tablewrap"><table class="t"><thead><tr><th>Store</th><th style="text-align:right">Incidents</th><th style="text-align:right">Open</th><th style="text-align:right">High</th><th>Last report</th></tr></thead><tbody>
+      ${storeRows.map(x => `<tr class="click" data-s="${x.s.num}"><td class="nowrap"><b>${x.s.num}</b> ${esc(x.s.name)} ${PILOT.includes(x.s.num) ? '<span class="tag">Pilot</span>' : ''}</td><td style="text-align:right;font-weight:700">${x.n}</td><td style="text-align:right">${x.open}</td><td style="text-align:right">${x.high}</td><td class="nowrap muted small">${x.last ? fmtAgo(x.last) : '—'}</td></tr>`).join('')}
+    </tbody></table></div></section>
+    <section class="card"><div class="card-h"><h3>RGV pilot · what we're watching</h3></div><div class="card-b grid" style="gap:10px">
+      <div class="banner gold">${ic('tablet')}<div><b>McAllen 1147, Harlingen 1162, Brownsville 1188</b> — one Galaxy Tab A9+ per store, all served by PFG Victoria.</div></div>
+      <div class="mini">
+        <div class="r"><span>Reports with photos + lot</span><b>${Math.round(HIST.filter(h => PILOT.includes(h.store) && h.complete).length / Math.max(1, HIST.filter(h => PILOT.includes(h.store)).length) * 100)}%</b></div>
+        <div class="r"><span>Median days to resolve (pilot)</span><b>${median(HIST.filter(h => PILOT.includes(h.store)).map(h => h.days)).toFixed(1)}</b></div>
+        <div class="r"><span>Credits recovered (pilot)</span><b style="color:var(--success)">${money0(HIST.filter(h => PILOT.includes(h.store)).reduce((a, h) => a + h.credit, 0))}</b></div>
+        <div class="r"><span>Most common type</span><b>${esc(Object.entries(HIST.filter(h => PILOT.includes(h.store)).reduce((a, h) => (a[h.type] = (a[h.type] || 0) + 1, a), {})).sort((a, b) => b[1] - a[1])[0][0])}</b></div>
+      </div></div></section>
+  </div>`;
+  $$('tr[data-s]', v).forEach(tr => tr.onclick = () => { Object.assign(QF, { status:'all', sev:'', sup:'', q:'', store: tr.dataset.s, finished:true }); go('#/queue'); });
+}
+
+/* ================= REPORTS ================= */
+function csv(rows){ return rows.map(r => r.map(c => { const s = String(c == null ? '' : c); return /[",\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s; }).join(',')).join('\r\n'); }
+function download(name, text){
+  const blob = new Blob(['﻿' + text], { type:'text/csv;charset=utf-8' });
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name; document.body.appendChild(a); a.click();
+  setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 500);
+  toast('Downloaded ' + name, 'ok');
+}
+const REPORTS = [
+  { key:'all', title:'All incidents', desc:'Every incident in the demo with status, routing, lot and credit.', icon:'inbox',
+    rows: () => [['Ref','Received','Store','Store name','Type','Severity','Status','Waiting on','Item','CIN','Vendor','Lot','Qty','Filed by','Photos','Credit','Headline']].concat(ALL.map(i => [i.ref, new Date(i.submittedAt).toISOString(), i.store.num, i.store.name, i.type, i.severity || '', i.statusInfo ? i.statusInfo.label : i.status, i.waitingOn || '', i.itemObj ? i.itemObj.name : '', i.itemObj ? i.itemObj.cin : '', i.vendor || '', i.lot || '', i.qty || '', i.by || '', i.photos.length, i.credit || 0, i.headline])) },
+  { key:'open', title:'Open by waiting-on', desc:'Who owes the next move on every open incident, oldest first.', icon:'clock',
+    rows: () => [['Ref','Waiting on','Status','Severity','Overdue','Days open','Store']].concat(ALL.filter(i => i.open).sort((a, b) => a.submittedAt - b.submittedAt).map(i => [i.ref, i.waitingOn || '', i.statusInfo.label, i.severity || '', i.overdue ? 'Yes' : 'No', ((Date.now() - i.submittedAt) / D).toFixed(1), i.store.num])) },
+  { key:'scorecard', title:'Supplier scorecard', desc:'Open, resolved, average reply time, overdue and credits per supplier (incl. pilot history, mock).', icon:'factory',
+    rows: () => [['Supplier','Open','Resolved 30d','Avg reply hrs','Overdue','Credits','Total incidents']].concat(SUPPLIERS.map(s => { const st = supStats(s); return [s.name, st.open, st.resolved, st.reply == null ? '' : st.reply, st.overdue, st.credits.toFixed(2), st.total]; })) },
+  { key:'credits', title:'Credits recovered', desc:'Resolved incidents with a supplier or DC credit, for finance.', icon:'dollar',
+    rows: () => [['Ref','Resolved','Store','Paid by','Credit']].concat(ALL.filter(i => i.credit).map(i => [i.ref, i.resolvedAt ? new Date(i.resolvedAt).toISOString().slice(0, 10) : '', i.store.num, i.route === 'dc' ? i.dc : (i.sup ? i.sup.name : ''), i.credit.toFixed(2)])) },
+  { key:'fsim', title:'Food-safety log (High)', desc:'High-severity incidents with lot, action taken and timeline, for audit.', icon:'shield',
+    rows: () => [['Ref','Received','Store','Type','Lot','Status','Timeline']].concat(ALL.filter(i => i.severity === 'High').map(i => [i.ref, new Date(i.submittedAt).toISOString(), i.store.num, i.type, i.lot || '', i.statusInfo.label, i.timeline.map(s => fmtTime(s.at) + ' ' + (s.who || 'QUIP') + ': ' + s.text).join(' | ')])) },
+];
+function viewReports(v){
+  v.innerHTML = `
+  <div class="pagehead"><div><div class="eyebrow">Reports</div><h1 style="margin-top:6px">Reports</h1><p>Exports run on live demo data — open them in Excel.</p></div></div>
+  <section class="card">${REPORTS.map(r => `<div style="display:flex;align-items:center;gap:14px;padding:16px;border-bottom:1px solid #EEEAE6">
+    <span class="logo-sq" style="background:var(--black-soft);color:var(--gold)">${ic(r.icon)}</span>
+    <div style="flex:1;min-width:0"><h3>${esc(r.title)}</h3><div class="muted small" style="margin-top:3px">${esc(r.desc)} · ${r.rows().length - 1} rows</div></div>
+    <button class="btn sm" data-r="${r.key}">${ic('download')}Export CSV</button></div>`).join('')}
+    <div style="padding:14px 16px" class="muted small">Scheduled: weekly supplier scorecard to Will Cash every Monday 7:00 · monthly credits summary to finance.</div></section>`;
+  $$('[data-r]', v).forEach(b => b.onclick = () => { const r = REPORTS.find(x => x.key === b.dataset.r); download(`quip-${r.key}-${new Date().toISOString().slice(0, 10)}.csv`, csv(r.rows())); });
+}
+
+/* ================= ADMIN ================= */
+const ADMIN_STATE = (() => { try { return JSON.parse(localStorage.getItem('quip-admin-ui') || '{}'); } catch (e) { return {}; } })();
+function saveUI(){ try { localStorage.setItem('quip-admin-ui', JSON.stringify(ADMIN_STATE)); } catch (e) {} }
+function sw(id, def){ const on = ADMIN_STATE[id] != null ? ADMIN_STATE[id] : def; return `<button class="switch ${on ? 'on' : ''}" data-sw="${id}" data-def="${def ? 1 : 0}" role="switch" aria-checked="${on}"></button>`; }
+function bindSwitches(v, msgs){
+  $$('[data-sw]', v).forEach(b => b.onclick = e => { e.stopPropagation(); const id = b.dataset.sw; const cur = ADMIN_STATE[id] != null ? ADMIN_STATE[id] : b.dataset.def === '1'; ADMIN_STATE[id] = !cur; saveUI();
+    b.classList.toggle('on', !cur); b.setAttribute('aria-checked', !cur); const m = msgs && msgs(id, !cur); toast(m || (!cur ? 'Turned on' : 'Turned off'), 'ok'); });
+}
+function viewAdmin(v, tab){
+  if (typeof v === 'string') { tab = v; v = $('#view'); }
+  const tabs = [['users','Users'],['tablets','Store tablets'],['types','Incident types'],['rules','Notification rules']];
+  let body = '';
+  if (tab === 'users') {
+    const users = [['Tasha','QA Lead','tasha.qa@churchs.example','Admin · all incidents', true],['Jennifer Scott-Ward','QA Specialist','jennifer.sw@churchs.example','QA · all incidents', true],['Grace','QA Specialist','grace.qa@churchs.example','QA · all incidents', true],['Sean Lawler','Super Admin','slawler@churchs.com','Super Admin · settings & access', true]];
+    body = `<div class="banner green" style="margin-bottom:14px">${ic('users')}<div><b>Church's manages its own users — no ArrowStream ticket.</b> Add a QA teammate, a store tablet, or a supplier contact here and they're live in minutes.</div></div>
+    <section class="card"><div class="card-h"><h3>QA team</h3><button class="btn sm" data-add="user">${ic('plus')}Invite user</button></div><div class="tablewrap"><table class="t"><thead><tr><th>Name</th><th>Role</th><th>Email</th><th>Access</th><th>Active</th></tr></thead><tbody>
+      ${users.map((u, k) => `<tr><td class="nowrap"><span style="display:inline-flex;align-items:center;gap:10px"><span class="av" style="width:30px;height:30px;font-size:13px">${u[0][0]}</span><b>${esc(u[0])}</b></span></td><td class="nowrap">${u[1] === 'Super Admin' ? '<span class="tag">Super Admin</span>' : esc(u[1])}</td><td class="mono small">${esc(u[2])}</td><td class="muted small nowrap">${esc(u[3])}</td><td>${sw('user' + k, u[4])}</td></tr>`).join('')}
+    </tbody></table></div></section>`;
+  } else if (tab === 'tablets') {
+    const t = [['Galaxy Tab A9+','10189','Houston, TX','Enrolled','2 min ago',true],['Galaxy Tab A9+','1147','McAllen, TX','Pending','—',false],['Galaxy Tab A9+','1162','Harlingen, TX','Pending','—',false],['Galaxy Tab A9+','1188','Brownsville, TX','Pending','—',false]];
+    body = `<section class="card"><div class="card-h"><div><h3>Store tablets</h3><div class="muted small">Kiosk-locked to the QUIP crew app · managed via Stratix</div></div><button class="btn sm" data-add="tablet">${ic('plus')}Enroll tablet</button></div><div class="tablewrap"><table class="t"><thead><tr><th>Device</th><th>Store</th><th>Status</th><th>Last seen</th><th>Kiosk lock</th><th></th></tr></thead><tbody>
+      ${t.map((d, k) => `<tr><td class="nowrap">${ic('tablet')} <b>${d[0]}</b></td><td class="nowrap">Store ${d[1]} · ${d[2]} ${PILOT.includes(d[1]) ? '<span class="tag">Pilot</span>' : ''}</td><td>${d[3] === 'Enrolled' ? '<span class="pill t-green">Enrolled</span>' : '<span class="pill t-gold">Pending · RGV pilot</span>'}</td><td class="nowrap muted">${d[4]}</td><td>${sw('kiosk' + k, d[5])}</td><td>${d[3] === 'Enrolled' ? `<a class="btn sm ghost" href="../quip/">${ic('ext')}Open</a>` : `<button class="btn sm" data-enroll="${d[1]}">Send code</button>`}</td></tr>`).join('')}
+    </tbody></table></div></section>`;
+  } else if (tab === 'types') {
+    body = `<section class="card"><div class="card-h"><div><h3>Incident types</h3><div class="muted small">What the store picks, and the one question the tablet asks for each</div></div><button class="btn sm" data-add="type">${ic('plus')}Add type</button></div><div class="tablewrap"><table class="t"><thead><tr><th>Type</th><th>Group</th><th>Question asked on the tablet</th><th>Default severity</th><th>Enabled</th></tr></thead><tbody>
+      ${Q.INCIDENT_TYPES.map((t, k) => `<tr><td class="nowrap"><b>${esc(t.name)}</b></td><td>${esc(t.group)}</td><td class="small" style="min-width:260px">${esc(t.q)}</td><td>${t.high ? sev('High') : t.group === 'Service' ? '<span class="sev-none">—</span>' : sev('Medium')}</td><td>${sw('type' + k, true)}</td></tr>`).join('')}
+    </tbody></table></div></section>`;
+  } else {
+    const rules = [['High severity filed or escalated','Post to QA Teams channel “QA – Food Safety” instantly', true],['Supplier or DC reply overdue (48 h)','One Teams message to the assigned QA person', true],['New report, normal severity','Included in daily digest at 7:00 CT', true],['Supplier or DC replies','Badge in QUIP only · no email', true],['Every status change','Email to QA team', false]];
+    body = `<div class="banner gold" style="margin-bottom:14px">${ic('bell')}<div><b>Fewer, targeted alerts.</b> One alert per decision point, everything else in the morning digest.</div></div>
+    <section class="card"><div class="card-h"><h3>Notification rules</h3></div>${rules.map((r, k) => `<div style="display:flex;align-items:center;gap:14px;padding:14px 16px;border-bottom:1px solid #EEEAE6"><div style="flex:1"><b>${esc(r[0])}</b><div class="muted small">${esc(r[1])}</div></div>${sw('rule' + k, r[2])}</div>`).join('')}
+    <div style="padding:14px 16px;display:flex;gap:10px;flex-wrap:wrap;align-items:center"><span class="lbl">Daily digest</span><select class="inp" style="width:auto" id="dg"><option>6:30 CT</option><option selected>7:00 CT</option><option>8:00 CT</option></select><span class="muted small">to Tasha, Jennifer, Grace</span></div></section>`;
+  }
+  v.innerHTML = `<div class="pagehead"><div><div class="eyebrow">Admin</div><h1 style="margin-top:6px">Settings &amp; access</h1></div></div>
+    <nav class="tabs">${tabs.map(([k, l]) => `<a href="#/admin/${k}" class="${tab === k ? 'on' : ''}">${l}</a>`).join('')}</nav>${body}`;
+  bindSwitches(v, (id, on) => id.startsWith('kiosk') ? (on ? 'Kiosk lock on · tablet opens straight to QUIP' : 'Kiosk lock off') : id.startsWith('rule') ? (on ? 'Rule on' : 'Rule off — fewer alerts') : id.startsWith('type') ? (on ? 'Type shown on store tablets' : 'Type hidden from store tablets') : (on ? 'User activated' : 'User deactivated'));
+  $$('[data-add]', v).forEach(b => b.onclick = () => toast({ user:'Invite sent — they sign in with their Church\'s Microsoft account', tablet:'Enrollment code: 4827-19 · valid 24 h', type:'New type drafted — add its tablet question to publish' }[b.dataset.add], 'ok'));
+  $$('[data-enroll]', v).forEach(b => b.onclick = () => toast(`Enrollment code sent to Store ${b.dataset.enroll} GM`, 'ok'));
+  const dg = $('#dg', v); if (dg) dg.onchange = () => toast('Digest moved to ' + dg.value, 'ok');
+}
+function viewAccess(v, kind){
+  if (typeof v === 'string') { kind = v; v = $('#view'); }
+  const sup = kind === 'supplier';
+  const rows = sup ? [
+    ['McCain QA Desk','McCain','qa.notifications@mccainfoods.example','Active','4 h ago'],['Lamb Weston Customer Quality','Lamb Weston','customer.quality@lambweston.example','Active','1 day ago'],
+    ['Koch Foods QA','Koch Foods','qa.desk@kochfoods.example','Active','6 days ago'],['Case Farms QA','Case Farms','quality@casefarms.example','Active','20 h ago'],
+    ['GreenGate Food Safety','GreenGate Fresh','foodsafety@greengatefresh.example','Active','2 days ago'],['Ardent Mills Quality','Ardent Mills','quality.alerts@ardentmills.example','Invited','—'],
+    ['Huhtamaki Customer Quality','Huhtamaki','cq.na@huhtamaki.example','Active','3 weeks ago']]
+  : [['PFG Houston Service Desk','PFG Houston','houston.service@pfgc.example','Invited','—'],['PFG Bakersfield Service Desk','PFG Bakersfield','bakersfield.service@pfgc.example','Active','18 h ago'],
+    ['PFG RFS Arizona Service Desk','PFG RFS Arizona','rfs.arizona.service@pfgc.example','Active','19 days ago'],['PFG Victoria Service Desk','PFG Victoria','victoria.service@pfgc.example','Invited','—'],
+    ['PFG Little Rock Service Desk','PFG Little Rock','littlerock.service@pfgc.example','Active','5 days ago'],['PFG Atlanta Service Desk','PFG Atlanta','atlanta.service@pfgc.example','Not invited','—']];
+  v.innerHTML = `<div class="pagehead"><div><div class="eyebrow">Admin</div><h1 style="margin-top:6px">${sup ? 'Supplier' : 'DC'} access</h1><p>${sup ? 'Each supplier signs into its own portal and sees only incidents routed to it.' : 'Each distribution center sees only incidents routed to it — damage, temperature and service.'}</p></div>
+    <button class="btn pri" id="inv">${ic('plus')}Invite ${sup ? 'supplier' : 'DC'} contact</button></div>
+  <section class="card"><div class="tablewrap"><table class="t"><thead><tr><th>Contact</th><th>${sup ? 'Supplier' : 'DC'}</th><th>Email</th><th>Status</th><th>Last sign-in</th><th>Portal access</th><th></th></tr></thead><tbody>
+    ${rows.map((r, k) => `<tr><td class="nowrap"><b>${esc(r[0])}</b></td><td class="nowrap">${esc(r[1])}</td><td class="mono small">${esc(r[2])}</td>
+      <td>${r[3] === 'Active' ? '<span class="pill t-green">Active</span>' : r[3] === 'Invited' ? '<span class="pill t-blue">Invited</span>' : '<span class="pill t-grey">Not invited</span>'}</td>
+      <td class="nowrap muted small">${r[4]}</td><td>${sw(kind + 'acc' + k, r[3] !== 'Not invited')}</td>
+      <td>${r[3] === 'Active' ? '' : `<button class="btn sm" data-inv="${esc(r[0])}">${r[3] === 'Invited' ? 'Resend' : 'Invite'}</button>`}</td></tr>`).join('')}
+  </tbody></table></div></section>
+  <div class="banner blue" style="margin-top:14px">${ic('shield')}<div>Contacts reply by email, Teams or their portal — every answer lands on the incident timeline, stamped with their name.</div></div>`;
+  bindSwitches(v, (id, on) => on ? 'Portal access granted' : 'Portal access revoked');
+  $$('[data-inv]', v).forEach(b => b.onclick = () => toast('Invite sent to ' + b.dataset.inv, 'ok'));
+  $('#inv').onclick = () => modal({ title:`Invite ${sup ? 'supplier' : 'DC'} contact`, body:`<div class="field"><label for="ivn">Name</label><input class="inp" id="ivn" placeholder="${sup ? 'e.g. Bunge QA' : 'e.g. PFG Atlanta Service Desk'}"></div><div class="field"><label for="ive">Email</label><input class="inp" id="ive" type="email" placeholder="name@company.example"></div>`,
+    actions:[{ label:'Cancel' }, { label:'Send invite', cls:'pri', icon:'send', fn(m){ const n = $('#ivn', m).value.trim() || 'contact'; toast('Invite sent to ' + n, 'ok'); } }] });
+}
+
+/* ================= DOCS ================= */
+function viewDocs(v){
+  v.innerHTML = `<div class="pagehead"><div><div class="eyebrow">Documentation</div><h1 style="margin-top:6px">QA team SOP</h1><p>How Tasha, Jennifer and Grace work an incident in QUIP. One owner per step, one alert per decision.</p></div><span class="mocknote">${ic('book')}v0.3 · pilot draft</span></div>
+  <section class="card"><ol class="sop">
+    <li><h3>Intake — same business day</h3><ul><li>Open the oldest <b>Pending intake</b> first; High-default types (Foreign Object, Spoilage) jump the line.</li><li>Check photos match the description; confirm lot, CIN and use-by are readable.</li><li>Set severity: <b>High</b> = possible food-safety or injury risk; Medium = quality / credit; Low = trend only.</li><li>Tell the store what to hold. Nothing gets thrown out until QA or the supplier says so.</li></ul></li>
+    <li><h3>Route — supplier or DC</h3><ul><li><b>Supplier</b> when the problem was made at pack (fill, foreign object, coding, appearance).</li><li><b>DC</b> when it happened in transit (damage at receiving, temperature abuse, late or short).</li><li>Only approved suppliers for that CIN are offered. Wrong call? Use <b>Correct routing</b> — never cancel and refile.</li></ul></li>
+    <li><h3>Notify</h3><ul><li>Preview, then send by email or Teams. Photos and lot attach automatically.</li><li>Reply due in 48 h (24 h for High). Overdue replies surface on the Morning Brief — chase once, then phone.</li></ul></li>
+    <li><h3>Record the response</h3><ul><li>Paste or summarise the supplier's or DC's answer: root cause, corrective action, credit.</li><li>Phone answers count — record who said it and when.</li></ul></li>
+    <li><h3>Resolve</h3><ul><li>Resolve only on a recorded response — nothing resolves on a note alone.</li><li>Enter the credit if one was issued; the store is told automatically.</li><li>Use <b>Close · no action</b> only for duplicates, non-issues, or trend-only service reports.</li></ul></li>
+  </ol></section>`;
+}
+
+/* ---------- global search ---------- */
+let hlIdx = -1;
+function searchResults(q){
+  q = q.trim().toLowerCase(); if (!q) return [];
+  const qd = q.replace(/^qa-?2026-?0*/, '');
+  return ALL.filter(i => i.ref.toLowerCase().includes(q) || (qd && i.ref.endsWith(qd.padStart(6, '0'))) || (i.lot || '').toLowerCase().includes(q) || i.store.num === q || i.store.num.includes(q) && q.length >= 3 || (i.store.name || '').toLowerCase().includes(q) || i.headline.toLowerCase().includes(q) || (i.vendor || '').toLowerCase().includes(q) || (i.itemObj && i.itemObj.name.toLowerCase().includes(q))).slice(0, 8);
+}
+function drawSearch(){
+  const q = $('#search').value, d = $('#searchDrop');
+  if (!q.trim()) { d.hidden = true; return; }
+  const r = searchResults(q); hlIdx = r.length ? 0 : -1;
+  d.innerHTML = r.length ? r.map((i, k) => `<button class="row ${k === 0 ? 'hl' : ''}" data-ref="${i.ref}"><span class="mono" style="font-weight:600;font-size:13px">${i.ref}</span><span style="flex:1;min-width:0"><b style="display:block;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(i.headline)}</b><small class="muted">Store ${esc(i.store.num)}${i.lot ? ' · Lot ' + esc(i.lot) : ''}</small></span>${pill(i)}</button>`).join('')
+    : `<div class="empty">No incident matches “${esc(q)}”. Try a ref (000005), a lot (KF1105) or a store number (10189).</div>`;
+  d.hidden = false;
+  $$('.row', d).forEach(b => b.onmousedown = e => { e.preventDefault(); pickSearch(b.dataset.ref); });
+}
+function pickSearch(ref){ $('#search').value = ''; $('#searchDrop').hidden = true; $('#search').blur(); go('#/incident/' + ref); }
+
+/* ---------- top bar wiring ---------- */
+function init(){
+  $('#burger').innerHTML = ic('menu');
+  $('#searchIco').outerHTML = ic('search');
+  $('#burger').onclick = () => document.body.classList.toggle('drawer');
+  $('#scrim').onclick = () => document.body.classList.remove('drawer');
+  const s = $('#search');
+  s.oninput = drawSearch;
+  s.onfocus = drawSearch;
+  s.onblur = () => setTimeout(() => $('#searchDrop').hidden = true, 120);
+  s.onkeydown = e => {
+    const rows = $$('#searchDrop .row');
+    if (e.key === 'ArrowDown' || e.key === 'ArrowUp') { e.preventDefault(); if (!rows.length) return; hlIdx = (hlIdx + (e.key === 'ArrowDown' ? 1 : -1) + rows.length) % rows.length; rows.forEach((r, k) => r.classList.toggle('hl', k === hlIdx)); }
+    else if (e.key === 'Enter') { if (rows[hlIdx]) pickSearch(rows[hlIdx].dataset.ref); }
+    else if (e.key === 'Escape') { s.value = ''; $('#searchDrop').hidden = true; s.blur(); }
+  };
+  const bm = $('#bellMenu'), um = $('#userMenu');
+  $('#bell').onclick = e => {
+    e.stopPropagation(); um.hidden = true;
+    const items = rankTodo();
+    bm.innerHTML = `<div class="mh"><b>Needs you</b><small>${items.length} item${items.length === 1 ? '' : 's'} · ranked</small></div>${items.slice(0, 6).map(t => `<div class="nrow" data-ref="${t.i.ref}"><b ${t.urgent ? 'style="color:var(--red)"' : ''}>${esc(t.why)}</b><small><span class="mono">${t.i.ref}</span> · ${esc(t.i.headline)}</small></div>`).join('') || '<div class="nrow"><small>All clear.</small></div>'}<div class="nfoot">High severity also posts to the QA Teams channel. Everything else waits for the 7:00 digest.</div>`;
+    $$('.nrow[data-ref]', bm).forEach(r => r.onclick = () => { bm.hidden = true; go('#/incident/' + r.dataset.ref); });
+    bm.hidden = !bm.hidden;
+  };
+  $('#userBtn').onclick = e => {
+    e.stopPropagation(); bm.hidden = true;
+    um.innerHTML = `<div class="mh"><b>Tasha</b><small>QA Lead · demo account</small></div>
+      <a href="../quip/">${ic('tablet')}Open crew tablet app</a>
+      <a href="#/docs">${ic('book')}QA team SOP</a>
+      <button class="danger" id="resetBtn">${ic('refresh')}Reset demo data</button>`;
+    $('#resetBtn').onclick = () => { um.hidden = true; modal({ title:'Reset demo data?', sub:'Puts every incident back to its starting state.',
+      body:`<div class="banner gold">${ic('refresh')}<div>Clears QA actions taken in this demo and any reports filed from the crew tablet app on this device. Nothing outside this demo is touched.</div></div>`,
+      actions:[{ label:'Cancel' }, { label:'Reset demo', cls:'danger', icon:'refresh', fn(){ Q.reset(); galRef = ''; checkNew(true); go('#/brief'); toast('Demo data reset', 'ok'); } }] }); };
+    um.hidden = !um.hidden;
+  };
+  document.addEventListener('click', e => { if (!e.target.closest('#bellMenu')) bm.hidden = true; if (!e.target.closest('#userMenu')) um.hidden = true; });
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') { if (modalClose) closeModal(); bm.hidden = um.hidden = true; document.body.classList.remove('drawer'); }
+    if (e.key === '/' && !/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName)) { e.preventDefault(); s.focus(); }
+  });
+  // chart tooltips
+  const tip = $('#tip');
+  document.addEventListener('pointerover', e => { const t = e.target.closest('[data-tip]'); if (!t) { tip.style.opacity = 0; return; } tip.textContent = t.dataset.tip; tip.style.opacity = 1; });
+  document.addEventListener('pointermove', e => { if (tip.style.opacity === '1') { const x = Math.min(e.clientX + 12, innerWidth - tip.offsetWidth - 8); tip.style.left = x + 'px'; tip.style.top = (e.clientY - 36) + 'px'; } });
+  // new reports from the crew tablet (same device)
+  const refresh = () => { if (document.visibilityState !== 'visible') return; const before = KNOWN ? KNOWN.size : 0; checkNew(false); if (KNOWN.size !== before && !modalClose) render(); else renderNav((location.hash || '#/brief').slice(2).split('/')[0]); };
+  window.addEventListener('focus', refresh);
+  document.addEventListener('visibilitychange', refresh);
+  window.addEventListener('storage', e => { if (e.key === Q.KEY) { checkNew(false); if (!modalClose) render(); } });
+  checkNew(true);
+  lastRoute = location.hash.split('/')[1];
+  if (!location.hash) history.replaceState(null, '', '#/brief');
+  render();
+}
+init();
+})();
+</script>
+<script>if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').catch(()=>{})}</script>
+</body>
+</html>
